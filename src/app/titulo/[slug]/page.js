@@ -6,7 +6,7 @@ import { getCatalog, getHypometro, getPlatformClass, getTitleBySlug } from '../.
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getCatalog().map((item) => ({ slug: String(item.id) }));
+  return getCatalog().map((item) => ({ slug: String(item.slug || item.id) }));
 }
 
 export async function generateMetadata({ params }) {
@@ -45,36 +45,36 @@ export default async function TitlePage({ params }) {
             </div>
             <div>
               <span>Crítica</span>
-              <strong>{item.nota_critica}%</strong>
+              <strong>{item.nota_critica ? `${item.nota_critica}%` : 'Em breve'}</strong>
             </div>
             <div>
               <span>Público</span>
-              <strong>{item.nota_publico}%</strong>
+              <strong>{item.nota_publico ? `${item.nota_publico}%` : 'Em breve'}</strong>
             </div>
           </div>
 
           <div className="detail-block">
             <h2>Onde assistir</h2>
             <div className="platform-list">
-              {item.plataformas.map((p) => <span key={p} className={`st st-${getPlatformClass(p)}`}>{p}</span>)}
+              {(item.plataformas || []).map((p) => <span key={p} className={`st st-${getPlatformClass(p)}`}>{p}</span>)}
             </div>
           </div>
 
           <div className="detail-block">
             <h2>Como é a experiência?</h2>
             <div className="experience-list">
-              {item.experiencia.map((entry) => <span key={entry}>{entry}</span>)}
+              {(item.experiencia || []).map((entry) => <span key={entry}>{entry}</span>)}
             </div>
           </div>
 
           <div className="decision-grid">
             <div className="detail-block">
               <h2>Ideal para quem gosta de</h2>
-              <ul>{item.ideal_para.map((entry) => <li key={entry}>✓ {entry}</li>)}</ul>
+              <ul>{(item.ideal_para || []).map((entry) => <li key={entry}>✓ {entry}</li>)}</ul>
             </div>
             <div className="detail-block">
               <h2>Talvez não seja para você se procura</h2>
-              <ul>{item.talvez_nao_seja.map((entry) => <li key={entry}>✗ {entry}</li>)}</ul>
+              <ul>{(item.talvez_nao_seja || []).map((entry) => <li key={entry}>✗ {entry}</li>)}</ul>
             </div>
           </div>
         </section>

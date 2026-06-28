@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "import:tmdb": "node scripts/import-tmdb.mjs"
   },
   "dependencies": {
     "next": "latest",

@@ -17,7 +17,7 @@ export default function TitleCard({ item }) {
   const platformClass = getPlatformClass(platform);
 
   return (
-    <Link className="card" href={`/titulo/${item.id}`}>
+    <Link className="card" href={`/titulo/${item.slug || item.id}`}>
       <div className={`card-thumb t${(item.nota_sofahype % 6) + 1}`}>
         {item.poster_url ? <img src={item.poster_url} alt={item.titulo} /> : <span>{initials(item.titulo)}</span>}
         <div className={`score-badge score-${hypo.classe}`}>{item.nota_sofahype}%</div>

@@ -8,7 +8,7 @@ export default function Ranking({ items }) {
         const hypo = getHypometro(item.nota_sofahype);
         const platform = getPrimaryPlatform(item);
         return (
-          <Link className="rank-row" href={`/titulo/${item.id}`} key={item.id}>
+          <Link className="rank-row" href={`/titulo/${item.slug || item.id}`} key={item.id}>
             <div className="rank-num">{index + 1}</div>
             <div className={`rank-thumb t${(index % 6) + 1}`}>{item.titulo.slice(0,3).toUpperCase()}</div>
             <div className="rank-info">

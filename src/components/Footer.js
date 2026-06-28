@@ -6,7 +6,7 @@ export default function Footer() {
       <footer>
         <div>
           <div className="footer-logo">🛋 SOFÁ <span>HYPE</span></div>
-          <p className="footer-desc">O guia brasileiro de filmes e séries. Notas, streamings e curadoria para decidir melhor o que assistir.</p>
+          <p className="footer-desc">O guia brasileiro de filmes e séries. Notas, streamings e curadoria para decidir melhor o que assistir.</p><p className="footer-note">Dados e imagens fornecidos por TMDb. Este produto utiliza a API do TMDb, mas não é endossado ou certificado pelo TMDb.</p>
         </div>
         <div>
           <div className="footer-col-title">Streamings</div>

@@ -40,7 +40,7 @@ export function getTitlesByStreaming(slug) {
 }
 
 export function getTitleBySlug(slug) {
-  return getCatalog().find((item) => item.id === slug || slugify(item.titulo) === slug);
+  return getCatalog().find((item) => item.slug === slug || item.id === slug || slugify(item.titulo) === slug);
 }
 
 export function getHypometro(score) {

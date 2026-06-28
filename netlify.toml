@@ -1,6 +1,8 @@
 [build]
-  command = "npm run build"
+  command = "npm run import:tmdb && npm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
+  TMDB_IMPORT_MOVIES = "120"
+  TMDB_IMPORT_SERIES = "60"

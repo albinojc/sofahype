@@ -107,3 +107,5 @@ footer { background:#111; border-top:1px solid #1e1e1e; padding:2.5rem 2rem; dis
   .poster-large { position: static; max-width: 320px; }
   .score-panel, .decision-grid, footer { grid-template-columns: 1fr; }
 }
+
+.footer-note { margin-top: 10px; font-size: 11px; color: #3f3f3f; line-height: 1.5; max-width: 460px; }
