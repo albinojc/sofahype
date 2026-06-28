@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getHypometro, getPlatformClass, getPrimaryPlatform } from '../lib/catalog';
+import HypometroIcon from './HypometroIcon';
 
 function initials(title) {
   return title
@@ -28,7 +29,7 @@ export default function TitleCard({ item }) {
         <div className="card-info">{item.ano} · {item.generos?.[0]} · {item.duracao}</div>
         <div className="card-footer">
           <span className="audience">👥 {item.nota_publico}%</span>
-          <span className="hype-tag">{hypo.emoji} {hypo.nome}</span>
+          <span className="hype-tag"><HypometroIcon variant={hypo.classe} size={20} /><span>{hypo.curto}</span></span>
         </div>
       </div>
     </Link>

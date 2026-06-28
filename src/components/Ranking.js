@@ -10,7 +10,9 @@ export default function Ranking({ items }) {
         return (
           <Link className="rank-row" href={`/titulo/${item.slug || item.id}`} key={item.id}>
             <div className="rank-num">{index + 1}</div>
-            <div className={`rank-thumb t${(index % 6) + 1}`}>{item.titulo.slice(0,3).toUpperCase()}</div>
+            <div className={`rank-thumb t${(index % 6) + 1}`}>
+              {item.poster_url ? <img src={item.poster_url} alt={item.titulo} /> : <span>{item.titulo.slice(0,3).toUpperCase()}</span>}
+            </div>
             <div className="rank-info">
               <div className="rank-title">{item.titulo}</div>
               <div className="rank-meta"><span className={`st st-${getPlatformClass(platform)}`}>{platform}</span> · {item.generos?.[0]} · {item.ano}</div>

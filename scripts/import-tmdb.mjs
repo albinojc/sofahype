@@ -163,61 +163,149 @@ function scoreFromDetails(details) {
   return Math.max(0, Math.min(score, 100));
 }
 
-function experienceFromGenres(genres, tipo) {
+function simpleUnique(list, limit = 4) {
+  return [...new Set(list.filter(Boolean))].slice(0, limit);
+}
+
+function experienceFromDetails(details, genres, tipo) {
   const text = normalize(genres.join(' '));
+  const titulo = normalize(details.title || details.name || details.original_title || details.original_name || '');
+  const sinopse = normalize(details.overview || '');
+  const runtime = tipo === 'filme' ? Number(details.runtime || 0) : Number(details.episode_run_time?.[0] || 0);
+
+  const has = (term) => text.includes(term);
+  const mentions = (term) => sinopse.includes(term) || titulo.includes(term);
+
+  const isComedy = has('comedia');
+  const isCrime = has('crime');
+  const isDrama = has('drama');
+  const isAction = has('acao') || has('aventura');
+  const isHorror = has('terror');
+  const isThriller = has('suspense') || has('misterio');
+  const isScifi = has('ficcao cientifica');
+  const isFantasy = has('fantasia');
+  const isDoc = has('documentario');
+  const isRomance = has('romance');
+  const isAnimation = has('animacao');
+  const isFamily = has('familia');
+  const isMusic = has('musica') || has('musical');
+  const isWar = has('guerra');
+  const isHistory = has('historia');
+  const isAdultByText = mentions('assassin') || mentions('crime') || mentions('violencia') || mentions('morte') || mentions('trafic') || mentions('gangue');
+  const adultTone = isCrime || isThriller || isHorror || isWar || isAdultByText;
+  const isKidFriendly = (isAnimation || isFamily) && !adultTone && !isHorror && !isCrime;
+
   const exp = [];
   const ideal = [];
   const avoid = [];
 
-  if (text.includes('comedia')) {
-    exp.push('Tom mais leve');
-    ideal.push('quem quer relaxar');
-    avoid.push('drama pesado');
+  // Regra de linguagem do SofáHype:
+  // usar termos simples, populares e úteis para decisão. Nada de jargão de crítico.
+
+  if (isKidFriendly) {
+    exp.push('Visual colorido');
+    exp.push(isFantasy || isScifi ? 'Tem fantasia' : 'Clima leve');
+    ideal.push('ver com crianças');
+    ideal.push('aventura para crianças');
+    avoid.push(isFantasy || isScifi ? 'história sem fantasia' : 'filme adulto');
+  } else if (isAnimation) {
+    exp.push('Animação para público mais velho');
+    ideal.push('animação com história adulta');
+    avoid.push('animação para crianças pequenas');
   }
-  if (text.includes('drama')) {
-    exp.push('Tom dramático');
-    ideal.push('histórias emocionais');
-    avoid.push('algo totalmente leve');
+
+  if (isCrime) {
+    exp.push(isComedy ? 'Crime com humor pesado' : 'Crime e tensão');
+    ideal.push('histórias de crime');
+    avoid.push('algo leve para relaxar');
   }
-  if (text.includes('acao') || text.includes('aventura')) {
-    exp.push('Mais movimento');
-    ideal.push('aventura e adrenalina');
-    avoid.push('ritmo muito contemplativo');
-  }
-  if (text.includes('terror')) {
-    exp.push('Tensão alta');
-    ideal.push('sustos e suspense');
-    avoid.push('filme confortável');
-  }
-  if (text.includes('suspense') || text.includes('misterio')) {
-    exp.push('Exige atenção');
-    ideal.push('mistério e investigação');
+
+  if (isThriller) {
+    exp.push('Tem mistério');
+    exp.push('Precisa prestar atenção');
+    ideal.push('suspense');
     avoid.push('assistir distraído');
   }
-  if (text.includes('ficcao cientifica') || text.includes('fantasia')) {
-    exp.push('Universo imaginativo');
-    ideal.push('mundos diferentes');
-    avoid.push('realismo cotidiano');
+
+  if (isHorror) {
+    exp.push('Clima de medo');
+    exp.push('Tem sustos');
+    ideal.push('terror');
+    avoid.push('filme tranquilo');
   }
-  if (text.includes('documentario')) {
-    exp.push('Conteúdo informativo');
-    ideal.push('aprender algo novo');
-    avoid.push('ficção escapista');
+
+  if (isAction) {
+    exp.push('Bem movimentado');
+    ideal.push('ação e aventura');
+    avoid.push('história parada');
   }
-  if (text.includes('romance')) {
-    exp.push('Tom emocional');
-    ideal.push('histórias afetivas');
-    avoid.push('ação constante');
+
+  if (isScifi || isFantasy) {
+    exp.push(isScifi ? 'Mistura ciência e imaginação' : 'Mundo de fantasia');
+    ideal.push(isScifi ? 'ficção científica' : 'fantasia');
+    avoid.push(isScifi || isFantasy ? 'história sem fantasia' : '');
+  }
+
+  if (isDrama) {
+    exp.push(adultTone ? 'Clima adulto' : 'História mais séria');
+    ideal.push('histórias intensas');
+    if (!isComedy) avoid.push('comédia leve');
+  }
+
+  if (isComedy) {
+    if (adultTone || isDrama) {
+      exp.push('Humor mais pesado');
+      ideal.push('humor adulto');
+      avoid.push('humor bem inocente');
+    } else {
+      exp.push('Tem humor');
+      ideal.push('dar risada');
+      avoid.push('drama pesado');
+    }
+  }
+
+  if (isRomance) {
+    exp.push('Foco nas relações');
+    ideal.push('histórias de amor');
+    avoid.push('ação o tempo todo');
+  }
+
+  if (isDoc) {
+    exp.push('Fala de assuntos reais');
+    ideal.push('aprender algo');
+    avoid.push('história inventada');
+  }
+
+  if (isMusic) {
+    exp.push('Música em destaque');
+    ideal.push('filmes com música');
+    avoid.push('filme sem números musicais');
+  }
+
+  if (isWar || isHistory) {
+    exp.push(isWar ? 'Tema de guerra' : 'Tema histórico');
+    ideal.push(isWar ? 'histórias de guerra' : 'histórias de época');
+    avoid.push('algo leve para relaxar');
+  }
+
+  if (tipo === 'filme' && runtime >= 150) {
+    exp.push('Filme longo');
+    avoid.push('filme curto');
+  }
+
+  if (tipo === 'serie') {
+    exp.push('Para acompanhar em episódios');
+    ideal.push('maratonar ou acompanhar aos poucos');
   }
 
   if (!exp.length) exp.push(tipo === 'serie' ? 'Boa opção de série' : 'Boa opção de filme');
-  if (!ideal.length) ideal.push('quem busca títulos bem avaliados');
-  if (!avoid.length) avoid.push('algo muito específico');
+  if (!ideal.length) ideal.push('títulos bem avaliados');
+  if (!avoid.length) avoid.push('outro estilo de filme ou série');
 
   return {
-    experiencia: [...new Set(exp)].slice(0, 4),
-    ideal_para: [...new Set(ideal)].slice(0, 4),
-    talvez_nao_seja: [...new Set(avoid)].slice(0, 4)
+    experiencia: simpleUnique(exp),
+    ideal_para: simpleUnique(ideal),
+    talvez_nao_seja: simpleUnique(avoid)
   };
 }
 
@@ -242,7 +330,7 @@ async function buildItem(candidate) {
   const sofaScore = scoreFromDetails(details);
   const publicScore = Math.round(Number(details.vote_average || 0) * 10);
   const slugBase = slugify(title || originalTitle || `${candidate.tipo}-${candidate.id}`);
-  const experience = experienceFromGenres(genres, candidate.tipo);
+  const experience = experienceFromDetails(details, genres, candidate.tipo);
 
   return {
     id: `${candidate.tipo}-${candidate.id}`,

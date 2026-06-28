@@ -51,13 +51,23 @@ a { color: inherit; text-decoration: none; }
 .card-info { font-size: 12px; color: #666; margin-bottom: 10px; }
 .card-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .audience { font-size: 12px; color: #777; display: flex; align-items: center; gap: 4px; }
-.hype-tag { font-size: 10px; font-weight: 800; color: #C8F135; letter-spacing: .5px; text-transform: uppercase; text-align: right; }
+.hype-tag { font-size: 10px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; text-align: right; display:flex; align-items:center; gap:6px; color:#C8F135; }
+.hypo-icon { display:inline-flex; align-items:center; justify-content:center; border-radius:10px; flex-shrink:0; background:#151515; border:1px solid #2a2a2a; }
+.hypo-icon svg { width:100%; height:100%; display:block; }
+.hypo-icon.galactico { color:#C8F135; background: radial-gradient(circle at 50% 20%, rgba(200,241,53,.20), #151515 58%); border-color: rgba(200,241,53,.55); }
+.hypo-icon.quente { color:#F4A821; background: radial-gradient(circle at 50% 10%, rgba(244,168,33,.18), #151515 60%); border-color: rgba(244,168,33,.48); }
+.hypo-icon.ok { color:#D8D1C3; background:#171717; border-color:#3a3a3a; }
+.hypo-icon.frio { color:#7B8794; background:#101317; border-color:#27313a; }
+.hypo-display { display:flex !important; align-items:center; gap:10px; font-size:18px !important; }
+.hypo-display span { display:inline !important; margin:0 !important; color:#F5F0E8 !important; font-size:18px !important; letter-spacing:0 !important; text-transform:none !important; }
 
 .ranking { display: flex; flex-direction: column; gap: 8px; }
 .rank-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #1a1a1a; border: 1px solid #222; border-radius: 10px; cursor: pointer; transition: border-color .2s; }
 .rank-row:hover { border-color: #444; }
 .rank-num { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: #3a3a3a; min-width: 32px; text-align: right; }
-.rank-thumb { width: 48px; height: 68px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: rgba(255,255,255,.15); }
+.rank-thumb { width: 54px; height: 76px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: rgba(255,255,255,.15); overflow: hidden; background: #111; }
+.rank-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rank-thumb span { padding: 4px; text-align: center; }
 .rank-info { flex: 1; min-width: 0; }
 .rank-title { font-size: 15px; font-weight: 800; color: #F5F0E8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
 .rank-meta { font-size: 12px; color: #666; }

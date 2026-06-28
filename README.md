@@ -40,3 +40,7 @@ TMDB_IMPORT_SERIES = "60"
 ```
 
 Depois que o teste estiver estável, podemos aumentar gradualmente até chegar ao objetivo de 2.000 filmes e 1.000 séries.
+
+## Regra importante de credibilidade
+
+A seção "Como é a experiência?" usa regras conservadoras. Não tratamos todo filme de comédia como "leve". Quando há crime, suspense, drama ou terror, o sistema prioriza o tom adulto/intenso para evitar recomendações enganosas.

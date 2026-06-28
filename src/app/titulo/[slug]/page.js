@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import { getCatalog, getHypometro, getPlatformClass, getTitleBySlug } from '../../../lib/catalog';
+import { getCatalog, getExperienceForDisplay, getHypometro, getPlatformClass, getTitleBySlug } from '../../../lib/catalog';
+import HypometroIcon from '../../../components/HypometroIcon';
 
 export const dynamicParams = false;
 
@@ -21,6 +22,7 @@ export default async function TitlePage({ params }) {
   if (!item) notFound();
 
   const hypo = getHypometro(item.nota_sofahype);
+  const experience = getExperienceForDisplay(item);
 
   return (
     <>
@@ -41,7 +43,7 @@ export default async function TitlePage({ params }) {
             </div>
             <div>
               <span>Hypômetro</span>
-              <strong>{hypo.emoji} {hypo.nome}</strong>
+              <strong className="hypo-display"><HypometroIcon variant={hypo.classe} size={38} /> <span>{hypo.nome}</span></strong>
             </div>
             <div>
               <span>Crítica</span>
@@ -63,18 +65,18 @@ export default async function TitlePage({ params }) {
           <div className="detail-block">
             <h2>Como é a experiência?</h2>
             <div className="experience-list">
-              {(item.experiencia || []).map((entry) => <span key={entry}>{entry}</span>)}
+              {(experience.experiencia || []).map((entry) => <span key={entry}>{entry}</span>)}
             </div>
           </div>
 
           <div className="decision-grid">
             <div className="detail-block">
               <h2>Ideal para quem gosta de</h2>
-              <ul>{(item.ideal_para || []).map((entry) => <li key={entry}>✓ {entry}</li>)}</ul>
+              <ul>{(experience.ideal_para || []).map((entry) => <li key={entry}>✓ {entry}</li>)}</ul>
             </div>
             <div className="detail-block">
               <h2>Talvez não seja para você se procura</h2>
-              <ul>{(item.talvez_nao_seja || []).map((entry) => <li key={entry}>✗ {entry}</li>)}</ul>
+              <ul>{(experience.talvez_nao_seja || []).map((entry) => <li key={entry}>✗ {entry}</li>)}</ul>
             </div>
           </div>
         </section>
