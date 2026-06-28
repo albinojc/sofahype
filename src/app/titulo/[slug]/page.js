@@ -3,17 +3,21 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { getCatalog, getHypometro, getPlatformClass, getTitleBySlug } from '../../../lib/catalog';
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
-  return getCatalog().map((item) => ({ slug: item.id }));
+  return getCatalog().map((item) => ({ slug: String(item.id) }));
 }
 
-export function generateMetadata({ params }) {
-  const item = getTitleBySlug(params.slug);
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const item = getTitleBySlug(slug);
   return { title: `${item?.titulo || 'Título'} | SofáHype` };
 }
 
-export default function TitlePage({ params }) {
-  const item = getTitleBySlug(params.slug);
+export default async function TitlePage({ params }) {
+  const { slug } = await params;
+  const item = getTitleBySlug(slug);
   if (!item) notFound();
 
   const hypo = getHypometro(item.nota_sofahype);

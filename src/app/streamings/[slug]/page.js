@@ -4,20 +4,24 @@ import Footer from '../../../components/Footer';
 import TitleGrid from '../../../components/TitleGrid';
 import { getTitlesByStreaming, streamings } from '../../../lib/catalog';
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return streamings.map((streaming) => ({ slug: streaming.slug }));
 }
 
-export function generateMetadata({ params }) {
-  const streaming = streamings.find((s) => s.slug === params.slug);
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const streaming = streamings.find((s) => s.slug === slug);
   return { title: `${streaming?.nome || 'Streaming'} | SofáHype` };
 }
 
-export default function StreamingPage({ params }) {
-  const streaming = streamings.find((s) => s.slug === params.slug);
+export default async function StreamingPage({ params }) {
+  const { slug } = await params;
+  const streaming = streamings.find((s) => s.slug === slug);
   if (!streaming) notFound();
 
-  const items = getTitlesByStreaming(params.slug);
+  const items = getTitlesByStreaming(slug);
   return (
     <>
       <Header />
