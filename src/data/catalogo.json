@@ -1,0 +1,446 @@
+[
+  {
+    "id": "oppenheimer",
+    "tipo": "filme",
+    "titulo": "Oppenheimer",
+    "titulo_original": "Oppenheimer",
+    "ano": "2023",
+    "generos": [
+      "Histórico",
+      "Drama"
+    ],
+    "plataformas": [
+      "Prime Video"
+    ],
+    "nota_sofahype": 97,
+    "nota_critica": 97,
+    "nota_publico": 91,
+    "nota_tmdb": 8.1,
+    "duracao": "3h",
+    "tag": "Oscar",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "A história do físico J. Robert Oppenheimer e da criação da bomba atômica.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "pobres-criaturas",
+    "tipo": "filme",
+    "titulo": "Pobres Criaturas",
+    "titulo_original": "Pobres Criaturas",
+    "ano": "2023",
+    "generos": [
+      "Drama",
+      "Fantasia"
+    ],
+    "plataformas": [
+      "Prime Video"
+    ],
+    "nota_sofahype": 96,
+    "nota_critica": 96,
+    "nota_publico": 80,
+    "nota_tmdb": 8.0,
+    "duracao": "2h21",
+    "tag": "Oscar",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Uma mulher volta à vida e parte em uma jornada de descoberta.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "interestelar",
+    "tipo": "filme",
+    "titulo": "Interestelar",
+    "titulo_original": "Interestelar",
+    "ano": "2014",
+    "generos": [
+      "Ficção Científica",
+      "Drama"
+    ],
+    "plataformas": [
+      "Netflix"
+    ],
+    "nota_sofahype": 96,
+    "nota_critica": 96,
+    "nota_publico": 85,
+    "nota_tmdb": 8.4,
+    "duracao": "2h49",
+    "tag": "Clássico",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Exploradores viajam através de um buraco de minhoca para salvar a humanidade.",
+    "experiencia": [
+      "Faz pensar",
+      "Visual marcante",
+      "Tom intenso",
+      "Mais diálogo"
+    ],
+    "ideal_para": [
+      "ficção científica",
+      "universos ambiciosos",
+      "dramas fortes",
+      "histórias densas"
+    ],
+    "talvez_nao_seja": [
+      "histórias muito simples",
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "cidade-de-deus",
+    "tipo": "filme",
+    "titulo": "Cidade de Deus",
+    "titulo_original": "Cidade de Deus",
+    "ano": "2002",
+    "generos": [
+      "Drama",
+      "Crime"
+    ],
+    "plataformas": [
+      "HBO Max"
+    ],
+    "nota_sofahype": 91,
+    "nota_critica": 91,
+    "nota_publico": 96,
+    "nota_tmdb": 8.4,
+    "duracao": "2h10",
+    "tag": "Nacional",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "A ascensão do crime organizado na Cidade de Deus, no Rio de Janeiro.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo",
+      "Tensão constante",
+      "Conflitos morais"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas",
+      "suspense",
+      "tramas adultas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "duna-parte-2",
+    "tipo": "filme",
+    "titulo": "Duna: Parte 2",
+    "titulo_original": "Duna: Parte 2",
+    "ano": "2024",
+    "generos": [
+      "Ficção Científica",
+      "Aventura"
+    ],
+    "plataformas": [
+      "Prime Video",
+      "HBO Max"
+    ],
+    "nota_sofahype": 90,
+    "nota_critica": 90,
+    "nota_publico": 84,
+    "nota_tmdb": 8.2,
+    "duracao": "2h46",
+    "tag": "Épico",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Paul Atreides se une aos Fremen em busca de vingança e destino.",
+    "experiencia": [
+      "Faz pensar",
+      "Visual marcante",
+      "Ritmo acelerado",
+      "Alta energia"
+    ],
+    "ideal_para": [
+      "ficção científica",
+      "universos ambiciosos",
+      "ação e aventura",
+      "filmes movimentados"
+    ],
+    "talvez_nao_seja": [
+      "histórias muito simples",
+      "filmes contemplativos"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "mad-max-estrada-da-furia",
+    "tipo": "filme",
+    "titulo": "Mad Max: Estrada da Fúria",
+    "titulo_original": "Mad Max: Estrada da Fúria",
+    "ano": "2015",
+    "generos": [
+      "Ação",
+      "Aventura"
+    ],
+    "plataformas": [
+      "HBO Max"
+    ],
+    "nota_sofahype": 89,
+    "nota_critica": 89,
+    "nota_publico": 86,
+    "nota_tmdb": 7.6,
+    "duracao": "2h",
+    "tag": "Clássico",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Em um deserto pós-apocalíptico, Furiosa e Max fogem de um tirano.",
+    "experiencia": [
+      "Ritmo acelerado",
+      "Alta energia"
+    ],
+    "ideal_para": [
+      "ação e aventura",
+      "filmes movimentados"
+    ],
+    "talvez_nao_seja": [
+      "filmes contemplativos"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "shogun",
+    "tipo": "serie",
+    "titulo": "Shōgun",
+    "titulo_original": "Shōgun",
+    "ano": "2024",
+    "generos": [
+      "Drama Histórico"
+    ],
+    "plataformas": [
+      "Disney+"
+    ],
+    "nota_sofahype": 99,
+    "nota_critica": 99,
+    "nota_publico": 91,
+    "nota_tmdb": 8.6,
+    "duracao": "Minissérie",
+    "tag": "Prestígio",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Um marinheiro inglês se envolve nas disputas políticas do Japão feudal.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "the-bear",
+    "tipo": "serie",
+    "titulo": "The Bear",
+    "titulo_original": "The Bear",
+    "ano": "2022–2025",
+    "generos": [
+      "Drama",
+      "Comédia"
+    ],
+    "plataformas": [
+      "Disney+"
+    ],
+    "nota_sofahype": 97,
+    "nota_critica": 97,
+    "nota_publico": 87,
+    "nota_tmdb": 8.2,
+    "duracao": "Série",
+    "tag": "Intensa",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Um chef volta para Chicago para tocar a lanchonete da família.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo",
+      "Humor presente",
+      "Ritmo ágil"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas",
+      "humor com drama",
+      "histórias de personagens"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "breaking-bad",
+    "tipo": "serie",
+    "titulo": "Breaking Bad",
+    "titulo_original": "Breaking Bad",
+    "ano": "2008–2013",
+    "generos": [
+      "Drama",
+      "Crime"
+    ],
+    "plataformas": [
+      "Netflix"
+    ],
+    "nota_sofahype": 96,
+    "nota_critica": 96,
+    "nota_publico": 96,
+    "nota_tmdb": 8.9,
+    "duracao": "5 temporadas",
+    "tag": "Clássico",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Um professor de química passa a produzir metanfetamina após descobrir um câncer.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo",
+      "Tensão constante",
+      "Conflitos morais"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas",
+      "suspense",
+      "tramas adultas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "succession",
+    "tipo": "serie",
+    "titulo": "Succession",
+    "titulo_original": "Succession",
+    "ano": "2018–2023",
+    "generos": [
+      "Drama"
+    ],
+    "plataformas": [
+      "HBO Max"
+    ],
+    "nota_sofahype": 96,
+    "nota_critica": 96,
+    "nota_publico": 89,
+    "nota_tmdb": 8.3,
+    "duracao": "4 temporadas",
+    "tag": "Prestígio",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Uma família bilionária disputa o controle de um império de mídia.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "slow-horses",
+    "tipo": "serie",
+    "titulo": "Slow Horses",
+    "titulo_original": "Slow Horses",
+    "ano": "2022–",
+    "generos": [
+      "Espionagem",
+      "Drama"
+    ],
+    "plataformas": [
+      "Apple TV+"
+    ],
+    "nota_sofahype": 97,
+    "nota_critica": 97,
+    "nota_publico": 88,
+    "nota_tmdb": 8.2,
+    "duracao": "Série",
+    "tag": "Espionagem",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Agentes rejeitados do MI5 investigam ameaças enquanto lidam com um chefe difícil.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo",
+      "Tensão constante",
+      "Conflitos morais"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas",
+      "suspense",
+      "tramas adultas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  },
+  {
+    "id": "euphoria",
+    "tipo": "serie",
+    "titulo": "Euphoria",
+    "titulo_original": "Euphoria",
+    "ano": "2019–2026",
+    "generos": [
+      "Drama"
+    ],
+    "plataformas": [
+      "HBO Max"
+    ],
+    "nota_sofahype": 88,
+    "nota_critica": 88,
+    "nota_publico": 85,
+    "nota_tmdb": 8.3,
+    "duracao": "Série",
+    "tag": "Drama",
+    "poster_url": "",
+    "backdrop_url": "",
+    "sinopse": "Jovens lidam com identidade, vícios, afetos e pressões sociais.",
+    "experiencia": [
+      "Tom intenso",
+      "Mais diálogo"
+    ],
+    "ideal_para": [
+      "dramas fortes",
+      "histórias densas"
+    ],
+    "talvez_nao_seja": [
+      "algo muito leve"
+    ],
+    "status": "ativo"
+  }
+]
