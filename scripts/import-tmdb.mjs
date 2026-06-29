@@ -18,7 +18,7 @@ const STREAMINGS = [
   { nome: 'Prime Video', aliases: ['amazon prime video', 'prime video'] },
   { nome: 'Disney+', aliases: ['disney plus', 'disney+'] },
   { nome: 'Globoplay', aliases: ['globoplay'] },
-  { nome: 'Apple TV+', aliases: ['apple tv plus', 'apple tv+'] },
+  { nome: 'Apple TV+', aliases: ['apple tv plus', 'apple tv+', 'apple tv plus amazon channel'] },
   { nome: 'Paramount+', aliases: ['paramount plus', 'paramount+'] },
   { nome: 'Hulu', aliases: ['hulu'] }
 ];
@@ -118,16 +118,21 @@ async function collectCandidates(tipo, target, providerMap) {
   const endpoint = tipo === 'filme' ? '/discover/movie' : '/discover/tv';
   const minVotes = tipo === 'filme' ? MIN_MOVIE_VOTES : MIN_TV_VOTES;
   const candidates = new Map();
+  const activeProviders = Array.from(providerMap.entries()).filter(([, ids]) => ids.length);
 
-  for (const [streamingName, ids] of providerMap.entries()) {
-    if (!ids.length) continue;
-
-    for (let page = 1; page <= 6 && candidates.size < target * 4; page += 1) {
+  // Antes o importador varria Netflix primeiro, depois HBO, Prime etc.
+  // Com isso, os primeiros streamings enchiam a cota e Apple TV+/Hulu podiam ficar vazios.
+  // Agora a coleta é em rodízio: página 1 de todos, depois página 2 de todos, etc.
+  // Isso melhora a diversidade do catálogo e evita que todos os cards de uma página carreguem
+  // a primeira plataforma do título como se fosse sempre Netflix.
+  for (let page = 1; page <= 8 && candidates.size < target * 6; page += 1) {
+    for (const [streamingName, ids] of activeProviders) {
       const data = await safeTmdb(endpoint, {
         language: 'pt-BR',
         region: 'BR',
         watch_region: 'BR',
         with_watch_providers: ids.join('|'),
+        with_watch_monetization_types: 'flatrate',
         sort_by: 'popularity.desc',
         include_adult: 'false',
         include_null_first_air_dates: 'false',
@@ -136,10 +141,16 @@ async function collectCandidates(tipo, target, providerMap) {
       });
 
       for (const item of data?.results || []) {
-        candidates.set(`${kind}-${item.id}`, { id: item.id, kind, tipo, seedStreaming: streamingName });
+        const key = `${kind}-${item.id}`;
+        if (!candidates.has(key)) {
+          candidates.set(key, { id: item.id, kind, tipo, seedStreamings: [streamingName] });
+        } else {
+          const existing = candidates.get(key);
+          if (!existing.seedStreamings.includes(streamingName)) existing.seedStreamings.push(streamingName);
+        }
       }
 
-      await sleep(120);
+      await sleep(100);
     }
   }
 
@@ -361,22 +372,52 @@ async function buildItem(candidate) {
 async function importType(tipo, target, providerMap) {
   console.log(`Buscando ${target} ${tipo === 'filme' ? 'filmes' : 'séries'}...`);
   const candidates = await collectCandidates(tipo, target, providerMap);
-  const items = [];
+  const pool = [];
   const seenSlugs = new Set();
 
+  // Monta uma piscina um pouco maior do que a cota final, para permitir diversidade por streaming.
   for (const candidate of candidates) {
-    if (items.length >= target) break;
+    if (pool.length >= target * 2) break;
     const item = await buildItem(candidate);
     if (!item) continue;
 
     if (seenSlugs.has(item.slug)) item.slug = `${item.slug}-${item.tmdb_id}`;
     seenSlugs.add(item.slug);
-    items.push(item);
+    pool.push(item);
     console.log(`  + ${item.titulo} (${item.plataformas.join(', ')})`);
-    await sleep(140);
+    await sleep(120);
   }
 
-  return items.sort((a, b) => b.nota_sofahype - a.nota_sofahype);
+  const selected = [];
+  const selectedIds = new Set();
+  const activeStreamingNames = Array.from(providerMap.entries())
+    .filter(([, ids]) => ids.length)
+    .map(([name]) => name);
+  const minimumPerStreaming = Math.max(2, Math.floor(target / Math.max(activeStreamingNames.length * 5, 1)));
+
+  // Primeiro garante alguma presença de cada streaming que a API retornou no Brasil.
+  for (const streamingName of activeStreamingNames) {
+    const options = pool
+      .filter((item) => item.plataformas.includes(streamingName) && !selectedIds.has(item.id))
+      .sort((a, b) => b.nota_sofahype - a.nota_sofahype)
+      .slice(0, minimumPerStreaming);
+
+    for (const item of options) {
+      if (selected.length >= target) break;
+      selected.push(item);
+      selectedIds.add(item.id);
+    }
+  }
+
+  // Depois completa com os melhores títulos no geral.
+  for (const item of pool.sort((a, b) => b.nota_sofahype - a.nota_sofahype)) {
+    if (selected.length >= target) break;
+    if (selectedIds.has(item.id)) continue;
+    selected.push(item);
+    selectedIds.add(item.id);
+  }
+
+  return selected.sort((a, b) => b.nota_sofahype - a.nota_sofahype);
 }
 
 async function main() {

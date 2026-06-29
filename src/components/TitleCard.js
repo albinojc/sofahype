@@ -12,9 +12,11 @@ function initials(title) {
     .toUpperCase();
 }
 
-export default function TitleCard({ item }) {
+export default function TitleCard({ item, platformContext = null }) {
   const hypo = getHypometro(item.nota_sofahype);
-  const platform = getPrimaryPlatform(item);
+  // Em páginas específicas de streaming, o selo do card deve representar
+  // a plataforma da página, não a primeira plataforma cadastrada no título.
+  const platform = platformContext || getPrimaryPlatform(item);
   const platformClass = getPlatformClass(platform);
 
   return (

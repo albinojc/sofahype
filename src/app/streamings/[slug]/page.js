@@ -30,7 +30,11 @@ export default async function StreamingPage({ params }) {
         <p>Filmes e séries bem avaliados disponíveis neste streaming.</p>
       </section>
       <section className="section">
-        <TitleGrid items={items} />
+        <TitleGrid
+          items={items}
+          platformContext={streaming.nome}
+          emptyMessage={`Ainda não encontramos títulos de ${streaming.nome} no recorte atual do catálogo. Isso pode acontecer quando a API não retorna disponibilidade no Brasil ou quando o importador ainda não trouxe títulos suficientes dessa plataforma.`}
+        />
       </section>
       <Footer />
     </>

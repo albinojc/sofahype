@@ -314,3 +314,19 @@ button.mood:focus-visible {
   .watch-platforms { justify-content: flex-start; }
   .watch-chip { min-height: 34px; }
 }
+
+/* Footer com logo oficial */
+.footer-logo-image {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+
+.footer-logo-image img {
+  width: 180px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

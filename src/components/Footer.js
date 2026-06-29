@@ -5,8 +5,11 @@ export default function Footer() {
     <>
       <footer>
         <div>
-          <div className="footer-logo">🛋 SOFÁ <span>HYPE</span></div>
-          <p className="footer-desc">O guia brasileiro de filmes e séries. Notas, streamings e curadoria para decidir melhor o que assistir.</p><p className="footer-note">Dados e imagens fornecidos por TMDb. Este produto utiliza a API do TMDb, mas não é endossado ou certificado pelo TMDb.</p>
+          <Link className="footer-logo footer-logo-image" href="/" aria-label="SofáHype">
+            <img src="/assets/logo-sofahype.png" alt="SofáHype" />
+          </Link>
+          <p className="footer-desc">O guia brasileiro de filmes e séries. Notas, streamings e curadoria para decidir melhor o que assistir.</p>
+          <p className="footer-note">Dados e imagens fornecidos por TMDb. Este produto utiliza a API do TMDb, mas não é endossado ou certificado pelo TMDb.</p>
         </div>
         <div>
           <div className="footer-col-title">Streamings</div>
@@ -15,6 +18,10 @@ export default function Footer() {
             <li><Link href="/streamings/hbo-max">HBO Max</Link></li>
             <li><Link href="/streamings/prime-video">Prime Video</Link></li>
             <li><Link href="/streamings/disney-plus">Disney+</Link></li>
+            <li><Link href="/streamings/globoplay">Globoplay</Link></li>
+            <li><Link href="/streamings/apple-tv-plus">Apple TV+</Link></li>
+            <li><Link href="/streamings/paramount-plus">Paramount+</Link></li>
+            <li><Link href="/streamings/hulu">Hulu</Link></li>
           </ul>
         </div>
         <div>
