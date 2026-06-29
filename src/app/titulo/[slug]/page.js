@@ -36,6 +36,18 @@ export default async function TitlePage({ params }) {
           <h1>{item.titulo}</h1>
           <p className="title-sinopse">{item.sinopse}</p>
 
+          <section className="watch-panel" aria-label="Onde assistir">
+            <div>
+              <span className="watch-eyebrow">Disponível nos streamings</span>
+              <h2>Onde assistir</h2>
+            </div>
+            <div className="watch-platforms">
+              {(item.plataformas || []).length > 0
+                ? (item.plataformas || []).map((p) => <span key={p} className={`watch-chip st-${getPlatformClass(p)}`}>{p}</span>)
+                : <span className="watch-empty">Ainda sem streaming cadastrado</span>}
+            </div>
+          </section>
+
           <div className="score-panel">
             <div>
               <span>Nota SofáHype</span>
@@ -52,13 +64,6 @@ export default async function TitlePage({ params }) {
             <div>
               <span>Público</span>
               <strong>{item.nota_publico ? `${item.nota_publico}%` : 'Em breve'}</strong>
-            </div>
-          </div>
-
-          <div className="detail-block">
-            <h2>Onde assistir</h2>
-            <div className="platform-list">
-              {(item.plataformas || []).map((p) => <span key={p} className={`st st-${getPlatformClass(p)}`}>{p}</span>)}
             </div>
           </div>
 

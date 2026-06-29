@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import TitleGrid from './TitleGrid';
+import { searchTitles } from '../lib/search';
 
 export default function SearchCatalog({ items, variant = 'panel' }) {
   const [query, setQuery] = useState('');
@@ -9,14 +10,9 @@ export default function SearchCatalog({ items, variant = 'panel' }) {
   const isHero = variant === 'hero';
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = query.trim();
     if (isHero && q.length < 2) return [];
-
-    return items.filter((item) => {
-      const byType = tipo === 'todos' || item.tipo === tipo;
-      const text = `${item.titulo} ${item.titulo_original || ''} ${item.generos?.join(' ')} ${item.plataformas?.join(' ')}`.toLowerCase();
-      return byType && (!q || text.includes(q));
-    });
+    return searchTitles(items, q, tipo);
   }, [items, query, tipo, isHero]);
 
   return (
@@ -26,8 +22,8 @@ export default function SearchCatalog({ items, variant = 'panel' }) {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Buscar filme, série, gênero ou streaming..."
-            aria-label="Buscar filme, série, gênero ou streaming"
+            placeholder="Buscar filme ou série..."
+            aria-label="Buscar filme ou série"
           />
           <span className="search-icon" aria-hidden="true">⌕</span>
         </div>

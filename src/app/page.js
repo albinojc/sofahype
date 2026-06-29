@@ -1,13 +1,12 @@
 import Link from 'next/link';
 import Footer from '../components/Footer';
 import SearchCatalog from '../components/SearchCatalog';
-import TitleGrid from '../components/TitleGrid';
+import SensationExplorer from '../components/SensationExplorer';
 import Ranking from '../components/Ranking';
 import { getCatalog, getTitlesByType, streamings } from '../lib/catalog';
 
 export default function HomePage() {
   const catalog = getCatalog();
-  const filmes = getTitlesByType('filme').slice(0, 6);
   const series = getTitlesByType('serie').slice(0, 8);
 
   return (
@@ -40,27 +39,7 @@ export default function HomePage() {
           </nav>
         </section>
 
-        <section className="humor-section">
-          <div className="section-label">✦ Escolha por sensação</div>
-          <div className="moods">
-            <span className="mood active">🍿 Quero me divertir</span>
-            <span className="mood">❤️ Quero me emocionar</span>
-            <span className="mood">🧠 Quero pensar</span>
-            <span className="mood">👻 Quero me assustar</span>
-            <span className="mood">🚀 Quero aventura</span>
-            <span className="mood">😴 Algo leve e fácil</span>
-          </div>
-        </section>
-
-        <div className="divider" />
-
-        <section className="section">
-          <div className="section-header">
-            <h2 className="section-title">Mais bem avaliados — <span>Filmes</span></h2>
-            <Link className="btn-ver-todos" href="/filmes">Ver todos →</Link>
-          </div>
-          <TitleGrid items={filmes} />
-        </section>
+        <SensationExplorer items={catalog} />
 
         <div className="divider" />
 
