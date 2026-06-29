@@ -119,3 +119,122 @@ footer { background:#111; border-top:1px solid #1e1e1e; padding:2.5rem 2rem; dis
 }
 
 .footer-note { margin-top: 10px; font-size: 11px; color: #3f3f3f; line-height: 1.5; max-width: 460px; }
+
+/* ── Ajustes de marca e UX - logo próprio, busca na home e Hypômetro com ícones proprietários ── */
+.logo-image { height: 54px; min-width: 190px; }
+.logo-image img { width: 198px; max-width: 100%; height: auto; display: block; }
+
+.home-hero {
+  background: #111;
+  border-bottom: 1px solid #1e1e1e;
+  padding: 3.4rem 2rem 0;
+}
+.home-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+.home-logo { width: 270px; max-width: 48vw; height: auto; display: block; }
+.home-brand-row p { color: #9b9b9b; font-size: 16px; line-height: 1.5; }
+.home-hero .hero-headline { margin-bottom: 2rem; max-width: 920px; }
+.home-streaming-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.home-search-section { padding: 0; margin: 0 auto 1.3rem; max-width: 860px; }
+.home-search-panel { padding: 0; background: transparent; border: 0; }
+.search-input-wrap { position: relative; }
+.search-input-wrap input {
+  width: 100%;
+  height: 42px;
+  background: #F5F0E8;
+  color: #0D0D0D;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 52px 0 22px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 10px 28px rgba(0,0,0,.24);
+}
+.search-input-wrap input::placeholder { color: #555; font-weight: 600; }
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-52%);
+  color: #0D0D0D;
+  font-size: 42px;
+  line-height: 1;
+  font-weight: 900;
+  pointer-events: none;
+}
+.home-search-results { margin-top: 1.5rem; }
+.home-nav {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid #1e1e1e;
+  margin: 0 -2rem;
+  padding-left: 2rem;
+}
+.home-nav a {
+  color: #888;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  padding: 14px 24px 14px 0;
+  min-width: 112px;
+  transition: color .18s;
+}
+.home-nav a:hover { color: #C8F135; }
+
+.hypo-icon { background: transparent !important; border: 0 !important; border-radius: 0 !important; overflow: visible; }
+.hypo-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.hype-galactico { color: #FFE600 !important; }
+.hype-quente { color: #FF3131 !important; }
+.hype-ok { color: #00FF38 !important; }
+.hype-frio { color: #15D8FF !important; }
+.hype-tag { min-width: 82px; justify-content: flex-end; }
+.hype-tag span { color: currentColor; }
+.score-galactico { background: #FFE600; color: #0D0D0D; }
+.score-quente { background: #FF3131; color: #fff; }
+.score-ok { background: #00FF38; color: #06250E; }
+.score-frio { background: #15D8FF; color: #041B24; }
+.hypo-display { gap: 12px; line-height: 1.05; }
+.hypo-display span { color: #F5F0E8 !important; }
+
+.decision-list { gap: 10px; }
+.decision-list li { display: flex; align-items: flex-start; gap: 8px; }
+.decision-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+.decision-icon.good { color: #00FF38; border: 2px solid #00FF38; }
+.decision-icon.bad { color: #FF3131; border: 2px solid #FF3131; }
+
+@media (max-width: 760px) {
+  .logo-image { height: auto; min-width: 0; }
+  .logo-image img { width: 172px; }
+  .home-hero { padding: 2rem 1rem 0; }
+  .home-brand-row { align-items: flex-start; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
+  .home-logo { width: 220px; max-width: 80vw; }
+  .home-search-section { max-width: 100%; }
+  .home-nav { margin: 0 -1rem; padding-left: 1rem; overflow-x: auto; }
+  .home-nav a { min-width: auto; padding-right: 22px; white-space: nowrap; }
+  .search-input-wrap input { height: 44px; font-size: 15px; }
+}

@@ -29,7 +29,7 @@ export default function TitleCard({ item }) {
         <div className="card-info">{item.ano} · {item.generos?.[0]} · {item.duracao}</div>
         <div className="card-footer">
           <span className="audience">👥 {item.nota_publico}%</span>
-          <span className="hype-tag"><HypometroIcon variant={hypo.classe} size={20} /><span>{hypo.curto}</span></span>
+          <span className={`hype-tag hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={22} /><span>{hypo.curto}</span></span>
         </div>
       </div>
     </Link>

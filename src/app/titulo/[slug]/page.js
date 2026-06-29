@@ -43,7 +43,7 @@ export default async function TitlePage({ params }) {
             </div>
             <div>
               <span>Hypômetro</span>
-              <strong className="hypo-display"><HypometroIcon variant={hypo.classe} size={38} /> <span>{hypo.nome}</span></strong>
+              <strong className={`hypo-display hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={58} /> <span>{hypo.nome}</span></strong>
             </div>
             <div>
               <span>Crítica</span>
@@ -72,11 +72,11 @@ export default async function TitlePage({ params }) {
           <div className="decision-grid">
             <div className="detail-block">
               <h2>Ideal para quem gosta de</h2>
-              <ul>{(experience.ideal_para || []).map((entry) => <li key={entry}>✓ {entry}</li>)}</ul>
+              <ul className="decision-list good-list">{(experience.ideal_para || []).map((entry) => <li key={entry}><span className="decision-icon good">✓</span>{entry}</li>)}</ul>
             </div>
             <div className="detail-block">
               <h2>Talvez não seja para você se procura</h2>
-              <ul>{(experience.talvez_nao_seja || []).map((entry) => <li key={entry}>✗ {entry}</li>)}</ul>
+              <ul className="decision-list bad-list">{(experience.talvez_nao_seja || []).map((entry) => <li key={entry}><span className="decision-icon bad">×</span>{entry}</li>)}</ul>
             </div>
           </div>
         </section>

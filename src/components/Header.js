@@ -5,9 +5,8 @@ export default function Header() {
   return (
     <>
       <nav className="nav">
-        <Link className="logo" href="/">
-          <span className="logo-icon">🛋</span>
-          SOFÁ <span className="logo-hype">HYPE</span>
+        <Link className="logo logo-image" href="/" aria-label="SofáHype">
+          <img src="/assets/logo-sofahype.png" alt="SofáHype" />
         </Link>
         <ul className="nav-links">
           <li><Link href="/filmes">Filmes</Link></li>
