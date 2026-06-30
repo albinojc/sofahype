@@ -461,3 +461,26 @@ button.mood:focus-visible {
   .search-submit { width: 100%; }
   .search-form-home, .search-form-page { max-width: 100%; }
 }
+
+.section-header-with-copy {
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.curation-note {
+  color: #7d7d7d;
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 680px;
+  margin-top: 6px;
+}
+
+.empty-curation {
+  background: #151515;
+  border: 1px solid #242424;
+  border-radius: 14px;
+  color: #aaa;
+  padding: 22px;
+  font-size: 14px;
+  line-height: 1.6;
+}
