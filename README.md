@@ -9,9 +9,17 @@ O guia brasileiro para decidir o que assistir.
 - Páginas por streaming.
 - Página individual de cada título.
 - Nota SofáHype.
-- Hypômetro.
+- Hypômetro com iconografia própria.
+- Página/estado de busca sem resultado com o sofá "Vacilei!".
 - Catálogo centralizado em `src/data/catalogo.json`.
 - Importador TMDb em `scripts/import-tmdb.mjs`.
+
+## Hypômetro
+
+- Sofá Galático: 90–100%
+- Sofá Quente: 75–89%
+- Sofá OK: 50–74%
+- Sofá Fraco: abaixo de 50%
 
 ## Como o catálogo é atualizado
 
@@ -27,19 +35,19 @@ O importador usa a variável segura:
 TMDB_READ_ACCESS_TOKEN
 ```
 
-No primeiro teste, o importador está configurado para buscar aproximadamente:
+Nesta versão, o importador está configurado para buscar aproximadamente:
 
-- 120 filmes
-- 60 séries
+- 500 filmes
+- 250 séries
 
 Esses números ficam em `netlify.toml`:
 
 ```toml
-TMDB_IMPORT_MOVIES = "120"
-TMDB_IMPORT_SERIES = "60"
+TMDB_IMPORT_MOVIES = "500"
+TMDB_IMPORT_SERIES = "250"
 ```
 
-Depois que o teste estiver estável, podemos aumentar gradualmente até chegar ao objetivo de 2.000 filmes e 1.000 séries.
+Depois que essa fase estiver estável, podemos subir gradualmente até chegar no objetivo de 2.000 filmes e 1.000 séries.
 
 ## Regra importante de credibilidade
 

@@ -43,7 +43,10 @@ a { color: inherit; text-decoration: none; }
 .card-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .t1 { background: linear-gradient(150deg, #1a2a1a, #0b150b); }.t2{ background:linear-gradient(150deg,#2a1a1a,#150b0b); }.t3{ background:linear-gradient(150deg,#1a1a2a,#0b0b15); }.t4{ background:linear-gradient(150deg,#2a1a2a,#150b15); }.t5{ background:linear-gradient(150deg,#1a2a2a,#0b1515); }.t6{ background:linear-gradient(150deg,#2a221a,#15120b); }
 .score-badge { position: absolute; top: 8px; left: 8px; display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 14px; font-size: 12px; font-weight: 800; font-family: 'Inter', sans-serif; }
-.score-galactico, .score-quente { background: #C8F135; color: #0D0D0D; }.score-ok{ background:#F4A821; color:#1a0e00; }.score-frio{ background:#6b7280; color:#fff; }
+.score-galatico { background: #B743FF; color: #fff; }
+.score-quente { background: #FF3131; color: #fff; }
+.score-ok { background: #FFD400; color: #0D0D0D; }
+.score-frio { background: #15D8FF; color: #041B24; }
 .static { position: static; font-size: 13px; }
 .stream-dot { position: absolute; bottom: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; font-family: 'Inter', sans-serif; }
 .card-body { padding: 12px 14px 14px; }
@@ -54,7 +57,7 @@ a { color: inherit; text-decoration: none; }
 .hype-tag { font-size: 10px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; text-align: right; display:flex; align-items:center; gap:6px; color:#C8F135; }
 .hypo-icon { display:inline-flex; align-items:center; justify-content:center; border-radius:10px; flex-shrink:0; background:#151515; border:1px solid #2a2a2a; }
 .hypo-icon svg { width:100%; height:100%; display:block; }
-.hypo-icon.galactico { color:#C8F135; background: radial-gradient(circle at 50% 20%, rgba(200,241,53,.20), #151515 58%); border-color: rgba(200,241,53,.55); }
+
 .hypo-icon.quente { color:#F4A821; background: radial-gradient(circle at 50% 10%, rgba(244,168,33,.18), #151515 60%); border-color: rgba(244,168,33,.48); }
 .hypo-icon.ok { color:#D8D1C3; background:#171717; border-color:#3a3a3a; }
 .hypo-icon.frio { color:#7B8794; background:#101317; border-color:#27313a; }
@@ -196,15 +199,15 @@ footer { background:#111; border-top:1px solid #1e1e1e; padding:2.5rem 2rem; dis
 
 .hypo-icon { background: transparent !important; border: 0 !important; border-radius: 0 !important; overflow: visible; }
 .hypo-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.hype-galactico { color: #FFE600 !important; }
+.hype-galatico { color: #B743FF !important; }
 .hype-quente { color: #FF3131 !important; }
-.hype-ok { color: #00FF38 !important; }
+.hype-ok { color: #FFD400 !important; }
 .hype-frio { color: #15D8FF !important; }
 .hype-tag { min-width: 82px; justify-content: flex-end; }
 .hype-tag span { color: currentColor; }
-.score-galactico { background: #FFE600; color: #0D0D0D; }
+.score-galatico { background: #B743FF; color: #fff; }
 .score-quente { background: #FF3131; color: #fff; }
-.score-ok { background: #00FF38; color: #06250E; }
+.score-ok { background: #FFD400; color: #0D0D0D; }
 .score-frio { background: #15D8FF; color: #041B24; }
 .hypo-display { gap: 12px; line-height: 1.05; }
 .hypo-display span { color: #F5F0E8 !important; }
@@ -330,3 +333,61 @@ button.mood:focus-visible {
   height: auto;
   display: block;
 }
+
+
+/* ── Busca sem resultado: personagem do SofáHype ── */
+.empty-search-state {
+  margin: 1.5rem auto 0;
+  max-width: 760px;
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 18px;
+  padding: 30px 22px;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 22px;
+  align-items: center;
+}
+.empty-search-state img {
+  width: 150px;
+  height: auto;
+  display: block;
+}
+.empty-search-state h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  line-height: .95;
+  letter-spacing: 1px;
+  color: #C8F135;
+  margin-bottom: 10px;
+}
+.empty-search-state p {
+  color: #bbb;
+  font-size: 15px;
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+.empty-search-state .btn-ver-todos {
+  display: inline-flex;
+  width: fit-content;
+}
+.hypo-display .hypo-icon { flex: 0 0 auto; }
+.hype-tag .hypo-icon { flex: 0 0 auto; }
+
+@media (max-width: 760px) {
+  .empty-search-state {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .empty-search-state img { margin: 0 auto; }
+  .empty-search-state .btn-ver-todos { margin: 0 auto; }
+}
+
+.not-found-page {
+  min-height: 58vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+.not-found-card { margin-top: 0; }

@@ -44,7 +44,7 @@ export function getTitleBySlug(slug) {
 }
 
 export function getHypometro(score) {
-  if (score >= 90) return { nome: 'Sofá Galáctico', curto: 'Galáctico', classe: 'galactico' };
+  if (score >= 90) return { nome: 'Sofá Galático', curto: 'Galático', classe: 'galatico' };
   if (score >= 75) return { nome: 'Sofá Quente', curto: 'Quente', classe: 'quente' };
   if (score >= 50) return { nome: 'Sofá OK!', curto: 'OK', classe: 'ok' };
   return { nome: 'Sofá Frio', curto: 'Frio', classe: 'frio' };

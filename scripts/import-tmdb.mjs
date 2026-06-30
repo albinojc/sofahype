@@ -377,7 +377,7 @@ async function importType(tipo, target, providerMap) {
 
   // Monta uma piscina um pouco maior do que a cota final, para permitir diversidade por streaming.
   for (const candidate of candidates) {
-    if (pool.length >= target * 2) break;
+    if (pool.length >= Math.ceil(target * 1.4)) break;
     const item = await buildItem(candidate);
     if (!item) continue;
 
@@ -385,7 +385,7 @@ async function importType(tipo, target, providerMap) {
     seenSlugs.add(item.slug);
     pool.push(item);
     console.log(`  + ${item.titulo} (${item.plataformas.join(', ')})`);
-    await sleep(120);
+    await sleep(80);
   }
 
   const selected = [];
