@@ -1,15 +1,31 @@
 import catalogo from '../data/catalogo.json';
 
 export const streamings = [
-  { nome: 'Netflix', slug: 'netflix', classe: 'netflix' },
-  { nome: 'HBO Max', slug: 'hbo-max', classe: 'hbo' },
-  { nome: 'Prime Video', slug: 'prime-video', classe: 'prime' },
-  { nome: 'Disney+', slug: 'disney-plus', classe: 'disney' },
-  { nome: 'Globoplay', slug: 'globoplay', classe: 'globo' },
-  { nome: 'Apple TV+', slug: 'apple-tv-plus', classe: 'apple' },
-  { nome: 'Paramount+', slug: 'paramount-plus', classe: 'paramount' },
-  { nome: 'Hulu', slug: 'hulu', classe: 'hulu' }
+  { nome: 'Netflix', slug: 'netflix', classe: 'netflix', aliases: ['Netflix'] },
+  { nome: 'HBO Max', slug: 'hbo-max', classe: 'hbo', aliases: ['HBO Max', 'Max'] },
+  { nome: 'Prime Video', slug: 'prime-video', classe: 'prime', aliases: ['Prime Video', 'Amazon Prime Video'] },
+  { nome: 'Disney+', slug: 'disney-plus', classe: 'disney', aliases: ['Disney+', 'Disney Plus'] },
+  { nome: 'Globoplay', slug: 'globoplay', classe: 'globo', aliases: ['Globoplay'] },
+  { nome: 'Apple TV', slug: 'apple-tv', classe: 'apple', aliases: ['Apple TV', 'Apple TV+', 'Apple TV Plus'] },
+  { nome: 'Paramount+', slug: 'paramount-plus', classe: 'paramount', aliases: ['Paramount+', 'Paramount Plus'] },
+  { nome: 'Hulu', slug: 'hulu', classe: 'hulu', aliases: ['Hulu'] }
 ];
+
+export const streamingSlugAliases = {
+  'apple-tv-plus': 'apple-tv'
+};
+
+export function canonicalStreamingSlug(slug) {
+  return streamingSlugAliases[slug] || slug;
+}
+
+function normalizeText(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
 
 export function slugify(text) {
   return String(text)
@@ -30,12 +46,18 @@ export function getTitlesByType(tipo) {
     .sort((a, b) => b.nota_sofahype - a.nota_sofahype);
 }
 
+export function platformMatches(itemPlatform, streaming) {
+  const platform = normalizeText(itemPlatform);
+  return (streaming.aliases || [streaming.nome]).some((alias) => normalizeText(alias) === platform);
+}
+
 export function getTitlesByStreaming(slug) {
-  const streaming = streamings.find((s) => s.slug === slug);
+  const canonicalSlug = canonicalStreamingSlug(slug);
+  const streaming = streamings.find((s) => s.slug === canonicalSlug);
   if (!streaming) return [];
 
   return getCatalog()
-    .filter((item) => item.plataformas.includes(streaming.nome))
+    .filter((item) => (item.plataformas || []).some((platform) => platformMatches(platform, streaming)))
     .sort((a, b) => b.nota_sofahype - a.nota_sofahype);
 }
 
@@ -47,7 +69,7 @@ export function getHypometro(score) {
   if (score >= 90) return { nome: 'Sofá Galático', curto: 'Galático', classe: 'galatico' };
   if (score >= 75) return { nome: 'Sofá Quente', curto: 'Quente', classe: 'quente' };
   if (score >= 50) return { nome: 'Sofá OK!', curto: 'OK', classe: 'ok' };
-  return { nome: 'Sofá Frio', curto: 'Frio', classe: 'frio' };
+  return { nome: 'Sofá Fraco', curto: 'Fraco', classe: 'fraco' };
 }
 
 export function getExperienceForDisplay(item) {
@@ -102,10 +124,12 @@ export function getExperienceForDisplay(item) {
 }
 
 export function getPrimaryPlatform(item) {
-  return item.plataformas?.[0] || 'Streaming';
+  const firstPlatform = item.plataformas?.[0] || 'Streaming';
+  const streaming = streamings.find((s) => (s.aliases || []).some((alias) => normalizeText(alias) === normalizeText(firstPlatform)));
+  return streaming?.nome || firstPlatform;
 }
 
 export function getPlatformClass(nome) {
-  const found = streamings.find((s) => s.nome === nome);
+  const found = streamings.find((s) => s.nome === nome || (s.aliases || []).some((alias) => normalizeText(alias) === normalizeText(nome)));
   return found?.classe || 'default';
 }

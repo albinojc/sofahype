@@ -1,27 +1,35 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import TitleGrid from '../../../components/TitleGrid';
-import { getTitlesByStreaming, streamings } from '../../../lib/catalog';
+import { canonicalStreamingSlug, getTitlesByStreaming, streamings, streamingSlugAliases } from '../../../lib/catalog';
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return streamings.map((streaming) => ({ slug: streaming.slug }));
+  const canonical = streamings.map((streaming) => ({ slug: streaming.slug }));
+  const aliases = Object.keys(streamingSlugAliases).map((slug) => ({ slug }));
+  return [...canonical, ...aliases];
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const streaming = streamings.find((s) => s.slug === slug);
+  const canonicalSlug = canonicalStreamingSlug(slug);
+  const streaming = streamings.find((s) => s.slug === canonicalSlug);
   return { title: `${streaming?.nome || 'Streaming'} | SofáHype` };
 }
 
 export default async function StreamingPage({ params }) {
   const { slug } = await params;
-  const streaming = streamings.find((s) => s.slug === slug);
+  const canonicalSlug = canonicalStreamingSlug(slug);
+  if (canonicalSlug !== slug) redirect(`/streamings/${canonicalSlug}`);
+
+  const streaming = streamings.find((s) => s.slug === canonicalSlug);
   if (!streaming) notFound();
 
-  const items = getTitlesByStreaming(slug);
+  const items = getTitlesByStreaming(canonicalSlug);
+  const isHulu = streaming.slug === 'hulu';
+
   return (
     <>
       <Header />
@@ -33,7 +41,9 @@ export default async function StreamingPage({ params }) {
         <TitleGrid
           items={items}
           platformContext={streaming.nome}
-          emptyMessage={`Ainda não encontramos títulos de ${streaming.nome} no recorte atual do catálogo. Isso pode acontecer quando a API não retorna disponibilidade no Brasil ou quando o importador ainda não trouxe títulos suficientes dessa plataforma.`}
+          emptyMessage={isHulu
+            ? 'Ainda não encontramos títulos do Hulu no recorte atual do catálogo. Como a disponibilidade por país pode variar, o SofáHype só vai mostrar aqui títulos que a fonte de dados retornar com segurança.'
+            : `Ainda não encontramos títulos de ${streaming.nome} no recorte atual do catálogo. O importador vai tentar trazer mais opções nas próximas atualizações.`}
         />
       </section>
       <Footer />

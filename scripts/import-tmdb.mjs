@@ -13,14 +13,16 @@ const MIN_MOVIE_VOTES = Number(process.env.TMDB_MIN_MOVIE_VOTES || 120);
 const MIN_TV_VOTES = Number(process.env.TMDB_MIN_TV_VOTES || 80);
 
 const STREAMINGS = [
-  { nome: 'Netflix', aliases: ['netflix'] },
-  { nome: 'HBO Max', aliases: ['hbo max', 'max'] },
-  { nome: 'Prime Video', aliases: ['amazon prime video', 'prime video'] },
-  { nome: 'Disney+', aliases: ['disney plus', 'disney+'] },
-  { nome: 'Globoplay', aliases: ['globoplay'] },
-  { nome: 'Apple TV+', aliases: ['apple tv plus', 'apple tv+', 'apple tv plus amazon channel'] },
-  { nome: 'Paramount+', aliases: ['paramount plus', 'paramount+'] },
-  { nome: 'Hulu', aliases: ['hulu'] }
+  { nome: 'Netflix', aliases: ['netflix'], region: 'BR' },
+  { nome: 'HBO Max', aliases: ['hbo max', 'max'], region: 'BR' },
+  { nome: 'Prime Video', aliases: ['amazon prime video', 'prime video'], region: 'BR' },
+  { nome: 'Disney+', aliases: ['disney plus', 'disney+'], region: 'BR' },
+  { nome: 'Globoplay', aliases: ['globoplay'], region: 'BR' },
+  { nome: 'Apple TV', aliases: ['apple tv plus', 'apple tv+', 'apple tv', 'apple tv plus amazon channel'], region: 'BR' },
+  { nome: 'Paramount+', aliases: ['paramount plus', 'paramount+'], region: 'BR' },
+  // Hulu pode não aparecer no recorte BR do TMDb. Mantemos uma busca US como fallback
+  // para não deixar a página vazia enquanto o produto ainda está em validação.
+  { nome: 'Hulu', aliases: ['hulu'], region: process.env.TMDB_HULU_REGION || 'US' }
 ];
 
 function normalize(value) {
@@ -75,15 +77,23 @@ async function safeTmdb(endpoint, params = {}) {
 }
 
 async function getProviderMap(kind) {
-  const data = await tmdb(`/watch/providers/${kind}`, {
-    language: 'pt-BR',
-    watch_region: 'BR'
-  });
+  const providersByRegion = new Map();
 
-  const providers = data.results || [];
+  async function providersForRegion(region) {
+    if (!providersByRegion.has(region)) {
+      const data = await tmdb(`/watch/providers/${kind}`, {
+        language: 'pt-BR',
+        watch_region: region
+      });
+      providersByRegion.set(region, data.results || []);
+    }
+    return providersByRegion.get(region);
+  }
+
   const found = new Map();
 
   for (const streaming of STREAMINGS) {
+    const providers = await providersForRegion(streaming.region || 'BR');
     const ids = providers
       .filter((provider) => {
         const providerName = normalize(provider.provider_name);
@@ -91,24 +101,36 @@ async function getProviderMap(kind) {
       })
       .map((provider) => provider.provider_id);
 
-    found.set(streaming.nome, [...new Set(ids)]);
+    found.set(streaming.nome, {
+      ids: [...new Set(ids)],
+      region: streaming.region || 'BR'
+    });
   }
 
   return found;
 }
 
 function streamingsFromWatchProviders(data) {
-  const br = data?.results?.BR;
-  const flatrate = br?.flatrate || [];
   const names = [];
 
-  for (const provider of flatrate) {
-    const providerName = normalize(provider.provider_name);
-    const match = STREAMINGS.find((streaming) =>
-      streaming.aliases.some((alias) => providerName === alias || providerName.includes(alias))
-    );
-    if (match && !names.includes(match.nome)) names.push(match.nome);
+  function addFromRegion(region, onlyName = null) {
+    const regionData = data?.results?.[region];
+    const flatrate = regionData?.flatrate || [];
+
+    for (const provider of flatrate) {
+      const providerName = normalize(provider.provider_name);
+      const match = STREAMINGS.find((streaming) =>
+        (!onlyName || streaming.nome === onlyName) &&
+        streaming.aliases.some((alias) => providerName === alias || providerName.includes(alias))
+      );
+      if (match && !names.includes(match.nome)) names.push(match.nome);
+    }
   }
+
+  // O SofáHype prioriza disponibilidade no Brasil.
+  addFromRegion('BR');
+  // Hulu é exceção enquanto o serviço/conteúdo ainda aparece de forma inconsistente por região.
+  addFromRegion(process.env.TMDB_HULU_REGION || 'US', 'Hulu');
 
   return names;
 }
@@ -118,7 +140,7 @@ async function collectCandidates(tipo, target, providerMap) {
   const endpoint = tipo === 'filme' ? '/discover/movie' : '/discover/tv';
   const minVotes = tipo === 'filme' ? MIN_MOVIE_VOTES : MIN_TV_VOTES;
   const candidates = new Map();
-  const activeProviders = Array.from(providerMap.entries()).filter(([, ids]) => ids.length);
+  const activeProviders = Array.from(providerMap.entries()).filter(([, config]) => config.ids.length);
 
   // Antes o importador varria Netflix primeiro, depois HBO, Prime etc.
   // Com isso, os primeiros streamings enchiam a cota e Apple TV+/Hulu podiam ficar vazios.
@@ -126,12 +148,12 @@ async function collectCandidates(tipo, target, providerMap) {
   // Isso melhora a diversidade do catálogo e evita que todos os cards de uma página carreguem
   // a primeira plataforma do título como se fosse sempre Netflix.
   for (let page = 1; page <= 8 && candidates.size < target * 6; page += 1) {
-    for (const [streamingName, ids] of activeProviders) {
+    for (const [streamingName, config] of activeProviders) {
       const data = await safeTmdb(endpoint, {
         language: 'pt-BR',
-        region: 'BR',
-        watch_region: 'BR',
-        with_watch_providers: ids.join('|'),
+        region: config.region || 'BR',
+        watch_region: config.region || 'BR',
+        with_watch_providers: config.ids.join('|'),
         with_watch_monetization_types: 'flatrate',
         sort_by: 'popularity.desc',
         include_adult: 'false',
@@ -391,7 +413,7 @@ async function importType(tipo, target, providerMap) {
   const selected = [];
   const selectedIds = new Set();
   const activeStreamingNames = Array.from(providerMap.entries())
-    .filter(([, ids]) => ids.length)
+    .filter(([, config]) => config.ids.length)
     .map(([name]) => name);
   const minimumPerStreaming = Math.max(2, Math.floor(target / Math.max(activeStreamingNames.length * 5, 1)));
 

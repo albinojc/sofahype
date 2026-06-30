@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { streamings } from '../lib/catalog';
 
 export default function Footer() {
   return (
@@ -14,14 +15,9 @@ export default function Footer() {
         <div>
           <div className="footer-col-title">Streamings</div>
           <ul className="footer-links">
-            <li><Link href="/streamings/netflix">Netflix</Link></li>
-            <li><Link href="/streamings/hbo-max">HBO Max</Link></li>
-            <li><Link href="/streamings/prime-video">Prime Video</Link></li>
-            <li><Link href="/streamings/disney-plus">Disney+</Link></li>
-            <li><Link href="/streamings/globoplay">Globoplay</Link></li>
-            <li><Link href="/streamings/apple-tv-plus">Apple TV+</Link></li>
-            <li><Link href="/streamings/paramount-plus">Paramount+</Link></li>
-            <li><Link href="/streamings/hulu">Hulu</Link></li>
+            {streamings.map((streaming) => (
+              <li key={streaming.slug}><Link href={`/streamings/${streaming.slug}`}>{streaming.nome}</Link></li>
+            ))}
           </ul>
         </div>
         <div>
