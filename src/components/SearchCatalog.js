@@ -1,24 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import TitleGrid from './TitleGrid';
+import SearchEmptyState from './SearchEmptyState';
 import { searchTitles } from '../lib/search';
-
-function EmptySearchState() {
-  return (
-    <div className="empty-search-state">
-      <img src="/assets/sofa-vacilei.png" alt="SofáHype não encontrou esse título" />
-      <div>
-        <h2>Vacilei!</h2>
-        <p>
-          Parece que ainda não temos o título que você tava procurando. Mas olha só, a gente vai correr pra deixar seu sofá preferido cada vez mais do seu jeito!
-        </p>
-        <Link className="btn-ver-todos" href="/">Voltar para a primeira página</Link>
-      </div>
-    </div>
-  );
-}
 
 export default function SearchCatalog({ items, variant = 'panel' }) {
   const [query, setQuery] = useState('');
@@ -58,11 +43,11 @@ export default function SearchCatalog({ items, variant = 'panel' }) {
       {isHero ? (
         showHeroResults && (
           <div className="home-search-results">
-            {showEmpty ? <EmptySearchState /> : <TitleGrid items={filtered.slice(0, 8)} />}
+            {showEmpty ? <SearchEmptyState /> : <TitleGrid items={filtered.slice(0, 8)} />}
           </div>
         )
       ) : (
-        showEmpty ? <EmptySearchState /> : <TitleGrid items={filtered.slice(0, 24)} />
+        showEmpty ? <SearchEmptyState /> : <TitleGrid items={filtered.slice(0, 24)} />
       )}
     </section>
   );

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Footer from '../components/Footer';
-import SearchCatalog from '../components/SearchCatalog';
+import SearchBox from '../components/SearchBox';
 import SensationExplorer from '../components/SensationExplorer';
 import Ranking from '../components/Ranking';
 import { getCatalog, getTitlesByType, streamings } from '../lib/catalog';
@@ -29,7 +29,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          <SearchCatalog items={catalog} variant="hero" />
+          <SearchBox variant="home" />
 
           <nav className="home-nav" aria-label="Navegação principal">
             <Link href="/filmes">Filmes</Link>
