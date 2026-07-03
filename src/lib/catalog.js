@@ -65,11 +65,26 @@ export function getTitleBySlug(slug) {
   return getCatalog().find((item) => item.slug === slug || item.id === slug || slugify(item.titulo) === slug);
 }
 
+export function getScoreClass(score) {
+  const value = Number(score || 0);
+  if (value >= 90) return 'galatico';
+  if (value >= 75) return 'quente';
+  if (value >= 60) return 'ok';
+  return 'fraco';
+}
+
+export function formatScore(score) {
+  const value = Number(score || 0);
+  if (!Number.isFinite(value) || value <= 0) return '—';
+  return (value / 10).toFixed(1);
+}
+
 export function getHypometro(score) {
-  if (score >= 90) return { nome: 'Sofá Galático', curto: 'Galático', classe: 'galatico' };
-  if (score >= 75) return { nome: 'Sofá Quente', curto: 'Quente', classe: 'quente' };
-  if (score >= 50) return { nome: 'Sofá OK!', curto: 'OK', classe: 'ok' };
-  return { nome: 'Sofá Fraco', curto: 'Fraco', classe: 'fraco' };
+  const classe = getScoreClass(score);
+  if (classe === 'galatico') return { nome: 'Sofá Galático', curto: 'Galático', classe };
+  if (classe === 'quente') return { nome: 'Sofá Quente', curto: 'Quente', classe };
+  if (classe === 'ok') return { nome: 'Sofá OK!', curto: 'OK', classe };
+  return { nome: 'Sofá Fraco', curto: 'Fraco', classe };
 }
 
 export function getExperienceForDisplay(item) {

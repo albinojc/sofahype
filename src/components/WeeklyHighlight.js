@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import HypometroIcon from './HypometroIcon';
-import { getCatalog, getHypometro, getPlatformClass, slugify } from '../lib/catalog';
+import { formatScore, getCatalog, getHypometro, getPlatformClass, getScoreClass, slugify } from '../lib/catalog';
 import { weeklyHighlight } from '../data/weeklyHighlight';
 
 function findHighlightItem() {
@@ -33,10 +33,10 @@ export default function WeeklyHighlight({ compact = false }) {
         <h2>{title}</h2>
         <p>{weeklyHighlight.chamada}</p>
         <div className="weekly-metrics" aria-label="Notas do destaque da semana">
-          <span><strong>{score}%</strong> Nota SofáHype</span>
+          <span className={`weekly-score-box score-box-${getScoreClass(score)}`}><strong>{formatScore(score)}</strong><small>Nota SofáHype</small></span>
           <span className={`weekly-hypo hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={42} /> {hypo.nome}</span>
-          <span><strong>{critics}%</strong> Crítica</span>
-          <span><strong>{audience}%</strong> Público</span>
+          <span className={`weekly-score-box score-box-${getScoreClass(critics)}`}><strong>{formatScore(critics)}</strong><small>Crítica</small></span>
+          <span className={`weekly-score-box score-box-${getScoreClass(audience)}`}><strong>{formatScore(audience)}</strong><small>Público</small></span>
         </div>
         <div className="weekly-actions">
           <Link className="btn-primary" href={`/titulo/${slug}`}>Ver crítica</Link>

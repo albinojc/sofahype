@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getHypometro, getPlatformClass, getPrimaryPlatform } from '../lib/catalog';
+import { formatScore, getHypometro, getPlatformClass, getPrimaryPlatform, getScoreClass } from '../lib/catalog';
 
 export default function Ranking({ items }) {
   return (
@@ -18,7 +18,7 @@ export default function Ranking({ items }) {
               <div className="rank-meta"><span className={`st st-${getPlatformClass(platform)}`}>{platform}</span> · {item.generos?.[0]} · {item.ano}</div>
             </div>
             <div className="rank-right">
-              <div className={`score-badge score-${hypo.classe} static`}>{item.nota_sofahype}%</div>
+              <div className={`score-badge score-${getScoreClass(item.nota_sofahype)} static`}>{formatScore(item.nota_sofahype)}</div>
               <div className="hype-bar-wrap"><div className="hype-bar" style={{ width: `${item.nota_sofahype}%` }} /></div>
             </div>
           </Link>

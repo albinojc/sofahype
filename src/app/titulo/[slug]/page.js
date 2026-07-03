@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import { getCatalog, getExperienceForDisplay, getHypometro, getPlatformClass, getTitleBySlug } from '../../../lib/catalog';
+import { formatScore, getCatalog, getExperienceForDisplay, getHypometro, getPlatformClass, getScoreClass, getTitleBySlug } from '../../../lib/catalog';
 import HypometroIcon from '../../../components/HypometroIcon';
 import { weeklyHighlight } from '../../../data/weeklyHighlight';
 
@@ -53,21 +53,21 @@ export default async function TitlePage({ params }) {
           </section>
 
           <div className="score-panel">
-            <div>
+            <div className={`score-metric score-box-${getScoreClass(item.nota_sofahype)}`}>
               <span>Nota SofáHype</span>
-              <strong>{item.nota_sofahype}%</strong>
+              <strong>{formatScore(item.nota_sofahype)}</strong>
             </div>
-            <div>
+            <div className="score-metric score-metric-hypo">
               <span>Hypômetro</span>
               <strong className={`hypo-display hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={58} /> <span>{hypo.nome}</span></strong>
             </div>
-            <div>
+            <div className={`score-metric ${item.nota_critica ? `score-box-${getScoreClass(item.nota_critica)}` : 'score-box-empty'}`}>
               <span>Crítica</span>
-              <strong>{item.nota_critica ? `${item.nota_critica}%` : 'Em breve'}</strong>
+              <strong>{item.nota_critica ? formatScore(item.nota_critica) : 'Em breve'}</strong>
             </div>
-            <div>
+            <div className={`score-metric ${item.nota_publico ? `score-box-${getScoreClass(item.nota_publico)}` : 'score-box-empty'}`}>
               <span>Público</span>
-              <strong>{item.nota_publico ? `${item.nota_publico}%` : 'Em breve'}</strong>
+              <strong>{item.nota_publico ? formatScore(item.nota_publico) : 'Em breve'}</strong>
             </div>
           </div>
 
@@ -76,7 +76,6 @@ export default async function TitlePage({ params }) {
               <span className="review-eyebrow">Destaque da semana</span>
               <h2>{highlightReviewTitle}</h2>
               <p>{highlightReview}</p>
-              <small>{item.fonte_resumo || weeklyHighlight.fonte_resumo}</small>
             </div>
           ) : null}
 
