@@ -20,6 +20,7 @@ function scoreTitle(item, query) {
   const title = normalizeSearch(item.titulo);
   const original = normalizeSearch(item.titulo_original);
   const slug = slugifySearch(item.titulo || '');
+  const aliases = (item.aliases || []).map((alias) => normalizeSearch(alias));
 
   if (title === query) return 1000;
   if (title.startsWith(query)) return 900;
@@ -32,6 +33,9 @@ function scoreTitle(item, query) {
   if (original === query) return 700;
   if (original.startsWith(query)) return 650;
   if (original.includes(query)) return 600;
+  if (aliases.some((alias) => alias === query)) return 580;
+  if (aliases.some((alias) => alias.startsWith(query))) return 560;
+  if (aliases.some((alias) => alias.includes(query))) return 540;
 
   return 0;
 }

@@ -484,3 +484,156 @@ button.mood:focus-visible {
   font-size: 14px;
   line-height: 1.6;
 }
+
+/* ── Destaque da semana ── */
+.weekly-highlight {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr minmax(180px, 260px);
+  gap: 26px;
+  align-items: center;
+  margin: 2rem;
+  padding: 28px;
+  border: 1px solid rgba(200,241,53,.30);
+  border-radius: 24px;
+  background: radial-gradient(circle at 20% 10%, rgba(200,241,53,.18), transparent 32%), #111;
+  box-shadow: 0 22px 70px rgba(0,0,0,.35);
+}
+.weekly-highlight-compact { margin: 0; }
+.weekly-highlight-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: .16;
+  filter: saturate(.85);
+}
+.weekly-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(13,13,13,.96), rgba(13,13,13,.76) 55%, rgba(13,13,13,.45));
+  pointer-events: none;
+}
+.weekly-copy, .weekly-poster { position: relative; z-index: 1; }
+.weekly-label {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #C8F135;
+  color: #0D0D0D;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.weekly-copy h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(46px, 7vw, 76px);
+  line-height: .9;
+  letter-spacing: 1.4px;
+  margin-bottom: 10px;
+}
+.weekly-copy p {
+  max-width: 720px;
+  color: #bdbdbd;
+  font-size: 16px;
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+.weekly-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.weekly-metrics span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 999px;
+  color: #ddd;
+  font-size: 12px;
+  font-weight: 850;
+}
+.weekly-metrics strong { color: #F5F0E8; font-size: 15px; }
+.weekly-hypo { color: #F5F0E8 !important; }
+.weekly-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #C8F135;
+  color: #0D0D0D;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  transition: transform .16s, filter .16s;
+}
+.btn-primary:hover { transform: translateY(-1px); filter: brightness(1.04); }
+.weekly-poster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 2/3;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #24203a, #0f1124 68%, #111);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 18px 52px rgba(0,0,0,.45);
+  font-family: 'Bebas Neue', sans-serif;
+  color: rgba(255,255,255,.2);
+  font-size: 58px;
+  letter-spacing: 2px;
+}
+.weekly-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.section-highlight-wrap { padding-bottom: 0; }
+.review-block {
+  border-color: rgba(200,241,53,.34);
+  background: linear-gradient(135deg, rgba(200,241,53,.08), #111 38%);
+}
+.review-eyebrow {
+  display: block;
+  color: #C8F135;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.review-block p {
+  color: #c9c9c9;
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 12px;
+}
+.review-block small {
+  display: block;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .weekly-highlight {
+    grid-template-columns: 1fr;
+    margin: 1rem;
+    padding: 22px;
+  }
+  .weekly-highlight-compact { margin: 0; }
+  .weekly-highlight::after { background: rgba(13,13,13,.88); }
+  .weekly-poster { max-width: 210px; width: 100%; order: -1; }
+  .weekly-copy h2 { font-size: 48px; }
+}

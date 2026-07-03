@@ -7,8 +7,8 @@ const IMAGE = 'https://image.tmdb.org/t/p';
 const ROOT = process.cwd();
 const OUTPUT = path.join(ROOT, 'src/data/catalogo.json');
 
-const TARGET_MOVIES = Number(process.env.TMDB_IMPORT_MOVIES || 120);
-const TARGET_SERIES = Number(process.env.TMDB_IMPORT_SERIES || 60);
+const TARGET_MOVIES = Number(process.env.TMDB_IMPORT_MOVIES || 500);
+const TARGET_SERIES = Number(process.env.TMDB_IMPORT_SERIES || 250);
 const MIN_MOVIE_VOTES = Number(process.env.TMDB_MIN_MOVIE_VOTES || 120);
 const MIN_TV_VOTES = Number(process.env.TMDB_MIN_TV_VOTES || 80);
 
@@ -442,6 +442,65 @@ async function importType(tipo, target, providerMap) {
   return selected.sort((a, b) => b.nota_sofahype - a.nota_sofahype);
 }
 
+
+const WEEKLY_HIGHLIGHT = {
+  id: 'filme-devoradores-de-estrelas',
+  slug: 'devoradores-de-estrelas',
+  tipo: 'filme',
+  titulo: 'Devoradores de Estrelas',
+  titulo_original: 'Project Hail Mary',
+  aliases: ['Devoradores de Galáxias', 'Project Hail Mary'],
+  ano: '2026',
+  generos: ['Ficção Científica', 'Aventura', 'Drama'],
+  plataformas: ['Prime Video'],
+  nota_sofahype: 94,
+  nota_critica: 94,
+  nota_publico: 95,
+  nota_tmdb: 8.2,
+  duracao: '2h36',
+  tag: 'Destaque da Semana',
+  poster_url: '',
+  backdrop_url: '',
+  sinopse: 'Ryland Grace acorda em uma nave espacial sem memória de quem é ou de como chegou ali. Aos poucos, ele entende que precisa resolver um problema gigantesco: uma ameaça que pode acabar com a vida na Terra. No caminho, uma parceria improvável muda completamente a missão.',
+  experiencia: ['Ficção científica com emoção', 'Aventura espacial', 'Tem ciência, mas sem aula chata', 'Amizade improvável'],
+  ideal_para: ['ficção científica com coração', 'histórias de sobrevivência', 'aventura inteligente', 'Ryan Gosling resolvendo pepino impossível'],
+  talvez_nao_seja: ['ação espacial o tempo todo', 'filme curto', 'história sem ciência', 'assistir sem prestar atenção'],
+  destaque_semana: true,
+  critica_titulo: 'A dica do SofáHype',
+  critica_sofahype: 'Devoradores de Estrelas é aquele tipo de ficção científica que poderia virar uma aula chata de física, mas escolhe ser uma aventura grande, esperta e surpreendentemente humana. A história começa com um professor acordando numa nave, sem lembrar direito que diabos está fazendo ali, e logo transforma esse pepino cósmico numa jornada de sobrevivência, ciência e amizade. Ryan Gosling segura o filme com carisma, vulnerabilidade e aquele jeito de sujeito normal tentando resolver um problema absurdo sem surtar de vez. O melhor é que o filme não trata o público como idiota, mas também não fica metido a gênio. Ele explica o que precisa, brinca quando dá, emociona quando aperta e entrega um sci-fi com coração. Só não vá esperando tiro, explosão e alienígena malvado o tempo todo: o barato aqui é outro. É sobre pensar rápido, improvisar pra caramba e descobrir que até no espaço dá para encontrar companhia quando tudo parece perdido.',
+  fonte_resumo: 'Curadoria SofáHype baseada em críticas publicadas e recepção do público.',
+  fonte_dados: 'Curadoria SofáHype + fontes públicas',
+  status: 'ativo'
+};
+
+function applyWeeklyHighlight(catalog) {
+  const matchesHighlight = (item) => {
+    const values = [item.slug, item.titulo, item.titulo_original, ...(item.aliases || [])]
+      .filter(Boolean)
+      .map((value) => normalize(value));
+    return values.some((value) => ['devoradores de estrelas', 'devoradores de galaxias', 'project hail mary'].includes(value));
+  };
+
+  const index = catalog.findIndex(matchesHighlight);
+  if (index >= 0) {
+    const existing = catalog[index];
+    catalog[index] = {
+      ...existing,
+      ...WEEKLY_HIGHLIGHT,
+      id: existing.id || WEEKLY_HIGHLIGHT.id,
+      tmdb_id: existing.tmdb_id,
+      poster_url: existing.poster_url || WEEKLY_HIGHLIGHT.poster_url,
+      backdrop_url: existing.backdrop_url || WEEKLY_HIGHLIGHT.backdrop_url,
+      plataformas: [...new Set([...(existing.plataformas || []), 'Prime Video'])],
+      fonte_dados: existing.fonte_dados ? `${existing.fonte_dados} + Curadoria SofáHype` : WEEKLY_HIGHLIGHT.fonte_dados
+    };
+  } else {
+    catalog.unshift(WEEKLY_HIGHLIGHT);
+  }
+
+  return catalog;
+}
+
 async function main() {
   if (!TOKEN) {
     console.warn('TMDB_READ_ACCESS_TOKEN não encontrado. Mantendo o catálogo atual.');
@@ -455,8 +514,8 @@ async function main() {
   const movies = await importType('filme', TARGET_MOVIES, movieProviderMap);
   const series = await importType('serie', TARGET_SERIES, tvProviderMap);
 
-  const catalog = [...movies, ...series]
-    .filter((item) => item.titulo && item.plataformas?.length)
+  const catalog = applyWeeklyHighlight([...movies, ...series]
+    .filter((item) => item.titulo && item.plataformas?.length))
     .sort((a, b) => {
       if (a.tipo !== b.tipo) return a.tipo === 'filme' ? -1 : 1;
       return b.nota_sofahype - a.nota_sofahype;

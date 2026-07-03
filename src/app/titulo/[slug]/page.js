@@ -3,6 +3,7 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { getCatalog, getExperienceForDisplay, getHypometro, getPlatformClass, getTitleBySlug } from '../../../lib/catalog';
 import HypometroIcon from '../../../components/HypometroIcon';
+import { weeklyHighlight } from '../../../data/weeklyHighlight';
 
 export const dynamicParams = false;
 
@@ -23,6 +24,9 @@ export default async function TitlePage({ params }) {
 
   const hypo = getHypometro(item.nota_sofahype);
   const experience = getExperienceForDisplay(item);
+  const isWeeklyHighlight = item.destaque_semana || item.slug === weeklyHighlight.slug || item.titulo_original === weeklyHighlight.titulo_original;
+  const highlightReview = item.critica_sofahype || (isWeeklyHighlight ? weeklyHighlight.critica_sofahype : '');
+  const highlightReviewTitle = item.critica_titulo || weeklyHighlight.critica_titulo;
 
   return (
     <>
@@ -66,6 +70,15 @@ export default async function TitlePage({ params }) {
               <strong>{item.nota_publico ? `${item.nota_publico}%` : 'Em breve'}</strong>
             </div>
           </div>
+
+          {highlightReview ? (
+            <div className="detail-block review-block">
+              <span className="review-eyebrow">Destaque da semana</span>
+              <h2>{highlightReviewTitle}</h2>
+              <p>{highlightReview}</p>
+              <small>{item.fonte_resumo || weeklyHighlight.fonte_resumo}</small>
+            </div>
+          ) : null}
 
           <div className="detail-block">
             <h2>Como é a experiência?</h2>

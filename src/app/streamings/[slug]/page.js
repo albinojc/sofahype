@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import TitleGrid from '../../../components/TitleGrid';
+import WeeklyHighlight from '../../../components/WeeklyHighlight';
 import { canonicalStreamingSlug, getTitlesByStreaming, streamings, streamingSlugAliases } from '../../../lib/catalog';
 
 export const dynamicParams = false;
@@ -37,6 +38,11 @@ export default async function StreamingPage({ params }) {
         <h1>{streaming.nome}</h1>
         <p>Filmes e séries bem avaliados disponíveis neste streaming.</p>
       </section>
+      {streaming.slug === 'prime-video' ? (
+        <section className="section section-highlight-wrap">
+          <WeeklyHighlight compact />
+        </section>
+      ) : null}
       <section className="section">
         <TitleGrid
           items={items}

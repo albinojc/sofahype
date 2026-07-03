@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import SearchBox from '../components/SearchBox';
 import SensationExplorer from '../components/SensationExplorer';
 import Ranking from '../components/Ranking';
+import WeeklyHighlight from '../components/WeeklyHighlight';
 import { getCatalog, getTitlesByType, streamings } from '../lib/catalog';
 
 export default function HomePage() {
@@ -38,6 +39,8 @@ export default function HomePage() {
             <Link href="/#streamings">Streamings</Link>
           </nav>
         </section>
+
+        <WeeklyHighlight />
 
         <SensationExplorer items={catalog} />
 
