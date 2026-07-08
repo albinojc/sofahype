@@ -147,7 +147,8 @@ async function collectCandidates(tipo, target, providerMap) {
   // Agora a coleta é em rodízio: página 1 de todos, depois página 2 de todos, etc.
   // Isso melhora a diversidade do catálogo e evita que todos os cards de uma página carreguem
   // a primeira plataforma do título como se fosse sempre Netflix.
-  for (let page = 1; page <= 8 && candidates.size < target * 6; page += 1) {
+  const maxPages = Math.max(8, Math.ceil(target / Math.max(activeProviders.length * 10, 1)) + 4);
+  for (let page = 1; page <= maxPages && candidates.size < target * 6; page += 1) {
     for (const [streamingName, config] of activeProviders) {
       const data = await safeTmdb(endpoint, {
         language: 'pt-BR',
@@ -398,16 +399,24 @@ async function importType(tipo, target, providerMap) {
   const seenSlugs = new Set();
 
   // Monta uma piscina um pouco maior do que a cota final, para permitir diversidade por streaming.
-  for (const candidate of candidates) {
-    if (pool.length >= Math.ceil(target * 1.4)) break;
-    const item = await buildItem(candidate);
-    if (!item) continue;
+  // Para catálogos maiores, processamos em pequenos lotes. Isso reduz o tempo de build
+  // sem transformar o importador em uma metralhadora de chamadas para a API.
+  const batchSize = Number(process.env.TMDB_IMPORT_BATCH_SIZE || 5);
+  for (let i = 0; i < candidates.length && pool.length < Math.ceil(target * 1.4); i += batchSize) {
+    const batch = candidates.slice(i, i + batchSize);
+    const items = await Promise.all(batch.map((candidate) => buildItem(candidate)));
 
-    if (seenSlugs.has(item.slug)) item.slug = `${item.slug}-${item.tmdb_id}`;
-    seenSlugs.add(item.slug);
-    pool.push(item);
-    console.log(`  + ${item.titulo} (${item.plataformas.join(', ')})`);
-    await sleep(80);
+    for (const item of items) {
+      if (!item) continue;
+      if (pool.length >= Math.ceil(target * 1.4)) break;
+
+      if (seenSlugs.has(item.slug)) item.slug = `${item.slug}-${item.tmdb_id}`;
+      seenSlugs.add(item.slug);
+      pool.push(item);
+      console.log(`  + ${item.titulo} (${item.plataformas.join(', ')})`);
+    }
+
+    await sleep(120);
   }
 
   const selected = [];
@@ -468,7 +477,6 @@ const WEEKLY_HIGHLIGHT = {
   destaque_semana: true,
   critica_titulo: 'A dica do SofáHype',
   critica_sofahype: 'Devoradores de Estrelas é aquele tipo de ficção científica que poderia virar uma aula chata de física, mas escolhe ser uma aventura grande, esperta e surpreendentemente humana. A história começa com um professor acordando numa nave, sem lembrar direito que diabos está fazendo ali, e logo transforma esse pepino cósmico numa jornada de sobrevivência, ciência e amizade. Ryan Gosling segura o filme com carisma, vulnerabilidade e aquele jeito de sujeito normal tentando resolver um problema absurdo sem surtar de vez. O melhor é que o filme não trata o público como idiota, mas também não fica metido a gênio. Ele explica o que precisa, brinca quando dá, emociona quando aperta e entrega um sci-fi com coração. Só não vá esperando tiro, explosão e alienígena malvado o tempo todo: o barato aqui é outro. É sobre pensar rápido, improvisar pra caramba e descobrir que até no espaço dá para encontrar companhia quando tudo parece perdido.',
-  fonte_resumo: 'Curadoria SofáHype baseada em críticas publicadas e recepção do público.',
   fonte_dados: 'Curadoria SofáHype + fontes públicas',
   status: 'ativo'
 };

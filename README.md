@@ -37,14 +37,14 @@ TMDB_READ_ACCESS_TOKEN
 
 Nesta versão, o importador está configurado para buscar aproximadamente:
 
-- 500 filmes
-- 250 séries
+- 1.000 filmes
+- 500 séries
 
 Esses números ficam em `netlify.toml`:
 
 ```toml
-TMDB_IMPORT_MOVIES = "500"
-TMDB_IMPORT_SERIES = "250"
+TMDB_IMPORT_MOVIES = "1000"
+TMDB_IMPORT_SERIES = "500"
 ```
 
 Depois que essa fase estiver estável, podemos subir gradualmente até chegar no objetivo de 2.000 filmes e 1.000 séries.
