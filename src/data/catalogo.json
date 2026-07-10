@@ -1,53 +1,56 @@
 [
   {
-    "id": "filme-devoradores-de-estrelas",
-    "slug": "devoradores-de-estrelas",
+    "id": "filme-o-drama",
+    "slug": "o-drama",
     "tipo": "filme",
-    "titulo": "Devoradores de Estrelas",
-    "titulo_original": "Project Hail Mary",
+    "titulo": "O Drama",
+    "titulo_original": "The Drama",
     "aliases": [
-      "Devoradores de Galáxias",
-      "Project Hail Mary"
+      "The Drama",
+      "Drama",
+      "O Drama Zendaya",
+      "O Drama Robert Pattinson"
     ],
     "ano": "2026",
     "generos": [
-      "Ficção Científica",
-      "Aventura",
-      "Drama"
+      "Comédia",
+      "Drama",
+      "Romance"
     ],
     "plataformas": [
       "Prime Video"
     ],
-    "nota_sofahype": 94,
-    "nota_critica": 94,
-    "nota_publico": 95,
-    "nota_tmdb": 8.2,
-    "duracao": "2h36",
+    "nota_sofahype": 82,
+    "nota_critica": 82,
+    "nota_publico": 80,
+    "nota_tmdb": 7.8,
+    "duracao": "1h45",
     "tag": "Destaque da Semana",
     "poster_url": "",
     "backdrop_url": "",
-    "sinopse": "Ryland Grace acorda em uma nave espacial sem memória de quem é ou de como chegou ali. Aos poucos, ele entende que precisa resolver um problema gigantesco: uma ameaça que pode acabar com a vida na Terra. No caminho, uma parceria improvável muda completamente a missão.",
+    "sinopse": "Dias antes do casamento, a relação de um casal é abalada quando uma revelação inesperada coloca tudo em dúvida.",
     "experiencia": [
-      "Ficção científica com emoção",
-      "Aventura espacial",
-      "Tem ciência, mas sem aula chata",
-      "Amizade improvável"
+      "Romance nada fofinho",
+      "Clima desconfortável",
+      "Humor ácido",
+      "Crise de casal levada ao limite"
     ],
     "ideal_para": [
-      "ficção científica com coração",
-      "histórias de sobrevivência",
-      "aventura inteligente",
-      "Ryan Gosling resolvendo pepino impossível"
+      "dramas adultos",
+      "filmes com climão estranho",
+      "histórias sobre relacionamento",
+      "Zendaya e Robert Pattinson em modo intenso"
     ],
     "talvez_nao_seja": [
-      "ação espacial o tempo todo",
-      "filme curto",
-      "história sem ciência",
-      "assistir sem prestar atenção"
+      "romance leve",
+      "comédia romântica tradicional",
+      "filme para relaxar",
+      "respostas fáceis"
     ],
     "destaque_semana": true,
     "critica_titulo": "A dica do SofáHype",
-    "critica_sofahype": "Devoradores de Estrelas é aquele tipo de ficção científica que poderia virar uma aula chata de física, mas escolhe ser uma aventura grande, esperta e surpreendentemente humana. A história começa com um professor acordando numa nave, sem lembrar direito que diabos está fazendo ali, e logo transforma esse pepino cósmico numa jornada de sobrevivência, ciência e amizade. Ryan Gosling segura o filme com carisma, vulnerabilidade e aquele jeito de sujeito normal tentando resolver um problema absurdo sem surtar de vez. O melhor é que o filme não trata o público como idiota, mas também não fica metido a gênio. Ele explica o que precisa, brinca quando dá, emociona quando aperta e entrega um sci-fi com coração. Só não vá esperando tiro, explosão e alienígena malvado o tempo todo: o barato aqui é outro. É sobre pensar rápido, improvisar pra caramba e descobrir que até no espaço dá para encontrar companhia quando tudo parece perdido.",
+    "critica_sofahype": "O Drama parece, de longe, mais um romance bonito com dois astros lindos sofrendo em apartamento bem iluminado. Só que o filme vai por outro caminho. A graça — e o desconforto — está em ver como uma revelação pesada antes do casamento desmonta a imagem perfeita do casal e transforma tudo numa mistura de romance, crise, vergonha alheia e tensão emocional. Zendaya e Robert Pattinson seguram o filme no braço: ela entrega uma personagem difícil de decifrar, ele faz muito bem esse cara tentando entender se ainda ama alguém depois de descobrir algo que muda tudo. Não é filme para ver esperando leveza ou romance fofinho. É mais torto, mais incômodo e às vezes até cruel. Também não é perfeito: tem hora que parece mais interessado em cutucar do que em resolver o que levanta. Mas quando funciona, funciona pra caramba. É daqueles filmes que você termina e fica querendo discutir, discordar, defender ou xingar um pouco. E isso, convenhamos, já é mais do que muito lançamento entrega.",
+    "fonte_dados": "Curadoria SofáHype + fontes públicas",
     "status": "ativo"
   },
   {

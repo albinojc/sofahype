@@ -5,7 +5,7 @@ import { weeklyHighlight } from '../data/weeklyHighlight';
 
 function findHighlightItem() {
   const catalog = getCatalog();
-  const aliases = [weeklyHighlight.slug, weeklyHighlight.titulo, weeklyHighlight.titulo_original, 'Devoradores de Galáxias'];
+  const aliases = [weeklyHighlight.slug, weeklyHighlight.titulo, weeklyHighlight.titulo_original, ...(weeklyHighlight.aliases || [])];
   return catalog.find((item) => {
     const values = [item.slug, item.titulo, item.titulo_original, ...(item.aliases || [])].filter(Boolean);
     return values.some((value) => aliases.some((alias) => slugify(value) === slugify(alias)));

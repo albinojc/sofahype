@@ -453,40 +453,94 @@ async function importType(tipo, target, providerMap) {
 
 
 const WEEKLY_HIGHLIGHT = {
-  id: 'filme-devoradores-de-estrelas',
-  slug: 'devoradores-de-estrelas',
+  id: 'filme-o-drama',
+  slug: 'o-drama',
   tipo: 'filme',
-  titulo: 'Devoradores de Estrelas',
-  titulo_original: 'Project Hail Mary',
-  aliases: ['Devoradores de Galáxias', 'Project Hail Mary'],
+  titulo: 'O Drama',
+  titulo_original: 'The Drama',
+  aliases: ['The Drama', 'Drama', 'O Drama Zendaya', 'O Drama Robert Pattinson'],
   ano: '2026',
-  generos: ['Ficção Científica', 'Aventura', 'Drama'],
+  generos: ['Comédia', 'Drama', 'Romance'],
   plataformas: ['Prime Video'],
-  nota_sofahype: 94,
-  nota_critica: 94,
-  nota_publico: 95,
-  nota_tmdb: 8.2,
-  duracao: '2h36',
+  nota_sofahype: 82,
+  nota_critica: 82,
+  nota_publico: 80,
+  nota_tmdb: 7.8,
+  duracao: '1h45',
   tag: 'Destaque da Semana',
   poster_url: '',
   backdrop_url: '',
-  sinopse: 'Ryland Grace acorda em uma nave espacial sem memória de quem é ou de como chegou ali. Aos poucos, ele entende que precisa resolver um problema gigantesco: uma ameaça que pode acabar com a vida na Terra. No caminho, uma parceria improvável muda completamente a missão.',
-  experiencia: ['Ficção científica com emoção', 'Aventura espacial', 'Tem ciência, mas sem aula chata', 'Amizade improvável'],
-  ideal_para: ['ficção científica com coração', 'histórias de sobrevivência', 'aventura inteligente', 'Ryan Gosling resolvendo pepino impossível'],
-  talvez_nao_seja: ['ação espacial o tempo todo', 'filme curto', 'história sem ciência', 'assistir sem prestar atenção'],
+  sinopse: 'Dias antes do casamento, a relação de um casal é abalada quando uma revelação inesperada coloca tudo em dúvida.',
+  experiencia: ['Romance nada fofinho', 'Clima desconfortável', 'Humor ácido', 'Crise de casal levada ao limite'],
+  ideal_para: ['dramas adultos', 'filmes com climão estranho', 'histórias sobre relacionamento', 'Zendaya e Robert Pattinson em modo intenso'],
+  talvez_nao_seja: ['romance leve', 'comédia romântica tradicional', 'filme para relaxar', 'respostas fáceis'],
   destaque_semana: true,
   critica_titulo: 'A dica do SofáHype',
-  critica_sofahype: 'Devoradores de Estrelas é aquele tipo de ficção científica que poderia virar uma aula chata de física, mas escolhe ser uma aventura grande, esperta e surpreendentemente humana. A história começa com um professor acordando numa nave, sem lembrar direito que diabos está fazendo ali, e logo transforma esse pepino cósmico numa jornada de sobrevivência, ciência e amizade. Ryan Gosling segura o filme com carisma, vulnerabilidade e aquele jeito de sujeito normal tentando resolver um problema absurdo sem surtar de vez. O melhor é que o filme não trata o público como idiota, mas também não fica metido a gênio. Ele explica o que precisa, brinca quando dá, emociona quando aperta e entrega um sci-fi com coração. Só não vá esperando tiro, explosão e alienígena malvado o tempo todo: o barato aqui é outro. É sobre pensar rápido, improvisar pra caramba e descobrir que até no espaço dá para encontrar companhia quando tudo parece perdido.',
+  critica_sofahype: 'O Drama parece, de longe, mais um romance bonito com dois astros lindos sofrendo em apartamento bem iluminado. Só que o filme vai por outro caminho. A graça — e o desconforto — está em ver como uma revelação pesada antes do casamento desmonta a imagem perfeita do casal e transforma tudo numa mistura de romance, crise, vergonha alheia e tensão emocional. Zendaya e Robert Pattinson seguram o filme no braço: ela entrega uma personagem difícil de decifrar, ele faz muito bem esse cara tentando entender se ainda ama alguém depois de descobrir algo que muda tudo. Não é filme para ver esperando leveza ou romance fofinho. É mais torto, mais incômodo e às vezes até cruel. Também não é perfeito: tem hora que parece mais interessado em cutucar do que em resolver o que levanta. Mas quando funciona, funciona pra caramba. É daqueles filmes que você termina e fica querendo discutir, discordar, defender ou xingar um pouco. E isso, convenhamos, já é mais do que muito lançamento entrega.',
   fonte_dados: 'Curadoria SofáHype + fontes públicas',
   status: 'ativo'
 };
 
-function applyWeeklyHighlight(catalog) {
+async function hydrateWeeklyHighlightFromTmdb() {
+  const queries = ['O Drama', 'The Drama'];
+  let candidate = null;
+
+  for (const query of queries) {
+    const data = await safeTmdb('/search/movie', {
+      language: 'pt-BR',
+      query,
+      include_adult: 'false',
+      year: '2026'
+    });
+
+    const results = data?.results || [];
+    candidate = results.find((item) => {
+      const values = [item.title, item.original_title].map(normalize);
+      return values.includes('o drama') || values.includes('the drama');
+    }) || results[0];
+
+    if (candidate) break;
+  }
+
+  if (!candidate?.id) return WEEKLY_HIGHLIGHT;
+
+  const details = await safeTmdb(`/movie/${candidate.id}`, { language: 'pt-BR' });
+  if (!details) return WEEKLY_HIGHLIGHT;
+
+  const watch = await safeTmdb(`/movie/${candidate.id}/watch/providers`);
+  const plataformas = streamingsFromWatchProviders(watch);
+  if (!plataformas.includes('Prime Video')) plataformas.unshift('Prime Video');
+
+  const genres = (details.genres || []).map((g) => g.name).filter(Boolean);
+  const date = details.release_date || '';
+
+  return {
+    ...WEEKLY_HIGHLIGHT,
+    id: `filme-${details.id}`,
+    tmdb_id: details.id,
+    titulo: details.title || WEEKLY_HIGHLIGHT.titulo,
+    titulo_original: details.original_title || WEEKLY_HIGHLIGHT.titulo_original,
+    ano: date ? String(date).slice(0, 4) : WEEKLY_HIGHLIGHT.ano,
+    generos: genres.length ? genres : WEEKLY_HIGHLIGHT.generos,
+    plataformas: [...new Set(plataformas)],
+    duracao: formatRuntime(details.runtime) || WEEKLY_HIGHLIGHT.duracao,
+    poster_url: details.poster_path ? `${IMAGE}/w500${details.poster_path}` : WEEKLY_HIGHLIGHT.poster_url,
+    backdrop_url: details.backdrop_path ? `${IMAGE}/w1280${details.backdrop_path}` : WEEKLY_HIGHLIGHT.backdrop_url,
+    sinopse: details.overview || WEEKLY_HIGHLIGHT.sinopse,
+    nota_tmdb: details.vote_average ? Number(details.vote_average).toFixed(1) : WEEKLY_HIGHLIGHT.nota_tmdb
+  };
+}
+
+function applyWeeklyHighlight(catalog, highlight = WEEKLY_HIGHLIGHT) {
+  const highlightTerms = [highlight.slug, highlight.titulo, highlight.titulo_original, ...(highlight.aliases || [])]
+    .filter(Boolean)
+    .map(normalize);
+
   const matchesHighlight = (item) => {
     const values = [item.slug, item.titulo, item.titulo_original, ...(item.aliases || [])]
       .filter(Boolean)
       .map((value) => normalize(value));
-    return values.some((value) => ['devoradores de estrelas', 'devoradores de galaxias', 'project hail mary'].includes(value));
+    return values.some((value) => highlightTerms.includes(value));
   };
 
   const index = catalog.findIndex(matchesHighlight);
@@ -494,16 +548,16 @@ function applyWeeklyHighlight(catalog) {
     const existing = catalog[index];
     catalog[index] = {
       ...existing,
-      ...WEEKLY_HIGHLIGHT,
-      id: existing.id || WEEKLY_HIGHLIGHT.id,
-      tmdb_id: existing.tmdb_id,
-      poster_url: existing.poster_url || WEEKLY_HIGHLIGHT.poster_url,
-      backdrop_url: existing.backdrop_url || WEEKLY_HIGHLIGHT.backdrop_url,
-      plataformas: [...new Set([...(existing.plataformas || []), 'Prime Video'])],
-      fonte_dados: existing.fonte_dados ? `${existing.fonte_dados} + Curadoria SofáHype` : WEEKLY_HIGHLIGHT.fonte_dados
+      ...highlight,
+      id: existing.id || highlight.id,
+      tmdb_id: existing.tmdb_id || highlight.tmdb_id,
+      poster_url: existing.poster_url || highlight.poster_url,
+      backdrop_url: existing.backdrop_url || highlight.backdrop_url,
+      plataformas: [...new Set([...(existing.plataformas || []), ...(highlight.plataformas || [])])],
+      fonte_dados: existing.fonte_dados ? `${existing.fonte_dados} + Curadoria SofáHype` : highlight.fonte_dados
     };
   } else {
-    catalog.unshift(WEEKLY_HIGHLIGHT);
+    catalog.unshift(highlight);
   }
 
   return catalog;
@@ -522,8 +576,10 @@ async function main() {
   const movies = await importType('filme', TARGET_MOVIES, movieProviderMap);
   const series = await importType('serie', TARGET_SERIES, tvProviderMap);
 
+  const weeklyHighlight = await hydrateWeeklyHighlightFromTmdb();
+
   const catalog = applyWeeklyHighlight([...movies, ...series]
-    .filter((item) => item.titulo && item.plataformas?.length))
+    .filter((item) => item.titulo && item.plataformas?.length), weeklyHighlight)
     .sort((a, b) => {
       if (a.tipo !== b.tipo) return a.tipo === 'filme' ? -1 : 1;
       return b.nota_sofahype - a.nota_sofahype;
