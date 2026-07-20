@@ -1,18 +1,40 @@
 export const weeklyHighlight = {
-  slug: 'o-drama',
-  titulo: 'O Drama',
-  titulo_original: 'The Drama',
-  aliases: ['The Drama', 'Drama', 'O Drama Zendaya', 'O Drama Robert Pattinson'],
+  slug: 'elize-sombras-de-uma-mulher',
+  titulo: 'Elize: Sombras de Uma Mulher',
+  titulo_original: 'Elize: Shadows of a Woman',
+  aliases: [
+    'Elize Shadows of a Woman',
+    'Elize Matsunaga',
+    'Elize Sombras de Uma Mulher',
+    'Sombras de Uma Mulher'
+  ],
   label: 'DESTAQUE DA SEMANA',
-  plataforma: 'Prime Video',
-  chamada: 'Zendaya e Robert Pattinson num romance que começa bonito, fica estranho e vira um teste daqueles para qualquer casal.',
-  nota_sofahype: 82,
-  nota_critica: 82,
-  nota_publico: 80,
-  hypometro: 'Sofá Quente',
+  plataforma: 'Netflix',
+  chamada:
+    'O caso Elize Matsunaga ganha uma versão dramatizada, pesada e brasileira, daquelas que não entram para “relaxar”, mas para discutir depois.',
+  nota_sofahype: 7.2,
+  nota_critica: null,
+  nota_publico: null,
+  hypometro: 'Sofá OK!',
   critica_titulo: 'A dica do SofáHype',
-  critica_sofahype: 'O Drama parece, de longe, mais um romance bonito com dois astros lindos sofrendo em apartamento bem iluminado. Só que o filme vai por outro caminho. A graça — e o desconforto — está em ver como uma revelação pesada antes do casamento desmonta a imagem perfeita do casal e transforma tudo numa mistura de romance, crise, vergonha alheia e tensão emocional. Zendaya e Robert Pattinson seguram o filme no braço: ela entrega uma personagem difícil de decifrar, ele faz muito bem esse cara tentando entender se ainda ama alguém depois de descobrir algo que muda tudo. Não é filme para ver esperando leveza ou romance fofinho. É mais torto, mais incômodo e às vezes até cruel. Também não é perfeito: tem hora que parece mais interessado em cutucar do que em resolver o que levanta. Mas quando funciona, funciona pra caramba. É daqueles filmes que você termina e fica querendo discutir, discordar, defender ou xingar um pouco. E isso, convenhamos, já é mais do que muito lançamento entrega.',
-  experiencia_extra: ['Romance nada fofinho', 'Clima desconfortável', 'Humor ácido', 'Crise de casal levada ao limite'],
-  ideal_extra: ['dramas adultos', 'filmes com climão estranho', 'histórias sobre relacionamento', 'Zendaya e Robert Pattinson em modo intenso'],
-  talvez_nao_extra: ['romance leve', 'comédia romântica tradicional', 'filme para relaxar', 'respostas fáceis']
+  critica_sofahype:
+    'Elize: Sombras de Uma Mulher entra naquele território delicado: todo mundo conhece o caso, muita gente já tem opinião formada, e qualquer escorregada pode virar exploração barata. A boa ideia aqui é não tratar a história como simples “revival de crime famoso”, mas como uma ficção pesada sobre poder, medo, violência dentro de casa e uma relação que vai apodrecendo até o pior ponto possível. Não é programa leve, não é pra colocar enquanto mexe no celular e definitivamente não é documentário de tribunal. É drama criminal para assistir sabendo que o assunto pesa. A graça, se dá para usar essa palavra num caso desses, está em ver uma história brasileira muito conhecida tentando sair da fofoca mórbida e virar reflexão. Pode incomodar. Deve incomodar. E talvez seja exatamente por isso que mereça entrar no radar da semana.',
+  experiencia_extra: [
+    'Crime real em versão dramatizada',
+    'Clima pesado',
+    'Relação tóxica',
+    'História brasileira conhecida'
+  ],
+  ideal_extra: [
+    'true crime dramatizado',
+    'dramas brasileiros',
+    'histórias de crime real',
+    'filmes que rendem conversa depois'
+  ],
+  talvez_nao_extra: [
+    'documentário tradicional',
+    'algo leve para relaxar',
+    'história confortável',
+    'filme para ver distraído'
+  ]
 };
