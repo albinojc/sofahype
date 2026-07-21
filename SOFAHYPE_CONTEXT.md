@@ -179,6 +179,16 @@ Não usar a frase:
 
 Essa frase deve ser evitada porque enfraquece a credibilidade editorial.
 
+## Expansão do catálogo
+
+Ao importar títulos automaticamente:
+
+* priorizar produções lançadas a partir de 2023;
+* manter cerca de 75% do catálogo automático com títulos de 2023 em diante;
+* reservar cerca de 25% para clássicos e títulos anteriores ainda relevantes;
+* não importar automaticamente títulos que ainda não estrearam;
+* manter equilíbrio entre os streamings disponíveis no Brasil.
+
 ## Fluxo de atualização semanal
 
 Para cada atualização semanal:
