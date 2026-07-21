@@ -11,6 +11,9 @@ const TARGET_MOVIES = Number(process.env.TMDB_IMPORT_MOVIES || 500);
 const TARGET_SERIES = Number(process.env.TMDB_IMPORT_SERIES || 250);
 const MIN_MOVIE_VOTES = Number(process.env.TMDB_MIN_MOVIE_VOTES || 120);
 const MIN_TV_VOTES = Number(process.env.TMDB_MIN_TV_VOTES || 80);
+const RECENT_START_YEAR = Number(process.env.TMDB_RECENT_START_YEAR || 2023);
+const RECENT_SHARE = Math.max(0, Math.min(1, Number(process.env.TMDB_RECENT_SHARE || 0.75)));
+const TODAY = new Date().toISOString().slice(0, 10);
 
 const STREAMINGS = [
   { nome: 'Netflix', aliases: ['netflix'], region: 'BR' },
@@ -135,7 +138,7 @@ function streamingsFromWatchProviders(data) {
   return names;
 }
 
-async function collectCandidates(tipo, target, providerMap) {
+async function collectCandidates(tipo, target, providerMap, { dateMode = 'all' } = {}) {
   const kind = tipo === 'filme' ? 'movie' : 'tv';
   const endpoint = tipo === 'filme' ? '/discover/movie' : '/discover/tv';
   const minVotes = tipo === 'filme' ? MIN_MOVIE_VOTES : MIN_TV_VOTES;
@@ -150,6 +153,18 @@ async function collectCandidates(tipo, target, providerMap) {
   const maxPages = Math.max(8, Math.ceil(target / Math.max(activeProviders.length * 10, 1)) + 4);
   for (let page = 1; page <= maxPages && candidates.size < target * 6; page += 1) {
     for (const [streamingName, config] of activeProviders) {
+      const recentStartDate = `${RECENT_START_YEAR}-01-01`;
+      const classicEndDate = `${RECENT_START_YEAR - 1}-12-31`;
+      const dateParams = tipo === 'filme'
+        ? {
+            'primary_release_date.lte': dateMode === 'classic' ? classicEndDate : TODAY,
+            ...(dateMode === 'recent' ? { 'primary_release_date.gte': recentStartDate } : {})
+          }
+        : {
+            'first_air_date.lte': dateMode === 'classic' ? classicEndDate : TODAY,
+            ...(dateMode === 'recent' ? { 'first_air_date.gte': recentStartDate } : {})
+          };
+
       const data = await safeTmdb(endpoint, {
         language: 'pt-BR',
         region: config.region || 'BR',
@@ -160,6 +175,7 @@ async function collectCandidates(tipo, target, providerMap) {
         include_adult: 'false',
         include_null_first_air_dates: 'false',
         'vote_count.gte': minVotes,
+        ...dateParams,
         page
       });
 
@@ -392,9 +408,46 @@ async function buildItem(candidate) {
   };
 }
 
+function releaseYear(item) {
+  const year = Number(String(item.ano || '').slice(0, 4));
+  return Number.isFinite(year) ? year : 0;
+}
+
+function isRecent(item) {
+  return releaseYear(item) >= RECENT_START_YEAR;
+}
+
+function editorialPriority(item) {
+  const year = releaseYear(item);
+  const currentYear = Number(TODAY.slice(0, 4));
+  let recencyBonus = 0;
+
+  if (year >= currentYear) recencyBonus = 8;
+  else if (year === currentYear - 1) recencyBonus = 6;
+  else if (year >= RECENT_START_YEAR) recencyBonus = 4;
+
+  return Number(item.nota_sofahype || 0) + recencyBonus;
+}
+
 async function importType(tipo, target, providerMap) {
   console.log(`Buscando ${target} ${tipo === 'filme' ? 'filmes' : 'séries'}...`);
-  const candidates = await collectCandidates(tipo, target, providerMap);
+  const recentTarget = Math.max(1, Math.ceil(target * RECENT_SHARE));
+  const classicTarget = Math.max(1, target - recentTarget);
+  const recentCandidates = await collectCandidates(tipo, recentTarget, providerMap, { dateMode: 'recent' });
+  const classicCandidates = await collectCandidates(tipo, classicTarget, providerMap, { dateMode: 'classic' });
+  const candidateMap = new Map();
+  const recentCandidateLimit = Math.ceil(recentTarget * 1.5);
+  const classicCandidateLimit = Math.ceil(classicTarget * 1.8);
+
+  for (const candidate of [
+    ...recentCandidates.slice(0, recentCandidateLimit),
+    ...classicCandidates.slice(0, classicCandidateLimit)
+  ]) {
+    const key = `${candidate.kind}-${candidate.id}`;
+    if (!candidateMap.has(key)) candidateMap.set(key, candidate);
+  }
+
+  const candidates = Array.from(candidateMap.values());
   const pool = [];
   const seenSlugs = new Set();
 
@@ -425,30 +478,45 @@ async function importType(tipo, target, providerMap) {
     .filter(([, config]) => config.ids.length)
     .map(([name]) => name);
   const minimumPerStreaming = Math.max(2, Math.floor(target / Math.max(activeStreamingNames.length * 5, 1)));
+  const recentQuota = Math.min(target, Math.round(target * RECENT_SHARE));
 
-  // Primeiro garante alguma presença de cada streaming que a API retornou no Brasil.
+  const addItem = (item) => {
+    if (!item || selected.length >= target || selectedIds.has(item.id)) return false;
+    selected.push(item);
+    selectedIds.add(item.id);
+    return true;
+  };
+
+  // Garante variedade entre streamings, mas escolhe lançamentos de 2023 em diante primeiro.
   for (const streamingName of activeStreamingNames) {
     const options = pool
       .filter((item) => item.plataformas.includes(streamingName) && !selectedIds.has(item.id))
-      .sort((a, b) => b.nota_sofahype - a.nota_sofahype)
+      .sort((a, b) => {
+        if (isRecent(a) !== isRecent(b)) return isRecent(a) ? -1 : 1;
+        return editorialPriority(b) - editorialPriority(a);
+      })
       .slice(0, minimumPerStreaming);
 
-    for (const item of options) {
-      if (selected.length >= target) break;
-      selected.push(item);
-      selectedIds.add(item.id);
-    }
+    for (const item of options) addItem(item);
   }
 
-  // Depois completa com os melhores títulos no geral.
-  for (const item of pool.sort((a, b) => b.nota_sofahype - a.nota_sofahype)) {
+  // Completa a cota editorial de títulos recentes.
+  const recentSelected = () => selected.filter(isRecent).length;
+  for (const item of pool.filter(isRecent).sort((a, b) => editorialPriority(b) - editorialPriority(a))) {
+    if (selected.length >= target || recentSelected() >= recentQuota) break;
+    addItem(item);
+  }
+
+  // Reserva o restante para clássicos e títulos anteriores que continuam relevantes.
+  for (const item of pool.sort((a, b) => editorialPriority(b) - editorialPriority(a))) {
     if (selected.length >= target) break;
-    if (selectedIds.has(item.id)) continue;
-    selected.push(item);
-    selectedIds.add(item.id);
+    addItem(item);
   }
 
-  return selected.sort((a, b) => b.nota_sofahype - a.nota_sofahype);
+  return selected.sort((a, b) => {
+    if (isRecent(a) !== isRecent(b)) return isRecent(a) ? -1 : 1;
+    return editorialPriority(b) - editorialPriority(a);
+  });
 }
 
 
