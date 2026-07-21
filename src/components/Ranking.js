@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { formatScore, getHypometro, getPlatformClass, getPrimaryPlatform, getScoreClass } from '../lib/catalog';
 
-export default function Ranking({ items }) {
+export default function Ranking({ items, limit = 8 }) {
   return (
     <div className="ranking">
-      {items.slice(0, 8).map((item, index) => {
+      {items.slice(0, limit ?? items.length).map((item, index) => {
         const hypo = getHypometro(item.nota_sofahype);
         const platform = getPrimaryPlatform(item);
         return (
