@@ -452,82 +452,33 @@ async function importType(tipo, target, providerMap) {
 }
 
 
-const WEEKLY_HIGHLIGHT = {
-  id: 'filme-o-drama',
-  slug: 'o-drama',
-  tipo: 'filme',
-  titulo: 'O Drama',
-  titulo_original: 'The Drama',
-  aliases: ['The Drama', 'Drama', 'O Drama Zendaya', 'O Drama Robert Pattinson'],
-  ano: '2026',
-  generos: ['Comédia', 'Drama', 'Romance'],
-  plataformas: ['Prime Video'],
-  nota_sofahype: 82,
-  nota_critica: 82,
-  nota_publico: 80,
-  nota_tmdb: 7.8,
-  duracao: '1h45',
-  tag: 'Destaque da Semana',
-  poster_url: '',
-  backdrop_url: '',
-  sinopse: 'Dias antes do casamento, a relação de um casal é abalada quando uma revelação inesperada coloca tudo em dúvida.',
-  experiencia: ['Romance nada fofinho', 'Clima desconfortável', 'Humor ácido', 'Crise de casal levada ao limite'],
-  ideal_para: ['dramas adultos', 'filmes com climão estranho', 'histórias sobre relacionamento', 'Zendaya e Robert Pattinson em modo intenso'],
-  talvez_nao_seja: ['romance leve', 'comédia romântica tradicional', 'filme para relaxar', 'respostas fáceis'],
-  destaque_semana: true,
-  critica_titulo: 'A dica do SofáHype',
-  critica_sofahype: 'O Drama parece, de longe, mais um romance bonito com dois astros lindos sofrendo em apartamento bem iluminado. Só que o filme vai por outro caminho. A graça — e o desconforto — está em ver como uma revelação pesada antes do casamento desmonta a imagem perfeita do casal e transforma tudo numa mistura de romance, crise, vergonha alheia e tensão emocional. Zendaya e Robert Pattinson seguram o filme no braço: ela entrega uma personagem difícil de decifrar, ele faz muito bem esse cara tentando entender se ainda ama alguém depois de descobrir algo que muda tudo. Não é filme para ver esperando leveza ou romance fofinho. É mais torto, mais incômodo e às vezes até cruel. Também não é perfeito: tem hora que parece mais interessado em cutucar do que em resolver o que levanta. Mas quando funciona, funciona pra caramba. É daqueles filmes que você termina e fica querendo discutir, discordar, defender ou xingar um pouco. E isso, convenhamos, já é mais do que muito lançamento entrega.',
-  fonte_dados: 'Curadoria SofáHype + fontes públicas',
-  status: 'ativo'
-};
+const WEEKLY_HIGHLIGHT_CONFIG = path.join(ROOT, 'src/data/weeklyHighlight.js');
 
-async function hydrateWeeklyHighlightFromTmdb() {
-  const queries = ['O Drama', 'The Drama'];
-  let candidate = null;
+async function loadConfiguredWeeklyHighlight() {
+  const configSource = await fs.readFile(WEEKLY_HIGHLIGHT_CONFIG, 'utf8');
+  const slugMatch = configSource.match(/\bslug\s*:\s*['"`]([^'"`]+)['"`]/);
+  const configuredSlug = slugMatch?.[1];
 
-  for (const query of queries) {
-    const data = await safeTmdb('/search/movie', {
-      language: 'pt-BR',
-      query,
-      include_adult: 'false',
-      year: '2026'
-    });
-
-    const results = data?.results || [];
-    candidate = results.find((item) => {
-      const values = [item.title, item.original_title].map(normalize);
-      return values.includes('o drama') || values.includes('the drama');
-    }) || results[0];
-
-    if (candidate) break;
+  if (!configuredSlug) {
+    throw new Error('Não foi possível identificar o slug em src/data/weeklyHighlight.js.');
   }
 
-  if (!candidate?.id) return WEEKLY_HIGHLIGHT;
+  const currentCatalog = JSON.parse(await fs.readFile(OUTPUT, 'utf8'));
+  const highlight = currentCatalog.find(
+    (item) => item.slug === configuredSlug || item.id === configuredSlug
+  );
 
-  const details = await safeTmdb(`/movie/${candidate.id}`, { language: 'pt-BR' });
-  if (!details) return WEEKLY_HIGHLIGHT;
-
-  const watch = await safeTmdb(`/movie/${candidate.id}/watch/providers`);
-  const plataformas = streamingsFromWatchProviders(watch);
-  if (!plataformas.includes('Prime Video')) plataformas.unshift('Prime Video');
-
-  const genres = (details.genres || []).map((g) => g.name).filter(Boolean);
-  const date = details.release_date || '';
+  if (!highlight) {
+    throw new Error(
+      `O destaque semanal "${configuredSlug}" não foi encontrado em src/data/catalogo.json. ` +
+      'O deploy foi interrompido para evitar um link que leve à página Vacilei.'
+    );
+  }
 
   return {
-    ...WEEKLY_HIGHLIGHT,
-    id: `filme-${details.id}`,
-    tmdb_id: details.id,
-    titulo: details.title || WEEKLY_HIGHLIGHT.titulo,
-    titulo_original: details.original_title || WEEKLY_HIGHLIGHT.titulo_original,
-    ano: date ? String(date).slice(0, 4) : WEEKLY_HIGHLIGHT.ano,
-    generos: genres.length ? genres : WEEKLY_HIGHLIGHT.generos,
-    plataformas: [...new Set(plataformas)],
-    duracao: formatRuntime(details.runtime) || WEEKLY_HIGHLIGHT.duracao,
-    poster_url: details.poster_path ? `${IMAGE}/w500${details.poster_path}` : WEEKLY_HIGHLIGHT.poster_url,
-    backdrop_url: details.backdrop_path ? `${IMAGE}/w1280${details.backdrop_path}` : WEEKLY_HIGHLIGHT.backdrop_url,
-    sinopse: details.overview || WEEKLY_HIGHLIGHT.sinopse,
-    nota_tmdb: details.vote_average ? Number(details.vote_average).toFixed(1) : WEEKLY_HIGHLIGHT.nota_tmdb
+    ...highlight,
+    destaque_semana: true,
+    tag: highlight.tag || 'Destaque da Semana'
   };
 }
 
@@ -569,6 +520,9 @@ async function main() {
     return;
   }
 
+  const weeklyHighlight = await loadConfiguredWeeklyHighlight();
+
+  console.log(`Destaque semanal preservado: ${weeklyHighlight.titulo}`);
   console.log('Iniciando importação TMDb para o SofáHype...');
   const movieProviderMap = await getProviderMap('movie');
   const tvProviderMap = await getProviderMap('tv');
@@ -576,7 +530,6 @@ async function main() {
   const movies = await importType('filme', TARGET_MOVIES, movieProviderMap);
   const series = await importType('serie', TARGET_SERIES, tvProviderMap);
 
-  const weeklyHighlight = await hydrateWeeklyHighlightFromTmdb();
 
   const catalog = applyWeeklyHighlight([...movies, ...series]
     .filter((item) => item.titulo && item.plataformas?.length), weeklyHighlight)
