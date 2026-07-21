@@ -17,7 +17,7 @@ export default function SeriesPage() {
         <SearchBox defaultTipo="serie" variant="page" placeholder="Buscar série..." />
       </section>
       <section className="section">
-        <Ranking items={series} />
+        <Ranking items={series} limit={null} />
       </section>
       <Footer />
     </>
