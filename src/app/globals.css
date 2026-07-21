@@ -739,3 +739,40 @@ button.mood:focus-visible {
 .rank-right .score-badge { font-size: 15px; }
 .hype-bar { background: linear-gradient(90deg, #B743FF, #FF3131, #FFD400, #15D8FF); }
 .review-block small { display:none !important; }
+
+
+/* Destaques ainda não lançados: não inventar nota nem Hypômetro */
+.weekly-metrics .weekly-score-pending {
+  min-height: 54px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(255,255,255,.055);
+  border: 1px solid rgba(255,255,255,.12);
+}
+.weekly-metrics .weekly-score-pending strong {
+  color: #F5F0E8;
+  font-size: 16px;
+  line-height: 1.1;
+}
+.weekly-metrics .weekly-score-pending small {
+  color: #9a9a9a;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.score-panel-pending { grid-template-columns: 2fr 1fr 1fr; }
+.score-awaiting-release small {
+  display: block;
+  margin-top: 7px;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.4;
+}
+@media (max-width: 760px) {
+  .score-panel-pending { grid-template-columns: 1fr; }
+}

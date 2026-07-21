@@ -1,5 +1,59 @@
 [
   {
+    "id": "elize-sombras-de-uma-mulher",
+    "slug": "elize-sombras-de-uma-mulher",
+    "tipo": "filme",
+    "titulo": "Elize: Sombras de Uma Mulher",
+    "titulo_original": "Elize: Shadows of a Woman",
+    "aliases": [
+      "Elize Shadows of a Woman",
+      "Elize Matsunaga",
+      "Elize Sombras de Uma Mulher",
+      "Sombras de Uma Mulher"
+    ],
+    "ano": "2026",
+    "generos": [
+      "Drama",
+      "Suspense",
+      "Crime"
+    ],
+    "plataformas": [
+      "Netflix"
+    ],
+    "nota_sofahype": null,
+    "nota_critica": null,
+    "nota_publico": null,
+    "nota_tmdb": null,
+    "duracao": "",
+    "tag": "Destaque da Semana",
+    "poster_url": "/assets/elize-sombras-de-uma-mulher.webp",
+    "backdrop_url": "",
+    "sinopse": "Nesta adaptação de um crime que chocou o Brasil, uma mulher descobre as traições do marido enquanto o relacionamento dos dois se transforma em um jogo marcado por poder, violência e consequências brutais.",
+    "experiencia": [
+      "Crime real em versão dramatizada",
+      "Suspense psicológico",
+      "Clima pesado",
+      "Relação marcada por violência"
+    ],
+    "ideal_para": [
+      "true crime dramatizado",
+      "dramas brasileiros",
+      "suspense psicológico",
+      "histórias que rendem conversa depois"
+    ],
+    "talvez_nao_seja": [
+      "documentário tradicional",
+      "algo leve para relaxar",
+      "história confortável",
+      "filme para ver distraído"
+    ],
+    "destaque_semana": true,
+    "critica_titulo": "Por que entrou no radar",
+    "critica_sofahype": "Antes da estreia, o principal motivo para ficar de olho é a proposta: usar a ficção para ir além da reconstituição do crime e mostrar como uma relação marcada por poder, traição e violência chegou ao pior desfecho possível. O roteiro é de Raphael Montes e Mariana Torres, dupla ligada a Bom Dia, Verônica, e a direção é de Felipe Vellas, de DNA do Crime. Isso não é uma nota nem uma crítica antecipada. É só o radar ligado para um lançamento brasileiro que deve render bastante conversa. Depois da estreia, a SofáHype atualiza a avaliação com o filme já disponível.",
+    "fonte_dados": "Netflix",
+    "status": "ativo"
+  },
+  {
     "id": "filme-o-drama",
     "slug": "o-drama",
     "tipo": "filme",

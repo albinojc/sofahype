@@ -1,49 +1,41 @@
-{
-  "id": "filme-elize-sombras-de-uma-mulher",
-  "slug": "elize-sombras-de-uma-mulher",
-  "tipo": "filme",
-  "titulo": "Elize: Sombras de Uma Mulher",
-  "titulo_original": "Elize: Shadows of a Woman",
-  "aliases": [
-    "Elize",
-    "Elize Matsunaga",
-    "Elize Sombras de Uma Mulher",
-    "Sombras de Uma Mulher"
+export const weeklyHighlight = {
+  slug: 'elize-sombras-de-uma-mulher',
+  titulo: 'Elize: Sombras de Uma Mulher',
+  titulo_original: 'Elize: Shadows of a Woman',
+  aliases: [
+    'Elize Shadows of a Woman',
+    'Elize Matsunaga',
+    'Elize Sombras de Uma Mulher',
+    'Sombras de Uma Mulher'
   ],
-  "ano": "2026",
-  "generos": ["Crime", "Drama", "Suspense"],
-  "plataformas": ["Netflix"],
-  "nota_sofahype": null,
-  "nota_critica": null,
-  "nota_publico": null,
-  "nota_tmdb": null,
-  "popularidade_tmdb": 0,
-  "duracao": "Em breve",
-  "tag": "Destaque da Semana",
-  "poster_url": "/assets/elize-sombras-de-uma-mulher.webp",
-  "backdrop_url": "",
-  "sinopse": "Inspirado no caso Elize Matsunaga, o filme revisita uma das histórias criminais mais comentadas do Brasil em uma versão dramatizada.",
-  "experiencia": [
-    "Crime real em versão dramatizada",
-    "Clima pesado",
-    "Relação tóxica",
-    "História brasileira conhecida"
+  label: 'DESTAQUE DA SEMANA',
+  plataforma: 'Netflix',
+  estreia: '22 de julho',
+  chamada:
+    'O caso Elize Matsunaga ganha uma versão dramatizada e pesada. A estreia é em 22 de julho — e as notas entram depois que o filme estiver disponível.',
+  nota_sofahype: null,
+  nota_critica: null,
+  nota_publico: null,
+  hypometro: null,
+  critica_titulo: 'Por que entrou no radar',
+  critica_sofahype:
+    'Antes da estreia, o principal motivo para ficar de olho é a proposta: usar a ficção para ir além da reconstituição do crime e mostrar como uma relação marcada por poder, traição e violência chegou ao pior desfecho possível. O roteiro é de Raphael Montes e Mariana Torres, dupla ligada a Bom Dia, Verônica, e a direção é de Felipe Vellas, de DNA do Crime. Isso não é uma nota nem uma crítica antecipada. É só o radar ligado para um lançamento brasileiro que deve render bastante conversa. Depois da estreia, a SofáHype atualiza a avaliação com o filme já disponível.',
+  experiencia_extra: [
+    'Crime real em versão dramatizada',
+    'Suspense psicológico',
+    'Clima pesado',
+    'Relação marcada por violência'
   ],
-  "ideal_para": [
-    "true crime dramatizado",
-    "dramas brasileiros",
-    "histórias de crime real",
-    "filmes que rendem conversa depois"
+  ideal_extra: [
+    'true crime dramatizado',
+    'dramas brasileiros',
+    'suspense psicológico',
+    'histórias que rendem conversa depois'
   ],
-  "talvez_nao_seja": [
-    "documentário tradicional",
-    "algo leve para relaxar",
-    "história confortável",
-    "filme para ver distraído"
-  ],
-  "destaque_semana": true,
-  "critica_titulo": "A dica do SofáHype",
-  "critica_sofahype": "Elize: Sombras de Uma Mulher chega com um assunto pesado nas costas. Todo mundo conhece alguma parte dessa história, muita gente já tem opinião formada, e qualquer abordagem descuidada poderia virar só exploração barata. A promessa aqui é olhar para o caso como drama criminal, não como fofoca mórbida. Não é para relaxar, não é para ver mexendo no celular e não é aquele filme confortável de fim de noite. É uma história brasileira pesada, incômoda e feita para render conversa depois.",
-  "fonte_dados": "Curadoria SofáHype",
-  "status": "ativo"
-},
+  talvez_nao_extra: [
+    'documentário tradicional',
+    'algo leve para relaxar',
+    'história confortável',
+    'filme para ver distraído'
+  ]
+};

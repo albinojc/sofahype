@@ -22,7 +22,8 @@ export default async function TitlePage({ params }) {
   const item = getTitleBySlug(slug);
   if (!item) notFound();
 
-  const hypo = getHypometro(item.nota_sofahype);
+  const hasScore = item.nota_sofahype !== null && item.nota_sofahype !== undefined && Number(item.nota_sofahype) > 0;
+  const hypo = hasScore ? getHypometro(item.nota_sofahype) : null;
   const experience = getExperienceForDisplay(item);
   const isWeeklyHighlight = item.destaque_semana || item.slug === weeklyHighlight.slug || item.titulo_original === weeklyHighlight.titulo_original;
   const highlightReview = item.critica_sofahype || (isWeeklyHighlight ? weeklyHighlight.critica_sofahype : '');
@@ -52,15 +53,25 @@ export default async function TitlePage({ params }) {
             </div>
           </section>
 
-          <div className="score-panel">
-            <div className={`score-metric score-box-${getScoreClass(item.nota_sofahype)}`}>
-              <span>Nota SofáHype</span>
-              <strong>{formatScore(item.nota_sofahype)}</strong>
-            </div>
-            <div className="score-metric score-metric-hypo">
-              <span>Hypômetro</span>
-              <strong className={`hypo-display hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={58} /> <span>{hypo.nome}</span></strong>
-            </div>
+          <div className={`score-panel ${hasScore ? '' : 'score-panel-pending'}`}>
+            {hasScore ? (
+              <>
+                <div className={`score-metric score-box-${getScoreClass(item.nota_sofahype)}`}>
+                  <span>Nota SofáHype</span>
+                  <strong>{formatScore(item.nota_sofahype)}</strong>
+                </div>
+                <div className="score-metric score-metric-hypo">
+                  <span>Hypômetro</span>
+                  <strong className={`hypo-display hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={58} /> <span>{hypo.nome}</span></strong>
+                </div>
+              </>
+            ) : (
+              <div className="score-metric score-box-empty score-awaiting-release">
+                <span>Avaliação</span>
+                <strong>Notas em breve</strong>
+                <small>O filme estreia em {weeklyHighlight.estreia}.</small>
+              </div>
+            )}
             <div className={`score-metric ${item.nota_critica ? `score-box-${getScoreClass(item.nota_critica)}` : 'score-box-empty'}`}>
               <span>Crítica</span>
               <strong>{item.nota_critica ? formatScore(item.nota_critica) : 'Em breve'}</strong>

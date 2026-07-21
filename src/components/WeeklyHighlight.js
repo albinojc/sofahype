@@ -16,10 +16,16 @@ export default function WeeklyHighlight({ compact = false }) {
   const item = findHighlightItem();
   const title = item?.titulo || weeklyHighlight.titulo;
   const slug = item?.slug || weeklyHighlight.slug;
-  const score = Number(item?.nota_sofahype || weeklyHighlight.nota_sofahype);
-  const critics = Number(item?.nota_critica || weeklyHighlight.nota_critica);
-  const audience = Number(item?.nota_publico || weeklyHighlight.nota_publico);
-  const hypo = getHypometro(score);
+  const rawScore = item?.nota_sofahype ?? weeklyHighlight.nota_sofahype;
+  const rawCritics = item?.nota_critica ?? weeklyHighlight.nota_critica;
+  const rawAudience = item?.nota_publico ?? weeklyHighlight.nota_publico;
+  const hasScore = rawScore !== null && rawScore !== undefined && Number(rawScore) > 0;
+  const hasCritics = rawCritics !== null && rawCritics !== undefined && Number(rawCritics) > 0;
+  const hasAudience = rawAudience !== null && rawAudience !== undefined && Number(rawAudience) > 0;
+  const score = hasScore ? Number(rawScore) : null;
+  const critics = hasCritics ? Number(rawCritics) : null;
+  const audience = hasAudience ? Number(rawAudience) : null;
+  const hypo = hasScore ? getHypometro(score) : null;
   const platform = weeklyHighlight.plataforma;
   const platformClass = getPlatformClass(platform);
   const poster = item?.poster_url;
@@ -33,10 +39,16 @@ export default function WeeklyHighlight({ compact = false }) {
         <h2>{title}</h2>
         <p>{weeklyHighlight.chamada}</p>
         <div className="weekly-metrics" aria-label="Notas do destaque da semana">
-          <span className={`weekly-score-box score-box-${getScoreClass(score)}`}><strong>{formatScore(score)}</strong><small>Nota SofáHype</small></span>
-          <span className={`weekly-hypo hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={42} /> {hypo.nome}</span>
-          <span className={`weekly-score-box score-box-${getScoreClass(critics)}`}><strong>{formatScore(critics)}</strong><small>Crítica</small></span>
-          <span className={`weekly-score-box score-box-${getScoreClass(audience)}`}><strong>{formatScore(audience)}</strong><small>Público</small></span>
+          {hasScore ? (
+            <>
+              <span className={`weekly-score-box score-box-${getScoreClass(score)}`}><strong>{formatScore(score)}</strong><small>Nota SofáHype</small></span>
+              <span className={`weekly-hypo hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={42} /> {hypo.nome}</span>
+            </>
+          ) : (
+            <span className="weekly-score-pending"><strong>Notas em breve</strong><small>Estreia em {weeklyHighlight.estreia}</small></span>
+          )}
+          {hasCritics ? <span className={`weekly-score-box score-box-${getScoreClass(critics)}`}><strong>{formatScore(critics)}</strong><small>Crítica</small></span> : null}
+          {hasAudience ? <span className={`weekly-score-box score-box-${getScoreClass(audience)}`}><strong>{formatScore(audience)}</strong><small>Público</small></span> : null}
         </div>
         <div className="weekly-actions">
           <Link className="btn-primary" href={`/titulo/${slug}`}>Ver crítica</Link>
