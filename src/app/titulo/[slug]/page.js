@@ -76,9 +76,9 @@ export default async function TitlePage({ params }) {
               <span>Crítica</span>
               <strong>{item.nota_critica ? formatScore(item.nota_critica) : 'Em breve'}</strong>
             </div>
-            <div className={`score-metric ${item.nota_publico ? `score-box-${getScoreClass(item.nota_publico)}` : 'score-box-empty'}`}>
-              <span>Público</span>
-              <strong>{item.nota_publico ? formatScore(item.nota_publico) : 'Em breve'}</strong>
+            <div className={`score-metric ${item.nota_publico ? 'score-publico' : 'score-box-empty'}`}>
+             <span>Público</span>
+             <strong>{item.nota_publico ? formatScore(item.nota_publico) : 'Em breve'}</strong>
             </div>
           </div>
 
