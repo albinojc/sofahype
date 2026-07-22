@@ -48,7 +48,7 @@ export default function WeeklyHighlight({ compact = false }) {
             <span className="weekly-score-pending"><strong>Notas em breve</strong><small>Estreia em {weeklyHighlight.estreia}</small></span>
           )}
           {hasCritics ? <span className={`weekly-score-box score-box-${getScoreClass(critics)}`}><strong>{formatScore(critics)}</strong><small>Crítica</small></span> : null}
-          {hasAudience ? <span className={`weekly-score-box score-box-${getScoreClass(audience)}`}><strong>{formatScore(audience)}</strong><small>Público</small></span> : null}
+          {hasAudience ? ( <span className="weekly-score-box score-publico"><strong>{formatScore(audience)}</strong><small>Público</small></span> ) : null}
         </div>
         <div className="weekly-actions">
           <Link className="btn-primary" href={`/titulo/${slug}`}>Ver crítica</Link>
