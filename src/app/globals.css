@@ -776,3 +776,9 @@ button.mood:focus-visible {
 @media (max-width: 760px) {
   .score-panel-pending { grid-template-columns: 1fr; }
 }
+/* Cor neutra para todas as notas do público */
+.score-publico {
+  background: #576140 !important;
+  color: #ffffff !important;
+  border-color: #576140 !important;
+}
