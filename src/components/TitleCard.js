@@ -30,7 +30,7 @@ export default function TitleCard({ item, platformContext = null }) {
         <div className="card-title">{item.titulo}</div>
         <div className="card-info">{item.ano} · {item.generos?.[0]} · {item.duracao}</div>
         <div className="card-footer">
-          <span className={`mini-score mini-score-${getScoreClass(item.nota_publico)}`}><span>Público</span><strong>{formatScore(item.nota_publico)}</strong></span>
+          <span className="mini-score score-publico"><span>Público</span><strong>{formatScore(item.nota_publico)}</strong></span>
           <span className={`hype-tag hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={22} /><span>{hypo.curto}</span></span>
         </div>
       </div>
