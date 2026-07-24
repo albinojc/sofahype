@@ -28,6 +28,7 @@ export default async function TitlePage({ params }) {
   const isWeeklyHighlight = item.destaque_semana || item.slug === weeklyHighlight.slug || item.titulo_original === weeklyHighlight.titulo_original;
   const highlightReview = item.critica_sofahype || (isWeeklyHighlight ? weeklyHighlight.critica_sofahype : '');
   const highlightReviewTitle = item.critica_titulo || weeklyHighlight.critica_titulo;
+  const reviewEyebrow = isWeeklyHighlight ? 'Destaque da semana' : 'Crítica SofáHype';
 
   return (
     <>
@@ -84,7 +85,7 @@ export default async function TitlePage({ params }) {
 
           {highlightReview ? (
             <div className="detail-block review-block">
-              <span className="review-eyebrow">Destaque da semana</span>
+              <span className="review-eyebrow">{reviewEyebrow}</span>
               <h2>{highlightReviewTitle}</h2>
               <p>{highlightReview}</p>
             </div>

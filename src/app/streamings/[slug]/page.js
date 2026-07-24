@@ -3,7 +3,8 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import TitleGrid from '../../../components/TitleGrid';
 import WeeklyHighlight from '../../../components/WeeklyHighlight';
-import { canonicalStreamingSlug, getTitlesByStreaming, streamings, streamingSlugAliases } from '../../../lib/catalog';
+import { canonicalStreamingSlug, getTitlesByStreaming, platformMatches, streamings, streamingSlugAliases } from '../../../lib/catalog';
+import { weeklyHighlight } from '../../../data/weeklyHighlight';
 
 export const dynamicParams = false;
 
@@ -38,7 +39,7 @@ export default async function StreamingPage({ params }) {
         <h1>{streaming.nome}</h1>
         <p>Filmes e séries bem avaliados disponíveis neste streaming.</p>
       </section>
-      {streaming.slug === 'prime-video' ? (
+      {platformMatches(weeklyHighlight.plataforma, streaming) ? (
         <section className="section section-highlight-wrap">
           <WeeklyHighlight compact />
         </section>
