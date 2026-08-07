@@ -1,5 +1,59 @@
 [
   {
+    "id": "a-ultima-casa",
+    "slug": "a-ultima-casa",
+    "tipo": "filme",
+    "titulo": "A Última Casa",
+    "titulo_original": "The Last House",
+    "aliases": [
+      "The Last House",
+      "The Last House 2026",
+      "A Ultima Casa",
+      "11817"
+    ],
+    "ano": "2026",
+    "generos": [
+      "Ficção Científica",
+      "Suspense",
+      "Terror"
+    ],
+    "plataformas": [
+      "Netflix"
+    ],
+    "nota_sofahype": null,
+    "nota_critica": null,
+    "nota_publico": null,
+    "nota_tmdb": null,
+    "duracao": "1h50",
+    "tag": "Destaque da Semana",
+    "poster_url": "/assets/a-ultima-casa.webp",
+    "backdrop_url": "/assets/a-ultima-casa-backdrop.webp",
+    "sinopse": "Ann e Jason acordam e descobrem que sua família está misteriosamente selada dentro de casa. Sem conseguir abrir portas ou quebrar janelas, eles precisam fazer os recursos durarem enquanto tentam entender a força ameaçadora que os mantém presos.",
+    "experiencia": [
+      "Mistério claustrofóbico",
+      "Ficção científica com clima de terror",
+      "Tensão dentro de casa",
+      "Sobrevivência em família"
+    ],
+    "ideal_para": [
+      "suspense de ficção científica",
+      "histórias de sobrevivência",
+      "mistérios em espaço fechado",
+      "Wagner Moura e Greta Lee"
+    ],
+    "talvez_nao_seja": [
+      "respostas muito bem amarradas",
+      "terror de susto o tempo inteiro",
+      "ficção científica cheia de explicações",
+      "filme leve para relaxar"
+    ],
+    "destaque_semana": true,
+    "critica_titulo": "A dica do SofáHype",
+    "critica_sofahype": "A ideia é daquelas que fazem você pensar: “Como ninguém fez isso antes?”\n\nWagner Moura e Greta Lee estão tranquilamente em casa com os filhos quando descobrem um pequeno problema: ninguém consegue sair. Porta não abre. Janela não quebra. E tem alguma coisa bem estranha acontecendo lá fora.\n\nA primeira metade funciona muito bem. O mistério prende, a sensação de claustrofobia cresce e Wagner Moura praticamente carrega a casa inteira nas costas — figurativamente, antes que alguém pergunte.\n\nO problema aparece quando o filme resolve explicar demais aquilo que talvez fosse mais interessante sem explicação. Quanto mais a gente descobre, menos assustadora fica a coisa.\n\nAinda assim, funciona como aquele suspense perfeito para uma sexta à noite: ideia boa, tensão suficiente para não pegar no celular e um Wagner Moura lembrando que brasileiro também sabe salvar filme de Hollywood.\n\nNão é exatamente “tranque as portas porque você vai morrer de medo”.\n\nMas dá o play.",
+    "fonte_dados": "Netflix + Curadoria SofáHype",
+    "status": "ativo"
+  },
+  {
     "id": "mestres-do-universo",
     "slug": "mestres-do-universo",
     "tipo": "filme",
@@ -47,9 +101,9 @@
       "fantasia séria e sombria",
       "ação sempre original"
     ],
-    "destaque_semana": true,
+    "destaque_semana": false,
     "critica_titulo": "A dica do SofáHype",
-    "critica_sofahype": "Vamos combinar: fazer um filme sério sobre um loiro musculoso que levanta uma espada e grita pelo poder de Grayskull já começa com um pequeno problema. Mestres do Universo acerta justamente quando para de fingir que isso é Shakespeare e entra de cabeça na fantasia colorida, nas armaduras exageradas e no Esqueleto sendo... o Esqueleto. Nicholas Galitzine segura bem o He-Man, o elenco entra na brincadeira e há uma energia simpática de aventura de sábado à tarde. O problema é que o filme quer provar demais que é um blockbuster. São mais de 2h20, piada em excesso e batalhas que começam a parecer repetição de academia: muda o aparelho, mas continua doendo no mesmo lugar. A crítica ficou dividida por isso — alguns compraram a diversão nostálgica, outros viram uma franquia inchada tentando fazer graça o tempo todo. O público gostou bem mais, e dá para entender. Quando abraça a cafonice e o coração da história, funciona. Quando tenta ser Marvel, Star Wars e comercial de brinquedo ao mesmo tempo, perde força. Não é o herói mais poderoso do cinema, mas entrega uma sessão divertida para quem sente saudade de Eternia ou só quer fantasia, pancadaria e um vilão que parece ter escolhido o look no escuro. Pelo poder de Grayskull? Mais ou menos. Mas dá para apertar o play sem medo.",
+    "critica_sofahype": "Vamos combinar: fazer um filme sério sobre um loiro musculoso que levanta uma espada e grita pelo poder de Grayskull já começa com um pequeno problema. Mestres do Universo acerta justamente quando para de fingir que isso é Shakespeare e entra de cabeça na fantasia colorida, nas armaduras exageradas e no Esqueleto sendo... o Esqueleto. Nicholas Galitzine segura bem o He-Man, o elenco entra na brincadeira e há uma energia simpática de aventura de sábado à tarde.\nO problema é que o filme quer provar demais que é um blockbuster. São mais de 2h20, piada em excesso e batalhas que começam a parecer repetição de academia: muda o aparelho, mas continua doendo no mesmo lugar. A crítica ficou dividida por isso — alguns compraram a diversão nostálgica, outros viram uma franquia inchada tentando fazer graça o tempo todo. O público gostou bem mais, e dá para entender. Quando abraça a cafonice e o coração da história, funciona.\nQuando tenta ser Marvel, Star Wars e comercial de brinquedo ao mesmo tempo, perde força. Não é o herói mais poderoso do cinema, mas entrega uma sessão divertida para quem sente saudade de Eternia ou só quer fantasia, pancadaria e um vilão que parece ter escolhido o look no escuro. Pelo poder de Grayskull? Mais ou menos. Mas dá para apertar o play sem medo.",
     "fonte_dados": "Curadoria SofáHype + Rotten Tomatoes + IMDb + Prime Video",
     "status": "ativo"
   },
@@ -157,7 +211,7 @@
     ],
     "destaque_semana": false,
     "critica_titulo": "A dica do SofáHype",
-    "critica_sofahype": "O Drama parece, de longe, mais um romance bonito com dois astros lindos sofrendo em apartamento bem iluminado. Só que o filme vai por outro caminho. A graça — e o desconforto — está em ver como uma revelação pesada antes do casamento desmonta a imagem perfeita do casal e transforma tudo numa mistura de romance, crise, vergonha alheia e tensão emocional. Zendaya e Robert Pattinson seguram o filme no braço: ela entrega uma personagem difícil de decifrar, ele faz muito bem esse cara tentando entender se ainda ama alguém depois de descobrir algo que muda tudo. Não é filme para ver esperando leveza ou romance fofinho. É mais torto, mais incômodo e às vezes até cruel. Também não é perfeito: tem hora que parece mais interessado em cutucar do que em resolver o que levanta. Mas quando funciona, funciona pra caramba. É daqueles filmes que você termina e fica querendo discutir, discordar, defender ou xingar um pouco. E isso, convenhamos, já é mais do que muito lançamento entrega.",
+    "critica_sofahype": "O Drama parece, de longe, mais um romance bonito com dois astros lindos sofrendo em apartamento bem iluminado. Só que o filme vai por outro caminho. A graça — e o desconforto — está em ver como uma revelação pesada antes do casamento desmonta a imagem perfeita do casal e transforma tudo numa mistura de romance, crise, vergonha alheia e tensão emocional.\nZendaya e Robert Pattinson seguram o filme no braço: ela entrega uma personagem difícil de decifrar, ele faz muito bem esse cara tentando entender se ainda ama alguém depois de descobrir algo que muda tudo. Não é filme para ver esperando leveza ou romance fofinho. É mais torto, mais incômodo e às vezes até cruel. Também não é perfeito: tem hora que parece mais interessado em cutucar do que em resolver o que levanta. Mas quando funciona, funciona pra caramba.\nÉ daqueles filmes que você termina e fica querendo discutir, discordar, defender ou xingar um pouco. E isso, convenhamos, já é mais do que muito lançamento entrega.",
     "fonte_dados": "Curadoria SofáHype + fontes públicas",
     "status": "ativo"
   },

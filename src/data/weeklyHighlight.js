@@ -1,40 +1,41 @@
 export const weeklyHighlight = {
-  slug: 'mestres-do-universo',
-  titulo: 'Mestres do Universo',
-  titulo_original: 'Masters of the Universe',
+  slug: 'a-ultima-casa',
+  titulo: 'A Última Casa',
+  titulo_original: 'The Last House',
   aliases: [
-    'Masters of the Universe',
-    'Mestres do Universo 2026',
-    'He-Man',
-    'He Man'
+    'The Last House',
+    'The Last House 2026',
+    'A Ultima Casa',
+    '11817'
   ],
   label: 'DESTAQUE DA SEMANA',
-  plataforma: 'Prime Video',
+  plataforma: 'Netflix',
+  estreia: '07/08/2026',
   chamada:
-    'He-Man chegou ao Prime Video com espada brilhando, Esqueleto fazendo pose e uma aventura que sabe que nasceu de um desenho e de uma linha de brinquedos — ainda bem.',
-  nota_sofahype: 73,
-  nota_critica: 67,
-  nota_publico: 86,
-  hypometro: 'Sofá OK!',
+    'Wagner Moura só queria ficar em casa. O problema é que agora ele não consegue sair.',
+  nota_sofahype: null,
+  nota_critica: null,
+  nota_publico: null,
+  hypometro: null,
   critica_titulo: 'A dica do SofáHype',
   critica_sofahype:
-    'Vamos combinar: fazer um filme sério sobre um loiro musculoso que levanta uma espada e grita pelo poder de Grayskull já começa com um pequeno problema. Mestres do Universo acerta justamente quando para de fingir que isso é Shakespeare e entra de cabeça na fantasia colorida, nas armaduras exageradas e no Esqueleto sendo... o Esqueleto. Nicholas Galitzine segura bem o He-Man, o elenco entra na brincadeira e há uma energia simpática de aventura de sábado à tarde. O problema é que o filme quer provar demais que é um blockbuster. São mais de 2h20, piada em excesso e batalhas que começam a parecer repetição de academia: muda o aparelho, mas continua doendo no mesmo lugar. A crítica ficou dividida por isso — alguns compraram a diversão nostálgica, outros viram uma franquia inchada tentando fazer graça o tempo todo. O público gostou bem mais, e dá para entender. Quando abraça a cafonice e o coração da história, funciona. Quando tenta ser Marvel, Star Wars e comercial de brinquedo ao mesmo tempo, perde força. Não é o herói mais poderoso do cinema, mas entrega uma sessão divertida para quem sente saudade de Eternia ou só quer fantasia, pancadaria e um vilão que parece ter escolhido o look no escuro. Pelo poder de Grayskull? Mais ou menos. Mas dá para apertar o play sem medo.',
+    "A ideia é daquelas que fazem você pensar: “Como ninguém fez isso antes?”\n\nWagner Moura e Greta Lee estão tranquilamente em casa com os filhos quando descobrem um pequeno problema: ninguém consegue sair. Porta não abre. Janela não quebra. E tem alguma coisa bem estranha acontecendo lá fora.\n\nA primeira metade funciona muito bem. O mistério prende, a sensação de claustrofobia cresce e Wagner Moura praticamente carrega a casa inteira nas costas — figurativamente, antes que alguém pergunte.\n\nO problema aparece quando o filme resolve explicar demais aquilo que talvez fosse mais interessante sem explicação. Quanto mais a gente descobre, menos assustadora fica a coisa.\n\nAinda assim, funciona como aquele suspense perfeito para uma sexta à noite: ideia boa, tensão suficiente para não pegar no celular e um Wagner Moura lembrando que brasileiro também sabe salvar filme de Hollywood.\n\nNão é exatamente “tranque as portas porque você vai morrer de medo”.\n\nMas dá o play.",
   experiencia_extra: [
-    'Fantasia colorida e sem vergonha de ser cafona',
-    'Ação grandiosa com humor',
-    'Nostalgia dos anos 1980',
-    'Aventura com mais de 2h20'
+    'Mistério claustrofóbico',
+    'Ficção científica com clima de terror',
+    'Tensão dentro de casa',
+    'Sobrevivência em família'
   ],
   ideal_extra: [
-    'He-Man e desenhos clássicos',
-    'aventuras de fantasia bem exageradas',
-    'filmes de herói mais leves',
-    'sessão pipoca com bastante ação'
+    'suspense de ficção científica',
+    'histórias de sobrevivência',
+    'mistérios em espaço fechado',
+    'Wagner Moura e Greta Lee'
   ],
   talvez_nao_extra: [
-    'história curta e direta',
-    'humor mais contido',
-    'fantasia séria e sombria',
-    'ação sempre original'
+    'respostas muito bem amarradas',
+    'terror de susto o tempo inteiro',
+    'ficção científica cheia de explicações',
+    'filme leve para relaxar'
   ]
 };
