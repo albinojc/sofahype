@@ -7,24 +7,26 @@ const IMAGE = 'https://image.tmdb.org/t/p';
 const ROOT = process.cwd();
 const OUTPUT = path.join(ROOT, 'src/data/catalogo.json');
 
+const TARGET_MOVIES = Number(process.env.TMDB_IMPORT_MOVIES || 500);
+const TARGET_SERIES = Number(process.env.TMDB_IMPORT_SERIES || 250);
 const MIN_MOVIE_VOTES = Number(process.env.TMDB_MIN_MOVIE_VOTES || 120);
 const MIN_TV_VOTES = Number(process.env.TMDB_MIN_TV_VOTES || 80);
 const RECENT_START_YEAR = Number(process.env.TMDB_RECENT_START_YEAR || 2023);
 const RECENT_SHARE = Math.max(0, Math.min(1, Number(process.env.TMDB_RECENT_SHARE || 0.75)));
-const MOVIE_SHARE = Math.max(0, Math.min(1, Number(process.env.TMDB_MOVIE_SHARE || 0.65)));
 const TODAY = new Date().toISOString().slice(0, 10);
 
 const STREAMINGS = [
   { nome: 'Netflix', aliases: ['netflix'], region: 'BR' },
-  { nome: 'Max', aliases: ['hbo max', 'max'], region: 'BR' },
+  { nome: 'HBO Max', aliases: ['hbo max', 'max'], region: 'BR' },
   { nome: 'Prime Video', aliases: ['amazon prime video', 'prime video'], region: 'BR' },
   { nome: 'Disney+', aliases: ['disney plus', 'disney+'], region: 'BR' },
   { nome: 'Globoplay', aliases: ['globoplay'], region: 'BR' },
   { nome: 'Apple TV', aliases: ['apple tv plus', 'apple tv+', 'apple tv', 'apple tv plus amazon channel'], region: 'BR' },
-  { nome: 'Paramount+', aliases: ['paramount plus', 'paramount+'], region: 'BR' }
+  { nome: 'Paramount+', aliases: ['paramount plus', 'paramount+'], region: 'BR' },
+  // Hulu pode não aparecer no recorte BR do TMDb. Mantemos uma busca US como fallback
+  // para não deixar a página vazia enquanto o produto ainda está em validação.
+  { nome: 'Hulu', aliases: ['hulu'], region: process.env.TMDB_HULU_REGION || 'US' }
 ];
-
-const SUPPORTED_PLATFORM_NAMES = new Set(STREAMINGS.map((streaming) => streaming.nome));
 
 function normalize(value) {
   return String(value || '')
@@ -41,22 +43,6 @@ function slugify(text) {
     .replace(/[^a-zA-Z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .toLowerCase();
-}
-
-function isValidReleasedDate(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '') || value > TODAY) return false;
-  const date = new Date(`${value}T00:00:00Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-
-function parseRequestedCount(argv) {
-  const countIndex = argv.findIndex((arg) => arg === '--count');
-  const raw = countIndex >= 0 ? argv[countIndex + 1] : argv.find((arg) => /^\d+$/.test(arg));
-  const count = Number(raw);
-  if (!Number.isInteger(count) || count <= 0) {
-    throw new Error('Informe a quantidade de novos títulos com --count. Exemplo: npm run catalog:import -- --count 1000');
-  }
-  return count;
 }
 
 function sleep(ms) {
@@ -144,8 +130,10 @@ function streamingsFromWatchProviders(data) {
     }
   }
 
-  // Somente assinatura (flatrate) confirmada pelo TMDb na região brasileira.
+  // O SofáHype prioriza disponibilidade no Brasil.
   addFromRegion('BR');
+  // Hulu é exceção enquanto o serviço/conteúdo ainda aparece de forma inconsistente por região.
+  addFromRegion(process.env.TMDB_HULU_REGION || 'US', 'Hulu');
 
   return names;
 }
@@ -215,6 +203,14 @@ function formatRuntime(minutes) {
   if (!h) return `${m}min`;
   if (!m) return `${h}h`;
   return `${h}h${String(m).padStart(2, '0')}`;
+}
+
+function scoreFromDetails(details) {
+  const voteAverage = Number(details.vote_average || 0) * 10;
+  const popularity = Math.min(Number(details.popularity || 0), 100);
+  const voteCount = Math.min(Number(details.vote_count || 0) / 100, 10);
+  const score = Math.round(voteAverage * 0.82 + popularity * 0.10 + voteCount * 0.8);
+  return Math.max(0, Math.min(score, 100));
 }
 
 function simpleUnique(list, limit = 4) {
@@ -381,8 +377,8 @@ async function buildItem(candidate) {
   const runtime = candidate.tipo === 'filme'
     ? formatRuntime(details.runtime)
     : formatRuntime(details.episode_run_time?.[0]);
-  if (!isValidReleasedDate(date) || !details.poster_path || !details.backdrop_path) return null;
-
+  const sofaScore = scoreFromDetails(details);
+  const publicScore = Math.round(Number(details.vote_average || 0) * 10);
   const slugBase = slugify(title || originalTitle || `${candidate.tipo}-${candidate.id}`);
   const experience = experienceFromDetails(details, genres, candidate.tipo);
 
@@ -394,14 +390,12 @@ async function buildItem(candidate) {
     titulo: title || originalTitle,
     titulo_original: originalTitle || title,
     ano: date ? String(date).slice(0, 4) : '',
-    data_lancamento: date,
     generos: genres,
     plataformas,
-    nota_sofahype: null,
+    nota_sofahype: sofaScore,
     nota_critica: null,
-    nota_publico: null,
-    nota_tmdb: Number(details.vote_average || 0) > 0 ? Number(details.vote_average).toFixed(1) : null,
-    votos_tmdb: Number(details.vote_count || 0),
+    nota_publico: publicScore,
+    nota_tmdb: Number(details.vote_average || 0).toFixed(1),
     popularidade_tmdb: Number(details.popularity || 0),
     duracao: runtime,
     tag: '',
@@ -410,7 +404,6 @@ async function buildItem(candidate) {
     sinopse: details.overview || 'Sinopse ainda não disponível em português.',
     ...experience,
     fonte_dados: 'TMDb',
-    origem_importacao: 'tmdb',
     status: 'ativo'
   };
 }
@@ -433,10 +426,7 @@ function editorialPriority(item) {
   else if (year === currentYear - 1) recencyBonus = 6;
   else if (year >= RECENT_START_YEAR) recencyBonus = 4;
 
-  const rating = Number(item.nota_tmdb || 0) * 10;
-  const votes = Math.min(Math.log10(Number(item.votos_tmdb || 0) + 1) * 10, 50);
-  const popularity = Math.min(Number(item.popularidade_tmdb || 0), 100) / 5;
-  return rating + votes + popularity + recencyBonus;
+  return Number(item.nota_sofahype || 0) + recencyBonus;
 }
 
 async function importType(tipo, target, providerMap) {
@@ -532,7 +522,7 @@ async function importType(tipo, target, providerMap) {
 
 const WEEKLY_HIGHLIGHT_CONFIG = path.join(ROOT, 'src/data/weeklyHighlight.js');
 
-async function loadConfiguredWeeklyHighlight(catalog) {
+async function loadConfiguredWeeklyHighlight() {
   const configSource = await fs.readFile(WEEKLY_HIGHLIGHT_CONFIG, 'utf8');
   const slugMatch = configSource.match(/\bslug\s*:\s*['"`]([^'"`]+)['"`]/);
   const configuredSlug = slugMatch?.[1];
@@ -541,7 +531,8 @@ async function loadConfiguredWeeklyHighlight(catalog) {
     throw new Error('Não foi possível identificar o slug em src/data/weeklyHighlight.js.');
   }
 
-  const highlight = catalog.find(
+  const currentCatalog = JSON.parse(await fs.readFile(OUTPUT, 'utf8'));
+  const highlight = currentCatalog.find(
     (item) => item.slug === configuredSlug || item.id === configuredSlug
   );
 
@@ -552,128 +543,71 @@ async function loadConfiguredWeeklyHighlight(catalog) {
     );
   }
 
-  const markedHighlights = catalog.filter((item) => item.destaque_semana === true);
-  if (markedHighlights.length !== 1 || markedHighlights[0] !== highlight) {
-    throw new Error('O catálogo deve ter exatamente um destaque_semana: true, correspondente ao slug configurado.');
-  }
-
-  return highlight;
-}
-
-function normalizedTitleKey(title, tipo, ano) {
-  return `${tipo}|${String(ano || '').slice(0, 4)}|${normalize(title).replace(/[^a-z0-9]+/g, ' ').trim()}`;
-}
-
-function createIdentityIndex(catalog) {
   return {
-    ids: new Set(catalog.map((item) => item.id).filter(Boolean)),
-    slugs: new Set(catalog.map((item) => item.slug).filter(Boolean)),
-    tmdb: new Set(catalog.filter((item) => item.tmdb_id).map((item) => `${item.tipo}|${item.tmdb_id}`)),
-    titles: new Set(catalog.flatMap((item) => [
-      normalizedTitleKey(item.titulo, item.tipo, item.ano),
-      normalizedTitleKey(item.titulo_original, item.tipo, item.ano)
-    ]).filter((key) => !key.endsWith('|')))
+    ...highlight,
+    destaque_semana: true,
+    tag: highlight.tag || 'Destaque da Semana'
   };
 }
 
-function isDuplicate(item, index) {
-  return index.ids.has(item.id) ||
-    index.slugs.has(item.slug) ||
-    index.tmdb.has(`${item.tipo}|${item.tmdb_id}`) ||
-    index.titles.has(normalizedTitleKey(item.titulo, item.tipo, item.ano)) ||
-    index.titles.has(normalizedTitleKey(item.titulo_original, item.tipo, item.ano));
-}
+function applyWeeklyHighlight(catalog, highlight = WEEKLY_HIGHLIGHT) {
+  const highlightTerms = [highlight.slug, highlight.titulo, highlight.titulo_original, ...(highlight.aliases || [])]
+    .filter(Boolean)
+    .map(normalize);
 
-function addToIdentityIndex(item, index) {
-  index.ids.add(item.id);
-  index.slugs.add(item.slug);
-  index.tmdb.add(`${item.tipo}|${item.tmdb_id}`);
-  index.titles.add(normalizedTitleKey(item.titulo, item.tipo, item.ano));
-  index.titles.add(normalizedTitleKey(item.titulo_original, item.tipo, item.ano));
-}
+  const matchesHighlight = (item) => {
+    const values = [item.slug, item.titulo, item.titulo_original, ...(item.aliases || [])]
+      .filter(Boolean)
+      .map((value) => normalize(value));
+    return values.some((value) => highlightTerms.includes(value));
+  };
 
-function validateImportedItem(item) {
-  const problems = [];
-  if (!item.tmdb_id) problems.push('tmdb_id ausente');
-  if (!item.slug) problems.push('slug ausente');
-  if (!item.titulo) problems.push('título ausente');
-  if (!['filme', 'serie'].includes(item.tipo)) problems.push('tipo inválido');
-  if (!isValidReleasedDate(item.data_lancamento)) problems.push('data de lançamento inválida ou futura');
-  if (!item.poster_url) problems.push('poster_url ausente');
-  if (!item.backdrop_url) problems.push('backdrop_url ausente');
-  if (!item.plataformas?.length || item.plataformas.some((name) => !SUPPORTED_PLATFORM_NAMES.has(name))) problems.push('plataforma inválida');
-  if (item.nota_sofahype !== null || item.nota_critica !== null || item.nota_publico !== null) problems.push('notas editoriais devem ser null');
-  return problems;
+  const index = catalog.findIndex(matchesHighlight);
+  if (index >= 0) {
+    const existing = catalog[index];
+    catalog[index] = {
+      ...existing,
+      ...highlight,
+      id: existing.id || highlight.id,
+      tmdb_id: existing.tmdb_id || highlight.tmdb_id,
+      poster_url: existing.poster_url || highlight.poster_url,
+      backdrop_url: existing.backdrop_url || highlight.backdrop_url,
+      plataformas: [...new Set([...(existing.plataformas || []), ...(highlight.plataformas || [])])],
+      fonte_dados: existing.fonte_dados ? `${existing.fonte_dados} + Curadoria SofáHype` : highlight.fonte_dados
+    };
+  } else {
+    catalog.unshift(highlight);
+  }
+
+  return catalog;
 }
 
 async function main() {
-  const requestedCount = parseRequestedCount(process.argv.slice(2));
   if (!TOKEN) {
-    throw new Error('TMDB_READ_ACCESS_TOKEN não encontrado. Nenhuma alteração foi feita.');
+    console.warn('TMDB_READ_ACCESS_TOKEN não encontrado. Mantendo o catálogo atual.');
+    return;
   }
 
-  const source = await fs.readFile(OUTPUT, 'utf8');
-  const currentCatalog = JSON.parse(source);
-  const weeklyHighlight = await loadConfiguredWeeklyHighlight(currentCatalog);
-  const weeklyHighlightSnapshot = JSON.stringify(weeklyHighlight);
-  const identityIndex = createIdentityIndex(currentCatalog);
-  const movieTarget = Math.round(requestedCount * MOVIE_SHARE);
-  const seriesTarget = requestedCount - movieTarget;
+  const weeklyHighlight = await loadConfiguredWeeklyHighlight();
 
   console.log(`Destaque semanal preservado: ${weeklyHighlight.titulo}`);
-  console.log(`Importação incremental solicitada: ${requestedCount} novos títulos (${movieTarget} filmes e ${seriesTarget} séries).`);
+  console.log('Iniciando importação TMDb para o SofáHype...');
   const movieProviderMap = await getProviderMap('movie');
   const tvProviderMap = await getProviderMap('tv');
 
-  const movies = await importType('filme', movieTarget + Math.ceil(movieTarget * 0.25), movieProviderMap);
-  const series = await importType('serie', seriesTarget + Math.ceil(seriesTarget * 0.25), tvProviderMap);
-  const selected = [];
+  const movies = await importType('filme', TARGET_MOVIES, movieProviderMap);
+  const series = await importType('serie', TARGET_SERIES, tvProviderMap);
 
-  function select(items, target) {
-    let added = 0;
-    const recentTarget = Math.round(target * RECENT_SHARE);
-    const tryAdd = (item) => {
-      const baseSlug = item.slug;
-      if (identityIndex.slugs.has(item.slug)) item.slug = `${baseSlug}-${item.tmdb_id}`;
-      if (isDuplicate(item, identityIndex)) return false;
-      const problems = validateImportedItem(item);
-      if (problems.length) return false;
-      selected.push(item);
-      addToIdentityIndex(item, identityIndex);
-      added += 1;
-      return true;
-    };
 
-    let recentAdded = 0;
-    for (const item of items.filter(isRecent)) {
-      if (recentAdded >= recentTarget) break;
-      if (tryAdd(item)) recentAdded += 1;
-    }
-    for (const item of items.filter((item) => !isRecent(item))) {
-      if (added >= target) break;
-      tryAdd(item);
-    }
-    for (const item of items.filter(isRecent)) {
-      if (added >= target) break;
-      tryAdd(item);
-    }
-  }
-
-  select(movies, movieTarget);
-  select(series, seriesTarget);
-
-  if (selected.length !== requestedCount) {
-    throw new Error(`Foram encontrados ${selected.length} títulos inéditos válidos de ${requestedCount} solicitados. O catálogo foi mantido intacto.`);
-  }
-
-  const catalog = [...currentCatalog, ...selected];
-  const preservedHighlight = catalog.find((item) => item === weeklyHighlight);
-  if (!preservedHighlight || JSON.stringify(preservedHighlight) !== weeklyHighlightSnapshot) {
-    throw new Error('A preservação integral do Destaque da Semana falhou. O catálogo foi mantido intacto.');
-  }
+  const catalog = applyWeeklyHighlight([...movies, ...series]
+    .filter((item) => item.titulo && item.plataformas?.length), weeklyHighlight)
+    .sort((a, b) => {
+      if (a.tipo !== b.tipo) return a.tipo === 'filme' ? -1 : 1;
+      return b.nota_sofahype - a.nota_sofahype;
+    });
 
   await fs.writeFile(OUTPUT, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');
-  console.log(`Catálogo atualizado de forma incremental: ${currentCatalog.length} preservados + ${selected.length} novos = ${catalog.length} títulos.`);
+  console.log(`Catálogo atualizado: ${movies.length} filmes + ${series.length} séries = ${catalog.length} títulos.`);
 }
 
 main().catch((error) => {

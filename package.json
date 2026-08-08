@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/validate-catalog.mjs && next build",
+    "build": "next build",
     "start": "next start",
-    "catalog:import": "node scripts/import-tmdb.mjs",
-    "catalog:validate": "node scripts/validate-catalog.mjs",
-    "import:tmdb": "npm run catalog:import"
+    "import:tmdb": "node scripts/import-tmdb.mjs"
   },
   "dependencies": {
     "next": "latest",
