@@ -7,6 +7,16 @@ import { weeklyHighlight } from '../../../data/weeklyHighlight';
 
 export const dynamicParams = false;
 
+function formatFutureReleaseDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null;
+
+  const date = new Date(`${value}T00:00:00Z`);
+  const today = new Date().toISOString().slice(0, 10);
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value || value <= today) return null;
+
+  return new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(date);
+}
+
 export function generateStaticParams() {
   return getCatalog().map((item) => ({ slug: String(item.slug || item.id) }));
 }
@@ -29,6 +39,7 @@ export default async function TitlePage({ params }) {
   const highlightReview = item.critica_sofahype || (isWeeklyHighlight ? weeklyHighlight.critica_sofahype : '');
   const highlightReviewTitle = item.critica_titulo || weeklyHighlight.critica_titulo;
   const reviewEyebrow = isWeeklyHighlight ? 'Destaque da semana' : 'Crítica SofáHype';
+  const futureReleaseDate = formatFutureReleaseDate(item.data_lancamento);
 
   return (
     <>
@@ -70,7 +81,7 @@ export default async function TitlePage({ params }) {
               <div className="score-metric score-box-empty score-awaiting-release">
                 <span>Avaliação</span>
                 <strong>Notas em breve</strong>
-                <small>O filme estreia em {weeklyHighlight.estreia}.</small>
+                {futureReleaseDate ? <small>Estreia em {futureReleaseDate}.</small> : null}
               </div>
             )}
             <div className={`score-metric ${item.nota_critica ? `score-box-${getScoreClass(item.nota_critica)}` : 'score-box-empty'}`}>
