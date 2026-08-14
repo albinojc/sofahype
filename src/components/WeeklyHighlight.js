@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import HypometroIcon from './HypometroIcon';
-import { formatScore, getFullCatalog, getHypometro, getPlatformClass, getScoreClass, slugify } from '../lib/catalog';
+import { formatAvailabilityStart, formatScore, getFullCatalog, getHypometro, getPlatformClass, getScoreClass, slugify } from '../lib/catalog';
 import { weeklyHighlight } from '../data/weeklyHighlight';
 
 function findHighlightItem() {
@@ -26,8 +26,10 @@ export default function WeeklyHighlight({ compact = false }) {
   const critics = hasCritics ? Number(rawCritics) : null;
   const audience = hasAudience ? Number(rawAudience) : null;
   const hypo = hasScore ? getHypometro(score) : null;
-  const platform = weeklyHighlight.plataforma;
+  const platform = item?.plataformas?.[0] || weeklyHighlight.plataforma;
   const platformClass = getPlatformClass(platform);
+  const availabilityStart = formatAvailabilityStart(item?.data_lancamento);
+  const hasConfirmedPlatform = Boolean(item?.plataformas?.length);
   const poster = item?.poster_url;
   const backdrop = item?.backdrop_url;
   const unavailable = item?.status_disponibilidade === 'sem_plataforma_monitorada';
@@ -48,7 +50,7 @@ export default function WeeklyHighlight({ compact = false }) {
               <span className={`weekly-hypo hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={42} /> {hypo.nome}</span>
             </>
           ) : (
-            <span className="weekly-score-pending"><strong>Notas em breve</strong><small>Estreia em {weeklyHighlight.estreia}</small></span>
+            <span className="weekly-score-pending"><strong>Notas em breve</strong><small>{availabilityStart || (upcoming ? 'Data a confirmar' : `Estreia em ${weeklyHighlight.estreia}`)}</small></span>
           )}
           {hasCritics ? <span className={`weekly-score-box score-box-${getScoreClass(critics)}`}><strong>{formatScore(critics)}</strong><small>Crítica</small></span> : null}
           {hasAudience ? ( <span className="weekly-score-box score-publico"><strong>{formatScore(audience)}</strong><small>Público</small></span> ) : null}
@@ -56,7 +58,8 @@ export default function WeeklyHighlight({ compact = false }) {
         <div className="weekly-actions">
           <Link className="btn-primary" href={`/titulo/${slug}`}>{upcoming ? 'Ver detalhes' : 'Ver crítica'}</Link>
           {unavailable ? <span className="watch-empty">Sem plataforma monitorada no momento</span>
-            : upcoming ? <><span className={`watch-chip st-${platformClass}`}>{platform}</span><span className="watch-empty">Estreia em {weeklyHighlight.estreia}</span></>
+            : upcoming && hasConfirmedPlatform && availabilityStart ? <><span className={`watch-chip st-${platformClass}`}>{platform}</span><span className="watch-empty">{availabilityStart}</span></>
+              : upcoming ? <span className="watch-empty">Ainda não chegou. A gente fica de olho.</span>
               : <span className={`watch-chip st-${platformClass}`}>{platform}</span>}
           {availabilityError ? <span className="watch-empty">Disponibilidade ainda não atualizada</span> : null}
         </div>
