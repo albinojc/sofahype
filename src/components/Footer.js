@@ -26,6 +26,7 @@ export default function Footer() {
             <li><Link href="/filmes">Melhores Filmes</Link></li>
             <li><Link href="/series">Melhores Séries</Link></li>
             <li><Link href="/#rankings">Rankings</Link></li>
+            <li><Link href="/creditos">Créditos</Link></li>
           </ul>
         </div>
       </footer>
