@@ -54,9 +54,9 @@ export default function WeeklyHighlight({ compact = false }) {
           {hasAudience ? ( <span className="weekly-score-box score-publico"><strong>{formatScore(audience)}</strong><small>Público</small></span> ) : null}
         </div>
         <div className="weekly-actions">
-          <Link className="btn-primary" href={`/titulo/${slug}`}>Ver crítica</Link>
+          <Link className="btn-primary" href={`/titulo/${slug}`}>{upcoming ? 'Ver detalhes' : 'Ver crítica'}</Link>
           {unavailable ? <span className="watch-empty">Sem plataforma monitorada no momento</span>
-            : upcoming ? <span className="watch-empty">Ainda não chegou</span>
+            : upcoming ? <><span className={`watch-chip st-${platformClass}`}>{platform}</span><span className="watch-empty">Estreia em {weeklyHighlight.estreia}</span></>
               : <span className={`watch-chip st-${platformClass}`}>{platform}</span>}
           {availabilityError ? <span className="watch-empty">Disponibilidade ainda não atualizada</span> : null}
         </div>
