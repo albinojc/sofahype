@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import { existsSync, realpathSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -16,6 +17,7 @@ const ROOT = path.resolve(SCRIPT_DIR, '..');
 const CATALOG_PATH = path.join(ROOT, 'src/data/catalogo.json');
 const MAX_CONCURRENCY = 5;
 const MAX_ATTEMPTS = 4;
+const EXPECTED_WRITE_TOTAL = 2436;
 const TODAY = new Date().toISOString().slice(0, 10);
 const AVAILABILITY_FIELDS = new Set([
   'plataformas',
@@ -26,7 +28,8 @@ const AVAILABILITY_FIELDS = new Set([
 function usageError(message) {
   throw new Error(
     `${message}\nUso: node scripts/sync-availability.mjs ` +
-    '[--limit N] [--json <caminho>] [--output-catalog <caminho>]'
+    '[--limit N] [--json <caminho>] [--output-catalog <caminho>] ' +
+    '[--write --confirm APPLY_AVAILABILITY_SYNC --expect-sha256 <hash> --require-zero-errors]'
   );
 }
 
@@ -46,11 +49,15 @@ function assertNotRealCatalog(outputPath, optionName) {
 }
 
 function parseArgs(argv) {
-  if (argv.includes('--write')) {
-    usageError('A opção --write não está disponível nesta fase. Nenhum arquivo foi modificado.');
-  }
-
-  const options = { limit: null, jsonPath: null, outputCatalogPath: null };
+  const options = {
+    limit: null,
+    jsonPath: null,
+    outputCatalogPath: null,
+    write: false,
+    confirm: null,
+    expectedSha256: null,
+    requireZeroErrors: false
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === '--limit') {
@@ -63,6 +70,15 @@ function parseArgs(argv) {
       const resolved = path.resolve(value);
       if (argument === '--json') options.jsonPath = resolved;
       else options.outputCatalogPath = resolved;
+    } else if (argument === '--write') {
+      options.write = true;
+    } else if (argument === '--require-zero-errors') {
+      options.requireZeroErrors = true;
+    } else if (argument === '--confirm' || argument === '--expect-sha256') {
+      const value = argv[++index];
+      if (!value || value.startsWith('--')) usageError(`${argument} exige um valor.`);
+      if (argument === '--confirm') options.confirm = value;
+      else options.expectedSha256 = value;
     } else {
       usageError(`Opção desconhecida: ${argument}`);
     }
@@ -73,7 +89,21 @@ function parseArgs(argv) {
   if (options.outputCatalogPath && options.limit) {
     usageError('--output-catalog exige a sincronização completa e não pode ser combinado com --limit.');
   }
+  if (options.write && options.limit) usageError('--write não pode ser combinado com --limit.');
+  if (options.write && options.confirm !== 'APPLY_AVAILABILITY_SYNC') {
+    usageError('--write exige --confirm APPLY_AVAILABILITY_SYNC.');
+  }
+  if (options.write && !/^[a-f0-9]{64}$/i.test(options.expectedSha256 || '')) {
+    usageError('--write exige --expect-sha256 com um SHA-256 válido.');
+  }
+  if (!options.write && (options.confirm || options.expectedSha256 || options.requireZeroErrors)) {
+    usageError('--confirm, --expect-sha256 e --require-zero-errors só podem ser usados com --write.');
+  }
   return options;
+}
+
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex');
 }
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -325,6 +355,67 @@ function validateCandidate(original, candidate) {
   };
 }
 
+function assertSafeCandidate(original, candidate, report) {
+  const validation = report.validacao;
+  const failures = [];
+  if (original.length !== EXPECTED_WRITE_TOTAL) failures.push(`total original ${original.length}`);
+  if (candidate.length !== EXPECTED_WRITE_TOTAL) failures.push(`total candidato ${candidate.length}`);
+  if (validation.ids_duplicados.length) failures.push('IDs duplicados');
+  if (validation.slugs_duplicados.length) failures.push('slugs duplicados');
+  if (validation.tipo_tmdb_id_duplicados.length) failures.push('tipo + tmdb_id duplicados');
+  if (validation.registros_perdidos.length) failures.push('registros perdidos');
+  if (validation.registros_adicionados.length) failures.push('registros novos');
+  if (!validation.ordem_preservada) failures.push('ordem de IDs alterada');
+  if (validation.valores_max_restantes.length) failures.push('valor Max remanescente');
+  if (validation.plataformas_invalidas.length) failures.push('plataformas inválidas');
+  if (validation.campos_editoriais_alterados_ou_ausentes.length) failures.push('campos editoriais alterados');
+  if (validation.status_editorial_alterado.length) failures.push('status editorial alterado');
+
+  const allowedAvailability = new Set(['ativo', 'sem_plataforma_monitorada', 'em_breve']);
+  const allowedVerification = new Set(['verificado', 'erro', 'sem_tmdb_id']);
+  if (candidate.some((item) => !allowedAvailability.has(item.status_disponibilidade))) {
+    failures.push('status_disponibilidade inválido ou ausente');
+  }
+  if (candidate.some((item) => !allowedVerification.has(item.verificacao_disponibilidade))) {
+    failures.push('verificacao_disponibilidade inválida ou ausente');
+  }
+  if (candidate.some((item) => item.status_disponibilidade === 'sem_plataforma_monitorada' && item.plataformas?.length)) {
+    failures.push('título sem_plataforma_monitorada com plataformas');
+  }
+  if (candidate.some((item) => item.status_disponibilidade === 'ativo' && !item.plataformas?.length && item.verificacao_disponibilidade !== 'erro')) {
+    failures.push('título ativo sem plataforma');
+  }
+  const lastHouse = candidate.find((item) => item.id === 'a-ultima-casa');
+  if (!lastHouse || lastHouse.tmdb_id !== 1284041) failures.push('tmdb_id de A Última Casa não preservado');
+
+  if (failures.length) throw new Error(`Catálogo candidato reprovado: ${failures.join('; ')}.`);
+}
+
+async function atomicWriteCatalog(originalSource, serializedCandidate, expectedSha256) {
+  const currentSource = await fs.readFile(CATALOG_PATH, 'utf8');
+  const currentSha = sha256(currentSource);
+  if (currentSha !== expectedSha256 || currentSource !== originalSource) {
+    throw new Error(`Catálogo mudou durante a sincronização. Esperado ${expectedSha256}, encontrado ${currentSha}. Nenhuma escrita realizada.`);
+  }
+
+  const temporaryPath = path.join(
+    path.dirname(CATALOG_PATH),
+    `.${path.basename(CATALOG_PATH)}.${process.pid}.tmp`
+  );
+  try {
+    await fs.writeFile(temporaryPath, serializedCandidate, { encoding: 'utf8', flag: 'wx' });
+    const temporarySource = await fs.readFile(temporaryPath, 'utf8');
+    const parsed = JSON.parse(temporarySource);
+    if (!Array.isArray(parsed) || parsed.length !== EXPECTED_WRITE_TOTAL) {
+      throw new Error('Arquivo temporário não contém o catálogo completo esperado.');
+    }
+    await fs.rename(temporaryPath, CATALOG_PATH);
+  } catch (error) {
+    await fs.unlink(temporaryPath).catch(() => {});
+    throw error;
+  }
+}
+
 function comparisonSummary(original, candidate) {
   const result = {
     somente_plataformas_alteradas: 0,
@@ -413,6 +504,10 @@ async function main() {
   executarAutotesteProviders();
 
   const source = await fs.readFile(CATALOG_PATH, 'utf8');
+  const sourceSha256 = sha256(source);
+  if (options.write && sourceSha256 !== options.expectedSha256) {
+    throw new Error(`SHA-256 divergente. Esperado ${options.expectedSha256}, encontrado ${sourceSha256}. Nenhuma escrita realizada.`);
+  }
   const catalog = JSON.parse(source);
   const selected = options.limit ? catalog.slice(0, options.limit) : catalog;
   const analyzed = new Array(selected.length);
@@ -435,14 +530,23 @@ async function main() {
   const candidate = analyzed.map((result) => result.candidate);
   const records = analyzed.map((result) => result.audit);
   const report = buildReport(selected, candidate, records);
+  if (!options.limit) assertSafeCandidate(selected, candidate, report);
+  if (options.write && options.requireZeroErrors && report.resumo.erros > 0) {
+    throw new Error(`--require-zero-errors recusou a escrita: ${report.resumo.erros} erro(s) de API.`);
+  }
+  const serializedCandidate = `${JSON.stringify(candidate, null, 2)}\n`;
 
   if (options.outputCatalogPath) {
-    await fs.writeFile(options.outputCatalogPath, `${JSON.stringify(candidate, null, 2)}\n`, 'utf8');
+    await fs.writeFile(options.outputCatalogPath, serializedCandidate, 'utf8');
     console.log(`Catálogo candidato salvo em ${options.outputCatalogPath}`);
   }
   if (options.jsonPath) {
     await fs.writeFile(options.jsonPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
     console.log(`Relatório JSON salvo em ${options.jsonPath}`);
+  }
+  if (options.write) {
+    await atomicWriteCatalog(source, serializedCandidate, options.expectedSha256);
+    console.log(`Catálogo atualizado atomicamente: ${candidate.length} registros.`);
   }
   console.log(JSON.stringify(report.resumo, null, 2));
 }
