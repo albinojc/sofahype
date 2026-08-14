@@ -2,12 +2,28 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const CATALOG_PATH = path.join(ROOT, 'src/data/catalogo.json');
+const DEFAULT_CATALOG_PATH = path.join(ROOT, 'src/data/catalogo.json');
 const HIGHLIGHT_PATH = path.join(ROOT, 'src/data/weeklyHighlight.js');
 const TODAY = new Date().toISOString().slice(0, 10);
 const SUPPORTED_PLATFORMS = new Set([
-  'Netflix', 'Max', 'HBO Max', 'Prime Video', 'Disney+', 'Globoplay', 'Apple TV', 'Paramount+'
+  'Netflix', 'HBO Max', 'Prime Video', 'Disney+', 'Globoplay', 'Apple TV', 'Paramount+', 'Hulu'
 ]);
+const AVAILABILITY_STATUSES = new Set(['ativo', 'sem_plataforma_monitorada', 'em_breve']);
+const VERIFICATION_STATUSES = new Set(['verificado', 'erro', 'sem_tmdb_id']);
+
+function parseArgs(argv) {
+  const options = { catalogPath: DEFAULT_CATALOG_PATH, strict: false };
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = argv[index];
+    if (argument === '--strict') options.strict = true;
+    else if (argument === '--file') {
+      const value = argv[++index];
+      if (!value || value.startsWith('--')) throw new Error('--file exige um caminho.');
+      options.catalogPath = path.resolve(value);
+    } else throw new Error(`Opção desconhecida: ${argument}`);
+  }
+  return options;
+}
 
 function slugify(text) {
   return String(text || '')
@@ -40,14 +56,15 @@ function isImported(item) {
 }
 
 async function main() {
+  const { catalogPath, strict } = parseArgs(process.argv.slice(2));
   const errors = [];
   const warnings = [];
   let catalog;
 
   try {
-    catalog = JSON.parse(await fs.readFile(CATALOG_PATH, 'utf8'));
+    catalog = JSON.parse(await fs.readFile(catalogPath, 'utf8'));
   } catch (error) {
-    console.error(`ERRO: JSON inválido em src/data/catalogo.json: ${error.message}`);
+    console.error(`ERRO: JSON inválido em ${catalogPath}: ${error.message}`);
     process.exitCode = 1;
     return;
   }
@@ -69,7 +86,26 @@ async function main() {
       errors.push(`Título futuro: ${label}`);
     }
     for (const platform of item.plataformas || []) {
-      if (!SUPPORTED_PLATFORMS.has(platform)) errors.push(`Plataforma não reconhecida em ${label}: ${platform}`);
+      if (platform === 'Max' && !strict) warnings.push(`Plataforma legada em ${label}: Max`);
+      else if (!SUPPORTED_PLATFORMS.has(platform)) errors.push(`Plataforma não reconhecida em ${label}: ${platform}`);
+    }
+
+    if (strict) {
+      if (!AVAILABILITY_STATUSES.has(item.status_disponibilidade)) {
+        errors.push(`status_disponibilidade inválido ou ausente em ${label}: ${item.status_disponibilidade}`);
+      }
+      if (!VERIFICATION_STATUSES.has(item.verificacao_disponibilidade)) {
+        errors.push(`verificacao_disponibilidade inválida ou ausente em ${label}: ${item.verificacao_disponibilidade}`);
+      }
+      if (item.status_disponibilidade === 'ativo' && !item.plataformas?.length && item.verificacao_disponibilidade !== 'erro') {
+        errors.push(`Título ativo sem plataforma em ${label}`);
+      }
+      if (item.status_disponibilidade === 'sem_plataforma_monitorada' && item.plataformas?.length) {
+        errors.push(`Título sem_plataforma_monitorada ainda possui plataforma em ${label}`);
+      }
+      if (item.verificacao_disponibilidade === 'sem_tmdb_id' && item.tmdb_id) {
+        errors.push(`Título marcado sem_tmdb_id possui tmdb_id em ${label}`);
+      }
     }
 
     if (isImported(item)) {
@@ -82,7 +118,7 @@ async function main() {
       if (!item.poster_url) errors.push(`Novo registro sem poster_url: ${label}`);
       if (!item.backdrop_url) errors.push(`Novo registro sem backdrop_url: ${label}`);
       if (!isValidReleasedDate(releaseDate)) errors.push(`Novo registro sem data válida já lançada: ${label}`);
-      if (!item.plataformas?.length) errors.push(`Novo registro sem plataforma: ${label}`);
+      if (!strict && !item.plataformas?.length) errors.push(`Novo registro sem plataforma: ${label}`);
       if (item.nota_sofahype !== null || item.nota_critica !== null || item.nota_publico !== null) {
         errors.push(`Novo registro com nota editorial preenchida: ${label}`);
       }
@@ -108,7 +144,7 @@ async function main() {
 
   for (const warning of warnings) console.warn(`AVISO: ${warning}`);
   for (const error of errors) console.error(`ERRO: ${error}`);
-  console.log(`Catálogo validado: ${catalog.length} títulos, ${errors.length} erro(s), ${warnings.length} aviso(s).`);
+  console.log(`Catálogo validado: ${catalog.length} títulos, ${errors.length} erro(s), ${warnings.length} aviso(s).${strict ? ' Modo estrito.' : ''}`);
   if (errors.length) process.exitCode = 1;
 }
 

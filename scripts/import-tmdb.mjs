@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { STREAMING_PROVIDERS, detectarPlataformasSofahype } from './streaming-providers.mjs';
 
 const TOKEN = process.env.TMDB_READ_ACCESS_TOKEN;
 const API = 'https://api.themoviedb.org/3';
@@ -18,17 +19,7 @@ const DISCOVERY_MULTIPLIER = Math.max(2, Number(process.env.TMDB_DISCOVERY_MULTI
 const MAX_DISCOVERY_PAGES = Math.max(20, Math.min(500, Number(process.env.TMDB_MAX_DISCOVERY_PAGES || 120)));
 const TODAY = new Date().toISOString().slice(0, 10);
 
-const STREAMINGS = [
-  { nome: 'Netflix', aliases: ['netflix'], region: 'BR' },
-  { nome: 'Max', aliases: ['hbo max', 'max'], region: 'BR' },
-  { nome: 'Prime Video', aliases: ['amazon prime video', 'prime video'], region: 'BR' },
-  { nome: 'Disney+', aliases: ['disney plus', 'disney+'], region: 'BR' },
-  { nome: 'Globoplay', aliases: ['globoplay'], region: 'BR' },
-  { nome: 'Apple TV', aliases: ['apple tv plus', 'apple tv+', 'apple tv', 'apple tv plus amazon channel'], region: 'BR' },
-  { nome: 'Paramount+', aliases: ['paramount plus', 'paramount+'], region: 'BR' }
-];
-
-const SUPPORTED_PLATFORM_NAMES = new Set(STREAMINGS.map((streaming) => streaming.nome));
+const SUPPORTED_PLATFORM_NAMES = new Set(STREAMING_PROVIDERS.map((provider) => provider.nome));
 
 function normalize(value) {
   return String(value || '')
@@ -53,14 +44,17 @@ function isValidReleasedDate(value) {
   return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-function parseRequestedCount(argv) {
+function parseCliOptions(argv) {
   const countIndex = argv.findIndex((arg) => arg === '--count');
   const raw = countIndex >= 0 ? argv[countIndex + 1] : argv.find((arg) => /^\d+$/.test(arg));
   const count = Number(raw);
   if (!Number.isInteger(count) || count <= 0) {
-    throw new Error('Informe a quantidade de novos títulos com --count. Exemplo: npm run catalog:import -- --count 1000');
+    throw new Error('Informe a quantidade de novos títulos com --count. Exemplo: node scripts/import-tmdb.mjs --count 1000');
   }
-  return count;
+  const allowedArguments = new Set(['--count', String(raw), '--dry-run']);
+  const unknown = argv.find((argument) => !allowedArguments.has(argument));
+  if (unknown) throw new Error(`Opção desconhecida: ${unknown}`);
+  return { requestedCount: count, dryRun: argv.includes('--dry-run') };
 }
 
 function sleep(ms) {
@@ -97,61 +91,20 @@ async function safeTmdb(endpoint, params = {}) {
   }
 }
 
-async function getProviderMap(kind) {
-  const providersByRegion = new Map();
-
-  async function providersForRegion(region) {
-    if (!providersByRegion.has(region)) {
-      const data = await tmdb(`/watch/providers/${kind}`, {
-        language: 'pt-BR',
-        watch_region: region
-      });
-      providersByRegion.set(region, data.results || []);
-    }
-    return providersByRegion.get(region);
-  }
-
-  const found = new Map();
-
-  for (const streaming of STREAMINGS) {
-    const providers = await providersForRegion(streaming.region || 'BR');
-    const ids = providers
-      .filter((provider) => {
-        const providerName = normalize(provider.provider_name);
-        return streaming.aliases.some((alias) => providerName === alias || providerName.includes(alias));
-      })
-      .map((provider) => provider.provider_id);
-
-    found.set(streaming.nome, {
-      ids: [...new Set(ids)],
-      region: streaming.region || 'BR'
-    });
-  }
-
-  return found;
+function getProviderMap() {
+  return new Map(STREAMING_PROVIDERS.map((provider) => [
+    provider.nome,
+    { ids: [provider.providerId], region: provider.regiao }
+  ]));
 }
 
 function streamingsFromWatchProviders(data) {
-  const names = [];
-
-  function addFromRegion(region, onlyName = null) {
-    const regionData = data?.results?.[region];
-    const flatrate = regionData?.flatrate || [];
-
-    for (const provider of flatrate) {
-      const providerName = normalize(provider.provider_name);
-      const match = STREAMINGS.find((streaming) =>
-        (!onlyName || streaming.nome === onlyName) &&
-        streaming.aliases.some((alias) => providerName === alias || providerName.includes(alias))
-      );
-      if (match && !names.includes(match.nome)) names.push(match.nome);
-    }
-  }
-
-  // Somente assinatura (flatrate) confirmada pelo TMDb na região brasileira.
-  addFromRegion('BR');
-
-  return names;
+  // As plataformas principais usam flatrate no Brasil. Hulu é a exceção
+  // histórica do SofáHype e usa exclusivamente US; isso não representa BR.
+  return detectarPlataformasSofahype({
+    brFlatrate: data?.results?.BR?.flatrate || [],
+    usFlatrate: data?.results?.US?.flatrate || []
+  });
 }
 
 async function collectCandidates(tipo, target, providerMap, { dateMode = 'all', excludedTmdb = new Set() } = {}) {
@@ -417,7 +370,9 @@ async function buildItem(candidate) {
     ...experience,
     fonte_dados: 'TMDb',
     origem_importacao: 'tmdb',
-    status: 'ativo'
+    status: 'ativo',
+    status_disponibilidade: 'ativo',
+    verificacao_disponibilidade: 'verificado'
   };
 }
 
@@ -608,7 +563,7 @@ function validateImportedItem(item) {
 }
 
 async function main() {
-  const requestedCount = parseRequestedCount(process.argv.slice(2));
+  const { requestedCount, dryRun } = parseCliOptions(process.argv.slice(2));
   if (!TOKEN) {
     throw new Error('TMDB_READ_ACCESS_TOKEN não encontrado. Nenhuma alteração foi feita.');
   }
@@ -623,11 +578,11 @@ async function main() {
 
   console.log(`Destaque semanal preservado: ${weeklyHighlight.titulo}`);
   console.log(`Importação incremental solicitada: ${requestedCount} novos títulos (${movieTarget} filmes e ${seriesTarget} séries).`);
-  const movieProviderMap = await getProviderMap('movie');
-  const tvProviderMap = await getProviderMap('tv');
+  const movieProviderMap = getProviderMap();
+  const tvProviderMap = getProviderMap();
 
-  const movieReserve = Math.max(10, Math.ceil(movieTarget * 0.05));
-  const seriesReserve = Math.max(10, Math.ceil(seriesTarget * 0.05));
+  const movieReserve = dryRun ? 0 : Math.max(10, Math.ceil(movieTarget * 0.05));
+  const seriesReserve = dryRun ? 0 : Math.max(10, Math.ceil(seriesTarget * 0.05));
   const movies = await importType('filme', movieTarget + movieReserve, movieProviderMap, identityIndex);
   const series = await importType('serie', seriesTarget + seriesReserve, tvProviderMap, identityIndex);
   const selected = [];
@@ -672,6 +627,16 @@ async function main() {
   const preservedHighlight = catalog.find((item) => item === weeklyHighlight);
   if (!preservedHighlight || JSON.stringify(preservedHighlight) !== weeklyHighlightSnapshot) {
     throw new Error('A preservação integral do Destaque da Semana falhou. O catálogo foi mantido intacto.');
+  }
+
+  if (dryRun) {
+    console.log(`DRY-RUN: ${movies.length + series.length} candidato(s) final(is) analisado(s).`);
+    console.log(`DRY-RUN: ${selected.length} novo(s) registro(s) seria(m) adicionado(s).`);
+    for (const item of selected.slice(0, 10)) {
+      console.log(`  • ${item.titulo} [${item.tipo}/${item.tmdb_id}] — ${item.plataformas.join(', ')}`);
+    }
+    console.log(`DRY-RUN: catálogo permaneceria com ${currentCatalog.length} registros; nenhuma gravação realizada.`);
+    return;
   }
 
   await fs.writeFile(OUTPUT, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');
