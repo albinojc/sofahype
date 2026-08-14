@@ -55,6 +55,27 @@ function isImported(item) {
   return item.origem_importacao === 'tmdb';
 }
 
+function validateAvailability(item, label, strict, errors) {
+  const hasAvailabilityStatus = item.status_disponibilidade !== undefined;
+  const hasVerificationStatus = item.verificacao_disponibilidade !== undefined;
+
+  if ((strict || hasAvailabilityStatus) && !AVAILABILITY_STATUSES.has(item.status_disponibilidade)) {
+    errors.push(`status_disponibilidade inválido ou ausente em ${label}: ${item.status_disponibilidade}`);
+  }
+  if ((strict || hasVerificationStatus) && !VERIFICATION_STATUSES.has(item.verificacao_disponibilidade)) {
+    errors.push(`verificacao_disponibilidade inválida ou ausente em ${label}: ${item.verificacao_disponibilidade}`);
+  }
+  if (item.status_disponibilidade === 'ativo' && !item.plataformas?.length && item.verificacao_disponibilidade !== 'erro') {
+    errors.push(`Título ativo sem plataforma em ${label}`);
+  }
+  if (item.status_disponibilidade === 'sem_plataforma_monitorada' && item.plataformas?.length) {
+    errors.push(`Título sem_plataforma_monitorada ainda possui plataforma em ${label}`);
+  }
+  if (item.verificacao_disponibilidade === 'sem_tmdb_id' && item.tmdb_id) {
+    errors.push(`Título marcado sem_tmdb_id possui tmdb_id em ${label}`);
+  }
+}
+
 async function main() {
   const { catalogPath, strict } = parseArgs(process.argv.slice(2));
   const errors = [];
@@ -90,23 +111,7 @@ async function main() {
       else if (!SUPPORTED_PLATFORMS.has(platform)) errors.push(`Plataforma não reconhecida em ${label}: ${platform}`);
     }
 
-    if (strict) {
-      if (!AVAILABILITY_STATUSES.has(item.status_disponibilidade)) {
-        errors.push(`status_disponibilidade inválido ou ausente em ${label}: ${item.status_disponibilidade}`);
-      }
-      if (!VERIFICATION_STATUSES.has(item.verificacao_disponibilidade)) {
-        errors.push(`verificacao_disponibilidade inválida ou ausente em ${label}: ${item.verificacao_disponibilidade}`);
-      }
-      if (item.status_disponibilidade === 'ativo' && !item.plataformas?.length && item.verificacao_disponibilidade !== 'erro') {
-        errors.push(`Título ativo sem plataforma em ${label}`);
-      }
-      if (item.status_disponibilidade === 'sem_plataforma_monitorada' && item.plataformas?.length) {
-        errors.push(`Título sem_plataforma_monitorada ainda possui plataforma em ${label}`);
-      }
-      if (item.verificacao_disponibilidade === 'sem_tmdb_id' && item.tmdb_id) {
-        errors.push(`Título marcado sem_tmdb_id possui tmdb_id em ${label}`);
-      }
-    }
+    validateAvailability(item, label, strict, errors);
 
     if (isImported(item)) {
       if (!item.id) errors.push(`Novo registro sem id: ${label}`);
@@ -118,7 +123,9 @@ async function main() {
       if (!item.poster_url) errors.push(`Novo registro sem poster_url: ${label}`);
       if (!item.backdrop_url) errors.push(`Novo registro sem backdrop_url: ${label}`);
       if (!isValidReleasedDate(releaseDate)) errors.push(`Novo registro sem data válida já lançada: ${label}`);
-      if (!strict && !item.plataformas?.length) errors.push(`Novo registro sem plataforma: ${label}`);
+      if (!strict && item.status_disponibilidade === undefined && !item.plataformas?.length) {
+        errors.push(`Novo registro sem plataforma: ${label}`);
+      }
       if (item.nota_sofahype !== null || item.nota_critica !== null || item.nota_publico !== null) {
         errors.push(`Novo registro com nota editorial preenchida: ${label}`);
       }
