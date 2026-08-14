@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { STREAMING_PROVIDERS, detectarPlataformasSofahype } from './streaming-providers.mjs';
 
 const TOKEN = process.env.TMDB_READ_ACCESS_TOKEN;
 const API = 'https://api.themoviedb.org/3';
@@ -7,26 +8,18 @@ const IMAGE = 'https://image.tmdb.org/t/p';
 const ROOT = process.cwd();
 const OUTPUT = path.join(ROOT, 'src/data/catalogo.json');
 
-const TARGET_MOVIES = Number(process.env.TMDB_IMPORT_MOVIES || 500);
-const TARGET_SERIES = Number(process.env.TMDB_IMPORT_SERIES || 250);
 const MIN_MOVIE_VOTES = Number(process.env.TMDB_MIN_MOVIE_VOTES || 120);
 const MIN_TV_VOTES = Number(process.env.TMDB_MIN_TV_VOTES || 80);
+const MIN_RECENT_MOVIE_VOTES = Number(process.env.TMDB_MIN_RECENT_MOVIE_VOTES || 30);
+const MIN_RECENT_TV_VOTES = Number(process.env.TMDB_MIN_RECENT_TV_VOTES || 15);
 const RECENT_START_YEAR = Number(process.env.TMDB_RECENT_START_YEAR || 2023);
 const RECENT_SHARE = Math.max(0, Math.min(1, Number(process.env.TMDB_RECENT_SHARE || 0.75)));
+const MOVIE_SHARE = Math.max(0, Math.min(1, Number(process.env.TMDB_MOVIE_SHARE || 0.65)));
+const DISCOVERY_MULTIPLIER = Math.max(2, Number(process.env.TMDB_DISCOVERY_MULTIPLIER || 4));
+const MAX_DISCOVERY_PAGES = Math.max(20, Math.min(500, Number(process.env.TMDB_MAX_DISCOVERY_PAGES || 120)));
 const TODAY = new Date().toISOString().slice(0, 10);
 
-const STREAMINGS = [
-  { nome: 'Netflix', aliases: ['netflix'], region: 'BR' },
-  { nome: 'HBO Max', aliases: ['hbo max', 'max'], region: 'BR' },
-  { nome: 'Prime Video', aliases: ['amazon prime video', 'prime video'], region: 'BR' },
-  { nome: 'Disney+', aliases: ['disney plus', 'disney+'], region: 'BR' },
-  { nome: 'Globoplay', aliases: ['globoplay'], region: 'BR' },
-  { nome: 'Apple TV', aliases: ['apple tv plus', 'apple tv+', 'apple tv', 'apple tv plus amazon channel'], region: 'BR' },
-  { nome: 'Paramount+', aliases: ['paramount plus', 'paramount+'], region: 'BR' },
-  // Hulu pode não aparecer no recorte BR do TMDb. Mantemos uma busca US como fallback
-  // para não deixar a página vazia enquanto o produto ainda está em validação.
-  { nome: 'Hulu', aliases: ['hulu'], region: process.env.TMDB_HULU_REGION || 'US' }
-];
+const SUPPORTED_PLATFORM_NAMES = new Set(STREAMING_PROVIDERS.map((provider) => provider.nome));
 
 function normalize(value) {
   return String(value || '')
@@ -43,6 +36,25 @@ function slugify(text) {
     .replace(/[^a-zA-Z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .toLowerCase();
+}
+
+function isValidReleasedDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '') || value > TODAY) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+function parseCliOptions(argv) {
+  const countIndex = argv.findIndex((arg) => arg === '--count');
+  const raw = countIndex >= 0 ? argv[countIndex + 1] : argv.find((arg) => /^\d+$/.test(arg));
+  const count = Number(raw);
+  if (!Number.isInteger(count) || count <= 0) {
+    throw new Error('Informe a quantidade de novos títulos com --count. Exemplo: node scripts/import-tmdb.mjs --count 1000');
+  }
+  const allowedArguments = new Set(['--count', String(raw), '--dry-run']);
+  const unknown = argv.find((argument) => !allowedArguments.has(argument));
+  if (unknown) throw new Error(`Opção desconhecida: ${unknown}`);
+  return { requestedCount: count, dryRun: argv.includes('--dry-run') };
 }
 
 function sleep(ms) {
@@ -79,79 +91,35 @@ async function safeTmdb(endpoint, params = {}) {
   }
 }
 
-async function getProviderMap(kind) {
-  const providersByRegion = new Map();
-
-  async function providersForRegion(region) {
-    if (!providersByRegion.has(region)) {
-      const data = await tmdb(`/watch/providers/${kind}`, {
-        language: 'pt-BR',
-        watch_region: region
-      });
-      providersByRegion.set(region, data.results || []);
-    }
-    return providersByRegion.get(region);
-  }
-
-  const found = new Map();
-
-  for (const streaming of STREAMINGS) {
-    const providers = await providersForRegion(streaming.region || 'BR');
-    const ids = providers
-      .filter((provider) => {
-        const providerName = normalize(provider.provider_name);
-        return streaming.aliases.some((alias) => providerName === alias || providerName.includes(alias));
-      })
-      .map((provider) => provider.provider_id);
-
-    found.set(streaming.nome, {
-      ids: [...new Set(ids)],
-      region: streaming.region || 'BR'
-    });
-  }
-
-  return found;
+function getProviderMap() {
+  return new Map(STREAMING_PROVIDERS.map((provider) => [
+    provider.nome,
+    { ids: [provider.providerId], region: provider.regiao }
+  ]));
 }
 
 function streamingsFromWatchProviders(data) {
-  const names = [];
-
-  function addFromRegion(region, onlyName = null) {
-    const regionData = data?.results?.[region];
-    const flatrate = regionData?.flatrate || [];
-
-    for (const provider of flatrate) {
-      const providerName = normalize(provider.provider_name);
-      const match = STREAMINGS.find((streaming) =>
-        (!onlyName || streaming.nome === onlyName) &&
-        streaming.aliases.some((alias) => providerName === alias || providerName.includes(alias))
-      );
-      if (match && !names.includes(match.nome)) names.push(match.nome);
-    }
-  }
-
-  // O SofáHype prioriza disponibilidade no Brasil.
-  addFromRegion('BR');
-  // Hulu é exceção enquanto o serviço/conteúdo ainda aparece de forma inconsistente por região.
-  addFromRegion(process.env.TMDB_HULU_REGION || 'US', 'Hulu');
-
-  return names;
+  // As plataformas principais usam flatrate no Brasil. Hulu é a exceção
+  // histórica do SofáHype e usa exclusivamente US; isso não representa BR.
+  return detectarPlataformasSofahype({
+    brFlatrate: data?.results?.BR?.flatrate || [],
+    usFlatrate: data?.results?.US?.flatrate || []
+  });
 }
 
-async function collectCandidates(tipo, target, providerMap, { dateMode = 'all' } = {}) {
+async function collectCandidates(tipo, target, providerMap, { dateMode = 'all', excludedTmdb = new Set() } = {}) {
   const kind = tipo === 'filme' ? 'movie' : 'tv';
   const endpoint = tipo === 'filme' ? '/discover/movie' : '/discover/tv';
-  const minVotes = tipo === 'filme' ? MIN_MOVIE_VOTES : MIN_TV_VOTES;
+  const minVotes = dateMode === 'recent'
+    ? (tipo === 'filme' ? MIN_RECENT_MOVIE_VOTES : MIN_RECENT_TV_VOTES)
+    : (tipo === 'filme' ? MIN_MOVIE_VOTES : MIN_TV_VOTES);
   const candidates = new Map();
   const activeProviders = Array.from(providerMap.entries()).filter(([, config]) => config.ids.length);
 
-  // Antes o importador varria Netflix primeiro, depois HBO, Prime etc.
-  // Com isso, os primeiros streamings enchiam a cota e Apple TV+/Hulu podiam ficar vazios.
-  // Agora a coleta é em rodízio: página 1 de todos, depois página 2 de todos, etc.
-  // Isso melhora a diversidade do catálogo e evita que todos os cards de uma página carreguem
-  // a primeira plataforma do título como se fosse sempre Netflix.
-  const maxPages = Math.max(8, Math.ceil(target / Math.max(activeProviders.length * 10, 1)) + 4);
-  for (let page = 1; page <= maxPages && candidates.size < target * 6; page += 1) {
+  // Varre os streamings em rodízio e ignora IDs já existentes antes das chamadas
+  // de detalhes. O limite alto permite avançar além da faixa de popularidade que
+  // formou o catálogo-base, sem abandonar a ordenação por relevância do TMDb.
+  for (let page = 1; page <= MAX_DISCOVERY_PAGES && candidates.size < target; page += 1) {
     for (const [streamingName, config] of activeProviders) {
       const recentStartDate = `${RECENT_START_YEAR}-01-01`;
       const classicEndDate = `${RECENT_START_YEAR - 1}-12-31`;
@@ -179,8 +147,11 @@ async function collectCandidates(tipo, target, providerMap, { dateMode = 'all' }
         page
       });
 
+      if (page > Number(data?.total_pages || 0)) continue;
+
       for (const item of data?.results || []) {
         const key = `${kind}-${item.id}`;
+        if (excludedTmdb.has(`${tipo}|${item.id}`)) continue;
         if (!candidates.has(key)) {
           candidates.set(key, { id: item.id, kind, tipo, seedStreamings: [streamingName] });
         } else {
@@ -203,14 +174,6 @@ function formatRuntime(minutes) {
   if (!h) return `${m}min`;
   if (!m) return `${h}h`;
   return `${h}h${String(m).padStart(2, '0')}`;
-}
-
-function scoreFromDetails(details) {
-  const voteAverage = Number(details.vote_average || 0) * 10;
-  const popularity = Math.min(Number(details.popularity || 0), 100);
-  const voteCount = Math.min(Number(details.vote_count || 0) / 100, 10);
-  const score = Math.round(voteAverage * 0.82 + popularity * 0.10 + voteCount * 0.8);
-  return Math.max(0, Math.min(score, 100));
 }
 
 function simpleUnique(list, limit = 4) {
@@ -377,8 +340,8 @@ async function buildItem(candidate) {
   const runtime = candidate.tipo === 'filme'
     ? formatRuntime(details.runtime)
     : formatRuntime(details.episode_run_time?.[0]);
-  const sofaScore = scoreFromDetails(details);
-  const publicScore = Math.round(Number(details.vote_average || 0) * 10);
+  if (!isValidReleasedDate(date) || !details.poster_path || !details.backdrop_path) return null;
+
   const slugBase = slugify(title || originalTitle || `${candidate.tipo}-${candidate.id}`);
   const experience = experienceFromDetails(details, genres, candidate.tipo);
 
@@ -390,12 +353,14 @@ async function buildItem(candidate) {
     titulo: title || originalTitle,
     titulo_original: originalTitle || title,
     ano: date ? String(date).slice(0, 4) : '',
+    data_lancamento: date,
     generos: genres,
     plataformas,
-    nota_sofahype: sofaScore,
+    nota_sofahype: null,
     nota_critica: null,
-    nota_publico: publicScore,
-    nota_tmdb: Number(details.vote_average || 0).toFixed(1),
+    nota_publico: null,
+    nota_tmdb: Number(details.vote_average || 0) > 0 ? Number(details.vote_average).toFixed(1) : null,
+    votos_tmdb: Number(details.vote_count || 0),
     popularidade_tmdb: Number(details.popularity || 0),
     duracao: runtime,
     tag: '',
@@ -404,7 +369,10 @@ async function buildItem(candidate) {
     sinopse: details.overview || 'Sinopse ainda não disponível em português.',
     ...experience,
     fonte_dados: 'TMDb',
-    status: 'ativo'
+    origem_importacao: 'tmdb',
+    status: 'ativo',
+    status_disponibilidade: 'ativo',
+    verificacao_disponibilidade: 'verificado'
   };
 }
 
@@ -426,92 +394,86 @@ function editorialPriority(item) {
   else if (year === currentYear - 1) recencyBonus = 6;
   else if (year >= RECENT_START_YEAR) recencyBonus = 4;
 
-  return Number(item.nota_sofahype || 0) + recencyBonus;
+  const rating = Number(item.nota_tmdb || 0) * 10;
+  const votes = Math.min(Math.log10(Number(item.votos_tmdb || 0) + 1) * 10, 50);
+  const popularity = Math.min(Number(item.popularidade_tmdb || 0), 100) / 5;
+  return rating + votes + popularity + recencyBonus;
 }
 
-async function importType(tipo, target, providerMap) {
+async function importType(tipo, target, providerMap, identityIndex) {
   console.log(`Buscando ${target} ${tipo === 'filme' ? 'filmes' : 'séries'}...`);
-  const recentTarget = Math.max(1, Math.ceil(target * RECENT_SHARE));
-  const classicTarget = Math.max(1, target - recentTarget);
-  const recentCandidates = await collectCandidates(tipo, recentTarget, providerMap, { dateMode: 'recent' });
-  const classicCandidates = await collectCandidates(tipo, classicTarget, providerMap, { dateMode: 'classic' });
-  const candidateMap = new Map();
-  const recentCandidateLimit = Math.ceil(recentTarget * 1.5);
-  const classicCandidateLimit = Math.ceil(classicTarget * 1.8);
+  const recentTarget = Math.round(target * RECENT_SHARE);
+  const classicTarget = target - recentTarget;
+  const excludedTmdb = identityIndex.tmdb;
+  const [recentCandidates, classicCandidates] = await Promise.all([
+    collectCandidates(tipo, Math.ceil(recentTarget * DISCOVERY_MULTIPLIER), providerMap, { dateMode: 'recent', excludedTmdb }),
+    collectCandidates(tipo, Math.ceil(classicTarget * DISCOVERY_MULTIPLIER), providerMap, { dateMode: 'classic', excludedTmdb })
+  ]);
 
-  for (const candidate of [
-    ...recentCandidates.slice(0, recentCandidateLimit),
-    ...classicCandidates.slice(0, classicCandidateLimit)
-  ]) {
-    const key = `${candidate.kind}-${candidate.id}`;
-    if (!candidateMap.has(key)) candidateMap.set(key, candidate);
-  }
+  console.log(`  Candidatos inéditos por TMDb encontrados: ${recentCandidates.length} recentes e ${classicCandidates.length} anteriores.`);
 
-  const candidates = Array.from(candidateMap.values());
-  const pool = [];
-  const seenSlugs = new Set();
-
-  // Monta uma piscina um pouco maior do que a cota final, para permitir diversidade por streaming.
-  // Para catálogos maiores, processamos em pequenos lotes. Isso reduz o tempo de build
-  // sem transformar o importador em uma metralhadora de chamadas para a API.
   const batchSize = Number(process.env.TMDB_IMPORT_BATCH_SIZE || 5);
-  for (let i = 0; i < candidates.length && pool.length < Math.ceil(target * 1.4); i += batchSize) {
-    const batch = candidates.slice(i, i + batchSize);
-    const items = await Promise.all(batch.map((candidate) => buildItem(candidate)));
+  const poolIndex = {
+    ids: new Set(identityIndex.ids),
+    slugs: new Set(identityIndex.slugs),
+    tmdb: new Set(identityIndex.tmdb),
+    titles: new Set(identityIndex.titles)
+  };
 
-    for (const item of items) {
-      if (!item) continue;
-      if (pool.length >= Math.ceil(target * 1.4)) break;
+  async function buildPool(candidates, quota) {
+    const pool = [];
+    const poolTarget = Math.ceil(quota * 1.5);
 
-      if (seenSlugs.has(item.slug)) item.slug = `${item.slug}-${item.tmdb_id}`;
-      seenSlugs.add(item.slug);
-      pool.push(item);
-      console.log(`  + ${item.titulo} (${item.plataformas.join(', ')})`);
+    for (let i = 0; i < candidates.length && pool.length < poolTarget; i += batchSize) {
+      const items = await Promise.all(candidates.slice(i, i + batchSize).map((candidate) => buildItem(candidate)));
+
+      for (const item of items) {
+        if (!item || pool.length >= poolTarget) continue;
+        if (poolIndex.slugs.has(item.slug)) item.slug = `${item.slug}-${item.tipo}-${item.tmdb_id}`;
+        if (isDuplicate(item, poolIndex)) continue;
+        pool.push(item);
+        addToIdentityIndex(item, poolIndex);
+        console.log(`  + ${item.titulo} (${item.plataformas.join(', ')})`);
+      }
+
+      await sleep(120);
     }
 
-    await sleep(120);
+    return pool;
   }
 
-  const selected = [];
-  const selectedIds = new Set();
+  const recentPool = await buildPool(recentCandidates, recentTarget);
+  const classicPool = await buildPool(classicCandidates, classicTarget);
   const activeStreamingNames = Array.from(providerMap.entries())
     .filter(([, config]) => config.ids.length)
     .map(([name]) => name);
-  const minimumPerStreaming = Math.max(2, Math.floor(target / Math.max(activeStreamingNames.length * 5, 1)));
-  const recentQuota = Math.min(target, Math.round(target * RECENT_SHARE));
 
-  const addItem = (item) => {
-    if (!item || selected.length >= target || selectedIds.has(item.id)) return false;
-    selected.push(item);
-    selectedIds.add(item.id);
-    return true;
-  };
+  function selectBalanced(pool, quota) {
+    const selected = [];
+    const selectedIds = new Set();
+    const minimumPerStreaming = Math.max(2, Math.floor(quota / Math.max(activeStreamingNames.length * 8, 1)));
+    const addItem = (item) => {
+      if (!item || selected.length >= quota || selectedIds.has(item.id)) return;
+      selected.push(item);
+      selectedIds.add(item.id);
+    };
 
-  // Garante variedade entre streamings, mas escolhe lançamentos de 2023 em diante primeiro.
-  for (const streamingName of activeStreamingNames) {
-    const options = pool
-      .filter((item) => item.plataformas.includes(streamingName) && !selectedIds.has(item.id))
-      .sort((a, b) => {
-        if (isRecent(a) !== isRecent(b)) return isRecent(a) ? -1 : 1;
-        return editorialPriority(b) - editorialPriority(a);
-      })
-      .slice(0, minimumPerStreaming);
+    for (const streamingName of activeStreamingNames) {
+      const options = pool
+        .filter((item) => item.plataformas.includes(streamingName) && !selectedIds.has(item.id))
+        .sort((a, b) => editorialPriority(b) - editorialPriority(a))
+        .slice(0, minimumPerStreaming);
+      for (const item of options) addItem(item);
+    }
 
-    for (const item of options) addItem(item);
+    for (const item of pool.sort((a, b) => editorialPriority(b) - editorialPriority(a))) addItem(item);
+    return selected;
   }
 
-  // Completa a cota editorial de títulos recentes.
-  const recentSelected = () => selected.filter(isRecent).length;
-  for (const item of pool.filter(isRecent).sort((a, b) => editorialPriority(b) - editorialPriority(a))) {
-    if (selected.length >= target || recentSelected() >= recentQuota) break;
-    addItem(item);
-  }
-
-  // Reserva o restante para clássicos e títulos anteriores que continuam relevantes.
-  for (const item of pool.sort((a, b) => editorialPriority(b) - editorialPriority(a))) {
-    if (selected.length >= target) break;
-    addItem(item);
-  }
+  const selected = [
+    ...selectBalanced(recentPool, recentTarget),
+    ...selectBalanced(classicPool, classicTarget)
+  ];
 
   return selected.sort((a, b) => {
     if (isRecent(a) !== isRecent(b)) return isRecent(a) ? -1 : 1;
@@ -522,7 +484,7 @@ async function importType(tipo, target, providerMap) {
 
 const WEEKLY_HIGHLIGHT_CONFIG = path.join(ROOT, 'src/data/weeklyHighlight.js');
 
-async function loadConfiguredWeeklyHighlight() {
+async function loadConfiguredWeeklyHighlight(catalog) {
   const configSource = await fs.readFile(WEEKLY_HIGHLIGHT_CONFIG, 'utf8');
   const slugMatch = configSource.match(/\bslug\s*:\s*['"`]([^'"`]+)['"`]/);
   const configuredSlug = slugMatch?.[1];
@@ -531,8 +493,7 @@ async function loadConfiguredWeeklyHighlight() {
     throw new Error('Não foi possível identificar o slug em src/data/weeklyHighlight.js.');
   }
 
-  const currentCatalog = JSON.parse(await fs.readFile(OUTPUT, 'utf8'));
-  const highlight = currentCatalog.find(
+  const highlight = catalog.find(
     (item) => item.slug === configuredSlug || item.id === configuredSlug
   );
 
@@ -543,71 +504,143 @@ async function loadConfiguredWeeklyHighlight() {
     );
   }
 
+  const markedHighlights = catalog.filter((item) => item.destaque_semana === true);
+  if (markedHighlights.length !== 1 || markedHighlights[0] !== highlight) {
+    throw new Error('O catálogo deve ter exatamente um destaque_semana: true, correspondente ao slug configurado.');
+  }
+
+  return highlight;
+}
+
+function normalizedTitleKey(title, tipo, ano) {
+  const normalizedTitle = normalize(title).replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  if (!normalizedTitle) return '';
+  return `${tipo}|${String(ano || '').slice(0, 4)}|${normalizedTitle}`;
+}
+
+function createIdentityIndex(catalog) {
   return {
-    ...highlight,
-    destaque_semana: true,
-    tag: highlight.tag || 'Destaque da Semana'
+    ids: new Set(catalog.map((item) => item.id).filter(Boolean)),
+    slugs: new Set(catalog.map((item) => item.slug).filter(Boolean)),
+    tmdb: new Set(catalog.filter((item) => item.tmdb_id).map((item) => `${item.tipo}|${item.tmdb_id}`)),
+    titles: new Set(catalog.flatMap((item) => [
+      normalizedTitleKey(item.titulo, item.tipo, item.ano),
+      normalizedTitleKey(item.titulo_original, item.tipo, item.ano)
+    ]).filter(Boolean))
   };
 }
 
-function applyWeeklyHighlight(catalog, highlight = WEEKLY_HIGHLIGHT) {
-  const highlightTerms = [highlight.slug, highlight.titulo, highlight.titulo_original, ...(highlight.aliases || [])]
-    .filter(Boolean)
-    .map(normalize);
+function isDuplicate(item, index) {
+  return index.ids.has(item.id) ||
+    index.slugs.has(item.slug) ||
+    index.tmdb.has(`${item.tipo}|${item.tmdb_id}`) ||
+    index.titles.has(normalizedTitleKey(item.titulo, item.tipo, item.ano)) ||
+    index.titles.has(normalizedTitleKey(item.titulo_original, item.tipo, item.ano));
+}
 
-  const matchesHighlight = (item) => {
-    const values = [item.slug, item.titulo, item.titulo_original, ...(item.aliases || [])]
-      .filter(Boolean)
-      .map((value) => normalize(value));
-    return values.some((value) => highlightTerms.includes(value));
-  };
+function addToIdentityIndex(item, index) {
+  index.ids.add(item.id);
+  index.slugs.add(item.slug);
+  index.tmdb.add(`${item.tipo}|${item.tmdb_id}`);
+  const titleKey = normalizedTitleKey(item.titulo, item.tipo, item.ano);
+  const originalTitleKey = normalizedTitleKey(item.titulo_original, item.tipo, item.ano);
+  if (titleKey) index.titles.add(titleKey);
+  if (originalTitleKey) index.titles.add(originalTitleKey);
+}
 
-  const index = catalog.findIndex(matchesHighlight);
-  if (index >= 0) {
-    const existing = catalog[index];
-    catalog[index] = {
-      ...existing,
-      ...highlight,
-      id: existing.id || highlight.id,
-      tmdb_id: existing.tmdb_id || highlight.tmdb_id,
-      poster_url: existing.poster_url || highlight.poster_url,
-      backdrop_url: existing.backdrop_url || highlight.backdrop_url,
-      plataformas: [...new Set([...(existing.plataformas || []), ...(highlight.plataformas || [])])],
-      fonte_dados: existing.fonte_dados ? `${existing.fonte_dados} + Curadoria SofáHype` : highlight.fonte_dados
-    };
-  } else {
-    catalog.unshift(highlight);
-  }
-
-  return catalog;
+function validateImportedItem(item) {
+  const problems = [];
+  if (!item.tmdb_id) problems.push('tmdb_id ausente');
+  if (!item.slug) problems.push('slug ausente');
+  if (!item.titulo) problems.push('título ausente');
+  if (!['filme', 'serie'].includes(item.tipo)) problems.push('tipo inválido');
+  if (!isValidReleasedDate(item.data_lancamento)) problems.push('data de lançamento inválida ou futura');
+  if (!item.poster_url) problems.push('poster_url ausente');
+  if (!item.backdrop_url) problems.push('backdrop_url ausente');
+  if (!item.plataformas?.length || item.plataformas.some((name) => !SUPPORTED_PLATFORM_NAMES.has(name))) problems.push('plataforma inválida');
+  if (item.nota_sofahype !== null || item.nota_critica !== null || item.nota_publico !== null) problems.push('notas editoriais devem ser null');
+  return problems;
 }
 
 async function main() {
+  const { requestedCount, dryRun } = parseCliOptions(process.argv.slice(2));
   if (!TOKEN) {
-    console.warn('TMDB_READ_ACCESS_TOKEN não encontrado. Mantendo o catálogo atual.');
+    throw new Error('TMDB_READ_ACCESS_TOKEN não encontrado. Nenhuma alteração foi feita.');
+  }
+
+  const source = await fs.readFile(OUTPUT, 'utf8');
+  const currentCatalog = JSON.parse(source);
+  const weeklyHighlight = await loadConfiguredWeeklyHighlight(currentCatalog);
+  const weeklyHighlightSnapshot = JSON.stringify(weeklyHighlight);
+  const identityIndex = createIdentityIndex(currentCatalog);
+  const movieTarget = Math.round(requestedCount * MOVIE_SHARE);
+  const seriesTarget = requestedCount - movieTarget;
+
+  console.log(`Destaque semanal preservado: ${weeklyHighlight.titulo}`);
+  console.log(`Importação incremental solicitada: ${requestedCount} novos títulos (${movieTarget} filmes e ${seriesTarget} séries).`);
+  const movieProviderMap = getProviderMap();
+  const tvProviderMap = getProviderMap();
+
+  const movieReserve = dryRun ? 0 : Math.max(10, Math.ceil(movieTarget * 0.05));
+  const seriesReserve = dryRun ? 0 : Math.max(10, Math.ceil(seriesTarget * 0.05));
+  const movies = await importType('filme', movieTarget + movieReserve, movieProviderMap, identityIndex);
+  const series = await importType('serie', seriesTarget + seriesReserve, tvProviderMap, identityIndex);
+  const selected = [];
+
+  const tryAdd = (item) => {
+    const baseSlug = item.slug;
+    if (identityIndex.slugs.has(item.slug)) item.slug = `${baseSlug}-${item.tipo}-${item.tmdb_id}`;
+    if (isDuplicate(item, identityIndex)) return false;
+    if (validateImportedItem(item).length) return false;
+    selected.push(item);
+    addToIdentityIndex(item, identityIndex);
+    return true;
+  };
+
+  function selectType(items, target) {
+    const selectedBefore = selected.length;
+    const recentTarget = Math.round(target * RECENT_SHARE);
+    let recentAdded = 0;
+
+    for (const item of items.filter(isRecent)) {
+      if (recentAdded >= recentTarget) break;
+      if (tryAdd(item)) recentAdded += 1;
+    }
+    for (const item of items.filter((item) => !isRecent(item))) {
+      if (selected.length - selectedBefore >= target) break;
+      tryAdd(item);
+    }
+    for (const item of items.filter(isRecent)) {
+      if (selected.length - selectedBefore >= target) break;
+      tryAdd(item);
+    }
+  }
+
+  selectType(movies, movieTarget);
+  selectType(series, seriesTarget);
+
+  if (selected.length !== requestedCount) {
+    throw new Error(`Foram encontrados ${selected.length} títulos inéditos válidos de ${requestedCount} solicitados. O catálogo foi mantido intacto.`);
+  }
+
+  const catalog = [...currentCatalog, ...selected];
+  const preservedHighlight = catalog.find((item) => item === weeklyHighlight);
+  if (!preservedHighlight || JSON.stringify(preservedHighlight) !== weeklyHighlightSnapshot) {
+    throw new Error('A preservação integral do Destaque da Semana falhou. O catálogo foi mantido intacto.');
+  }
+
+  if (dryRun) {
+    console.log(`DRY-RUN: ${movies.length + series.length} candidato(s) final(is) analisado(s).`);
+    console.log(`DRY-RUN: ${selected.length} novo(s) registro(s) seria(m) adicionado(s).`);
+    for (const item of selected.slice(0, 10)) {
+      console.log(`  • ${item.titulo} [${item.tipo}/${item.tmdb_id}] — ${item.plataformas.join(', ')}`);
+    }
+    console.log(`DRY-RUN: catálogo permaneceria com ${currentCatalog.length} registros; nenhuma gravação realizada.`);
     return;
   }
 
-  const weeklyHighlight = await loadConfiguredWeeklyHighlight();
-
-  console.log(`Destaque semanal preservado: ${weeklyHighlight.titulo}`);
-  console.log('Iniciando importação TMDb para o SofáHype...');
-  const movieProviderMap = await getProviderMap('movie');
-  const tvProviderMap = await getProviderMap('tv');
-
-  const movies = await importType('filme', TARGET_MOVIES, movieProviderMap);
-  const series = await importType('serie', TARGET_SERIES, tvProviderMap);
-
-
-  const catalog = applyWeeklyHighlight([...movies, ...series]
-    .filter((item) => item.titulo && item.plataformas?.length), weeklyHighlight)
-    .sort((a, b) => {
-      if (a.tipo !== b.tipo) return a.tipo === 'filme' ? -1 : 1;
-      return b.nota_sofahype - a.nota_sofahype;
-    });
-
   await fs.writeFile(OUTPUT, `${JSON.stringify(catalog, null, 2)}\n`, 'utf8');
-  console.log(`Catálogo atualizado: ${movies.length} filmes + ${series.length} séries = ${catalog.length} títulos.`);
+  console.log(`Catálogo atualizado de forma incremental: ${currentCatalog.length} preservados + ${selected.length} novos = ${catalog.length} títulos.`);
 }
 
 main().catch((error) => {

@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/validate-catalog.mjs && next build",
     "start": "next start",
-    "import:tmdb": "node scripts/import-tmdb.mjs"
+    "catalog:import": "node scripts/import-tmdb.mjs",
+    "catalog:validate": "node scripts/validate-catalog.mjs",
+    "import:tmdb": "npm run catalog:import"
   },
   "dependencies": {
-    "next": "latest",
+    "next": "16.3.1",
     "react": "latest",
     "react-dom": "latest"
   },

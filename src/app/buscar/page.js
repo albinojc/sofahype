@@ -4,7 +4,7 @@ import SearchBox from '../../components/SearchBox';
 import SearchEmptyState from '../../components/SearchEmptyState';
 import TitleGrid from '../../components/TitleGrid';
 import Ranking from '../../components/Ranking';
-import { getCatalog } from '../../lib/catalog';
+import { getFullCatalog } from '../../lib/catalog';
 import { searchTitles } from '../../lib/search';
 
 export const metadata = { title: 'Busca | SofáHype' };
@@ -23,7 +23,7 @@ export default async function BuscarPage({ searchParams }) {
   const params = await searchParams;
   const q = normalizeParam(params?.q).trim();
   const tipo = normalizeTipo(params?.tipo || 'todos');
-  const catalog = getCatalog();
+  const catalog = getFullCatalog();
   const results = q.length >= 2 ? searchTitles(catalog, q, tipo) : [];
   const seriesResults = results.filter((item) => item.tipo === 'serie');
   const titleLabel = tipo === 'filme' ? 'filmes' : tipo === 'serie' ? 'séries' : 'títulos';

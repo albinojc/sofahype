@@ -36,8 +36,14 @@ export function slugify(text) {
     .toLowerCase();
 }
 
-export function getCatalog() {
+export function getFullCatalog() {
   return catalogo.filter((item) => item.status !== 'oculto');
+}
+
+export function getCatalog() {
+  return getFullCatalog().filter((item) =>
+    item.status_disponibilidade === undefined || item.status_disponibilidade === 'ativo'
+  );
 }
 
 export function getTitlesByType(tipo) {
@@ -62,7 +68,7 @@ export function getTitlesByStreaming(slug) {
 }
 
 export function getTitleBySlug(slug) {
-  return getCatalog().find((item) => item.slug === slug || item.id === slug || slugify(item.titulo) === slug);
+  return getFullCatalog().find((item) => item.slug === slug || item.id === slug || slugify(item.titulo) === slug);
 }
 
 export function getScoreClass(score) {

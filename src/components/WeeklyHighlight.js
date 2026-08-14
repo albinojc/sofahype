@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import HypometroIcon from './HypometroIcon';
-import { formatScore, getCatalog, getHypometro, getPlatformClass, getScoreClass, slugify } from '../lib/catalog';
+import { formatScore, getFullCatalog, getHypometro, getPlatformClass, getScoreClass, slugify } from '../lib/catalog';
 import { weeklyHighlight } from '../data/weeklyHighlight';
 
 function findHighlightItem() {
-  const catalog = getCatalog();
+  const catalog = getFullCatalog();
   const aliases = [weeklyHighlight.slug, weeklyHighlight.titulo, weeklyHighlight.titulo_original, ...(weeklyHighlight.aliases || [])];
   return catalog.find((item) => {
     const values = [item.slug, item.titulo, item.titulo_original, ...(item.aliases || [])].filter(Boolean);
@@ -30,6 +30,9 @@ export default function WeeklyHighlight({ compact = false }) {
   const platformClass = getPlatformClass(platform);
   const poster = item?.poster_url;
   const backdrop = item?.backdrop_url;
+  const unavailable = item?.status_disponibilidade === 'sem_plataforma_monitorada';
+  const upcoming = item?.status_disponibilidade === 'em_breve';
+  const availabilityError = item?.verificacao_disponibilidade === 'erro';
 
   return (
     <section className={compact ? 'weekly-highlight weekly-highlight-compact' : 'weekly-highlight'}>
@@ -52,7 +55,10 @@ export default function WeeklyHighlight({ compact = false }) {
         </div>
         <div className="weekly-actions">
           <Link className="btn-primary" href={`/titulo/${slug}`}>Ver crítica</Link>
-          <span className={`watch-chip st-${platformClass}`}>{platform}</span>
+          {unavailable ? <span className="watch-empty">Sem plataforma monitorada no momento</span>
+            : upcoming ? <span className="watch-empty">Ainda não chegou</span>
+              : <span className={`watch-chip st-${platformClass}`}>{platform}</span>}
+          {availabilityError ? <span className="watch-empty">Disponibilidade ainda não atualizada</span> : null}
         </div>
       </div>
       <Link className="weekly-poster" href={`/titulo/${slug}`} aria-label={`Abrir ${title}`}>

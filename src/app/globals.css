@@ -123,6 +123,12 @@ footer { background:#111; border-top:1px solid #1e1e1e; padding:2.5rem 2rem; dis
 
 .footer-note { margin-top: 10px; font-size: 11px; color: #3f3f3f; line-height: 1.5; max-width: 460px; }
 
+.credits-page { max-width: 900px; margin: 0 auto; }
+.credits-page p { color: #aaa; line-height: 1.7; }
+.credits-page p + p { margin-top: 12px; }
+.credits-page a { color: #C8F135; }
+.credits-tmdb-logo { width: 180px; max-width: 55%; height: auto; display: block; margin-bottom: 18px; }
+
 /* ── Ajustes de marca e UX - logo próprio, busca na home e Hypômetro com ícones proprietários ── */
 .logo-image { height: 54px; min-width: 190px; }
 .logo-image img { width: 198px; max-width: 100%; height: auto; display: block; }
