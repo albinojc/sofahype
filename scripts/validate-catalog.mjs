@@ -34,10 +34,11 @@ function slugify(text) {
     .toLowerCase();
 }
 
-function isValidReleasedDate(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '') || value > TODAY) return false;
+function isValidCatalogDate(value, availabilityStatus) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return false;
   const date = new Date(`${value}T00:00:00Z`);
-  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  const isValidDate = !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  return isValidDate && (value <= TODAY || availabilityStatus === 'em_breve');
 }
 
 function duplicateValues(items, valueFor) {
@@ -103,7 +104,7 @@ async function main() {
     const label = item.titulo || item.id || '(registro sem identificação)';
     const releaseDate = item.data_lancamento;
     const year = Number(String(item.ano || '').slice(0, 4));
-    if ((releaseDate && releaseDate > TODAY) || (!releaseDate && Number.isFinite(year) && year > Number(TODAY.slice(0, 4)))) {
+    if (item.status_disponibilidade !== 'em_breve' && ((releaseDate && releaseDate > TODAY) || (!releaseDate && Number.isFinite(year) && year > Number(TODAY.slice(0, 4))))) {
       errors.push(`Título futuro: ${label}`);
     }
     for (const platform of item.plataformas || []) {
@@ -122,7 +123,7 @@ async function main() {
       if (!/^\d{4}$/.test(String(item.ano || ''))) errors.push(`Novo registro sem ano válido: ${label}`);
       if (!item.poster_url) errors.push(`Novo registro sem poster_url: ${label}`);
       if (!item.backdrop_url) errors.push(`Novo registro sem backdrop_url: ${label}`);
-      if (!isValidReleasedDate(releaseDate)) errors.push(`Novo registro sem data válida já lançada: ${label}`);
+      if (!isValidCatalogDate(releaseDate, item.status_disponibilidade)) errors.push(`Novo registro sem data válida: ${label}`);
       if (!strict && item.status_disponibilidade === undefined && !item.plataformas?.length) {
         errors.push(`Novo registro sem plataforma: ${label}`);
       }

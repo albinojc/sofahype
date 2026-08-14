@@ -41495,7 +41495,7 @@
       "ficção científica cheia de explicações",
       "filme leve para relaxar"
     ],
-    "destaque_semana": true,
+    "destaque_semana": false,
     "critica_titulo": "A dica do SofáHype",
     "critica_sofahype": "A ideia é daquelas que fazem você pensar: “Como ninguém fez isso antes?”\n\nWagner Moura e Greta Lee estão tranquilamente em casa com os filhos quando descobrem um pequeno problema: ninguém consegue sair. Porta não abre. Janela não quebra. E tem alguma coisa bem estranha acontecendo lá fora.\n\nA primeira metade funciona muito bem. O mistério prende, a sensação de claustrofobia cresce e Wagner Moura praticamente carrega a casa inteira nas costas — figurativamente, antes que alguém pergunte.\n\nO problema aparece quando o filme resolve explicar demais aquilo que talvez fosse mais interessante sem explicação. Quanto mais a gente descobre, menos assustadora fica a coisa.\n\nAinda assim, funciona como aquele suspense perfeito para uma sexta à noite: ideia boa, tensão suficiente para não pegar no celular e um Wagner Moura lembrando que brasileiro também sabe salvar filme de Hollywood.\n\nNão é exatamente “tranque as portas porque você vai morrer de medo”.\n\nMas dá o play.",
     "fonte_dados": "Netflix + Curadoria SofáHype",
@@ -109999,6 +109999,56 @@
     "origem_importacao": "tmdb",
     "status": "ativo",
     "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado"
+  },
+  {
+    "id": "serie-95350",
+    "slug": "lanternas",
+    "tmdb_id": 95350,
+    "tipo": "serie",
+    "titulo": "Lanternas",
+    "titulo_original": "Lanterns",
+    "ano": "2026",
+    "data_lancamento": "2026-08-16",
+    "generos": [
+      "Sci-Fi & Fantasy",
+      "Mistério",
+      "Action & Adventure"
+    ],
+    "plataformas": [
+      "HBO Max"
+    ],
+    "nota_sofahype": null,
+    "nota_critica": null,
+    "nota_publico": null,
+    "nota_tmdb": "5.0",
+    "votos_tmdb": 9,
+    "popularidade_tmdb": 23.5899,
+    "duracao": "55min",
+    "tag": "Destaque da Semana",
+    "poster_url": "https://image.tmdb.org/t/p/w500/th9PqHNf9BX89k0lGrcJk9Sqq11.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/wJjnJbVUwPz0GADAgpFt9nWtzUu.jpg",
+    "sinopse": "Dois policiais intergalácticos, o recruta novato John Stewart e o lendário Lanterna Verde Hal Jordan, se veem envolvidos em um mistério sombrio que se passa na Terra enquanto investigam um assassinato no coração dos Estados Unidos.",
+    "experiencia": [
+      "Tem mistério",
+      "Precisa prestar atenção",
+      "Mundo de fantasia",
+      "Para acompanhar em episódios"
+    ],
+    "ideal_para": [
+      "suspense",
+      "fantasia",
+      "maratonar ou acompanhar aos poucos"
+    ],
+    "talvez_nao_seja": [
+      "assistir distraído",
+      "história sem fantasia"
+    ],
+    "destaque_semana": true,
+    "fonte_dados": "TMDb",
+    "origem_importacao": "tmdb",
+    "status": "ativo",
+    "status_disponibilidade": "em_breve",
     "verificacao_disponibilidade": "verificado"
   }
 ]

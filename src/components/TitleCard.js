@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { formatScore, getHypometro, getPlatformClass, getPrimaryPlatform, getScoreClass } from '../lib/catalog';
+import { formatAvailabilityStart, formatScore, getHypometro, getPlatformClass, getPrimaryPlatform, getScoreClass } from '../lib/catalog';
 import HypometroIcon from './HypometroIcon';
 
 function initials(title) {
@@ -18,20 +18,24 @@ export default function TitleCard({ item, platformContext = null }) {
   // a plataforma da página, não a primeira plataforma cadastrada no título.
   const platform = platformContext || getPrimaryPlatform(item);
   const platformClass = getPlatformClass(platform);
+  const upcoming = item.status_disponibilidade === 'em_breve';
+  const availabilityStart = formatAvailabilityStart(item.data_lancamento);
 
   return (
     <Link className="card" href={`/titulo/${item.slug || item.id}`}>
       <div className={`card-thumb t${(item.nota_sofahype % 6) + 1}`}>
         {item.poster_url ? <img src={item.poster_url} alt={item.titulo} /> : <span>{initials(item.titulo)}</span>}
-        <div className={`score-badge score-${getScoreClass(item.nota_sofahype)}`}>{formatScore(item.nota_sofahype)}</div>
+        {!upcoming ? <div className={`score-badge score-${getScoreClass(item.nota_sofahype)}`}>{formatScore(item.nota_sofahype)}</div> : null}
         <div className={`stream-dot s-${platformClass}`}>{platform[0]}</div>
       </div>
       <div className="card-body">
         <div className="card-title">{item.titulo}</div>
         <div className="card-info">{item.ano} · {item.generos?.[0]} · {item.duracao}</div>
         <div className="card-footer">
-          <span className="mini-score score-publico"><span>Público</span><strong>{formatScore(item.nota_publico)}</strong></span>
-          <span className={`hype-tag hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={22} /><span>{hypo.curto}</span></span>
+          {upcoming ? <span className="availability-upcoming">{availabilityStart}</span> : <>
+            <span className="mini-score score-publico"><span>Público</span><strong>{formatScore(item.nota_publico)}</strong></span>
+            <span className={`hype-tag hype-${hypo.classe}`}><HypometroIcon variant={hypo.classe} size={22} /><span>{hypo.curto}</span></span>
+          </>}
         </div>
       </div>
     </Link>

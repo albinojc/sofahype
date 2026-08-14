@@ -1,41 +1,37 @@
 export const weeklyHighlight = {
-  slug: 'a-ultima-casa',
-  titulo: 'A Última Casa',
-  titulo_original: 'The Last House',
+  slug: 'lanternas',
+  titulo: 'Lanternas',
+  titulo_original: 'Lanterns',
   aliases: [
-    'The Last House',
-    'The Last House 2026',
-    'A Ultima Casa',
-    '11817'
+    'Lanterns',
+    'Lanternas 2026',
+    '95350'
   ],
   label: 'DESTAQUE DA SEMANA',
-  plataforma: 'Netflix',
-  estreia: '07/08/2026',
+  plataforma: 'HBO Max',
+  estreia: '16/08/2026',
   chamada:
-    'Wagner Moura só queria ficar em casa. O problema é que agora ele não consegue sair.',
+    'Dois Lanternas, um assassinato e um mistério na Terra. A nova série da DC estreia na HBO Max.',
   nota_sofahype: null,
   nota_critica: null,
   nota_publico: null,
   hypometro: null,
-  critica_titulo: 'A dica do SofáHype',
+  critica_titulo: 'O que esperar',
   critica_sofahype:
-    "A ideia é daquelas que fazem você pensar: “Como ninguém fez isso antes?”\n\nWagner Moura e Greta Lee estão tranquilamente em casa com os filhos quando descobrem um pequeno problema: ninguém consegue sair. Porta não abre. Janela não quebra. E tem alguma coisa bem estranha acontecendo lá fora.\n\nA primeira metade funciona muito bem. O mistério prende, a sensação de claustrofobia cresce e Wagner Moura praticamente carrega a casa inteira nas costas — figurativamente, antes que alguém pergunte.\n\nO problema aparece quando o filme resolve explicar demais aquilo que talvez fosse mais interessante sem explicação. Quanto mais a gente descobre, menos assustadora fica a coisa.\n\nAinda assim, funciona como aquele suspense perfeito para uma sexta à noite: ideia boa, tensão suficiente para não pegar no celular e um Wagner Moura lembrando que brasileiro também sabe salvar filme de Hollywood.\n\nNão é exatamente “tranque as portas porque você vai morrer de medo”.\n\nMas dá o play.",
+    'John Stewart e Hal Jordan se juntam para investigar um assassinato no coração dos Estados Unidos. Lanternas estreia em 16 de agosto na HBO Max e chega sem nota por aqui: primeiro a série precisa ir ao ar, depois a gente atualiza a avaliação.',
   experiencia_extra: [
-    'Mistério claustrofóbico',
-    'Ficção científica com clima de terror',
-    'Tensão dentro de casa',
-    'Sobrevivência em família'
+    'Tem mistério',
+    'Precisa prestar atenção',
+    'Mundo de fantasia',
+    'Para acompanhar em episódios'
   ],
   ideal_extra: [
-    'suspense de ficção científica',
-    'histórias de sobrevivência',
-    'mistérios em espaço fechado',
-    'Wagner Moura e Greta Lee'
+    'suspense',
+    'fantasia',
+    'maratonar ou acompanhar aos poucos'
   ],
   talvez_nao_extra: [
-    'respostas muito bem amarradas',
-    'terror de susto o tempo inteiro',
-    'ficção científica cheia de explicações',
-    'filme leve para relaxar'
+    'assistir distraído',
+    'história sem fantasia'
   ]
 };

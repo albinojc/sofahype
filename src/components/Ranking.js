@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import { formatScore, getHypometro, getPlatformClass, getPrimaryPlatform, getScoreClass } from '../lib/catalog';
+import { formatAvailabilityStart, formatScore, getPlatformClass, getPrimaryPlatform, getScoreClass } from '../lib/catalog';
 
 export default function Ranking({ items, limit = 8 }) {
   return (
     <div className="ranking">
       {items.slice(0, limit ?? items.length).map((item, index) => {
-        const hypo = getHypometro(item.nota_sofahype);
         const platform = getPrimaryPlatform(item);
+        const upcoming = item.status_disponibilidade === 'em_breve';
+        const availabilityStart = formatAvailabilityStart(item.data_lancamento);
         return (
           <Link className="rank-row" href={`/titulo/${item.slug || item.id}`} key={item.id}>
             <div className="rank-num">{index + 1}</div>
@@ -18,8 +19,10 @@ export default function Ranking({ items, limit = 8 }) {
               <div className="rank-meta"><span className={`st st-${getPlatformClass(platform)}`}>{platform}</span> · {item.generos?.[0]} · {item.ano}</div>
             </div>
             <div className="rank-right">
-              <div className={`score-badge score-${getScoreClass(item.nota_sofahype)} static`}>{formatScore(item.nota_sofahype)}</div>
-              <div className="hype-bar-wrap"><div className="hype-bar" style={{ width: `${item.nota_sofahype}%` }} /></div>
+              {upcoming ? <span className="availability-upcoming">{availabilityStart}</span> : <>
+                <div className={`score-badge score-${getScoreClass(item.nota_sofahype)} static`}>{formatScore(item.nota_sofahype)}</div>
+                <div className="hype-bar-wrap"><div className="hype-bar" style={{ width: `${item.nota_sofahype}%` }} /></div>
+              </>}
             </div>
           </Link>
         );

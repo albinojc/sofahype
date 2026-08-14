@@ -40,10 +40,26 @@ export function getFullCatalog() {
   return catalogo.filter((item) => item.status !== 'oculto');
 }
 
+export function formatAvailabilityStart(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null;
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) return null;
+
+  const dayAndMonth = new Intl.DateTimeFormat('pt-BR', {
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC'
+  }).format(date);
+  return `A partir de ${dayAndMonth}`;
+}
+
 export function getCatalog() {
-  return getFullCatalog().filter((item) =>
-    item.status_disponibilidade === undefined || item.status_disponibilidade === 'ativo'
-  );
+  return getFullCatalog().filter((item) => {
+    if (item.status_disponibilidade === undefined || item.status_disponibilidade === 'ativo') return true;
+    return item.status_disponibilidade === 'em_breve' &&
+      item.plataformas?.length > 0 &&
+      Boolean(formatAvailabilityStart(item.data_lancamento));
+  });
 }
 
 export function getTitlesByType(tipo) {

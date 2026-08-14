@@ -1,21 +1,11 @@
 import { notFound } from 'next/navigation';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
-import { formatScore, getExperienceForDisplay, getFullCatalog, getHypometro, getPlatformClass, getScoreClass, getTitleBySlug } from '../../../lib/catalog';
+import { formatAvailabilityStart, formatScore, getExperienceForDisplay, getFullCatalog, getHypometro, getPlatformClass, getScoreClass, getTitleBySlug } from '../../../lib/catalog';
 import HypometroIcon from '../../../components/HypometroIcon';
 import { weeklyHighlight } from '../../../data/weeklyHighlight';
 
 export const dynamicParams = false;
-
-function formatFutureReleaseDate(value) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null;
-
-  const date = new Date(`${value}T00:00:00Z`);
-  const today = new Date().toISOString().slice(0, 10);
-  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value || value <= today) return null;
-
-  return new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC' }).format(date);
-}
 
 export function generateStaticParams() {
   return getFullCatalog().map((item) => ({ slug: String(item.slug || item.id) }));
@@ -39,7 +29,7 @@ export default async function TitlePage({ params }) {
   const highlightReview = item.critica_sofahype || (isWeeklyHighlight ? weeklyHighlight.critica_sofahype : '');
   const highlightReviewTitle = item.critica_titulo || weeklyHighlight.critica_titulo;
   const reviewEyebrow = isWeeklyHighlight ? 'Destaque da semana' : 'Crítica SofáHype';
-  const futureReleaseDate = formatFutureReleaseDate(item.data_lancamento);
+  const availabilityStart = formatAvailabilityStart(item.data_lancamento);
   const availabilityStatus = item.status_disponibilidade;
   const availabilityVerification = item.verificacao_disponibilidade;
   const unavailable = availabilityStatus === 'sem_plataforma_monitorada';
@@ -66,7 +56,9 @@ export default async function TitlePage({ params }) {
               {unavailable
                 ? <span className="watch-empty">Este título não está disponível agora nas plataformas monitoradas pelo SofáHype.</span>
                 : upcoming
-                  ? <span className="watch-empty">Ainda não chegou. A gente fica de olho.</span>
+                  ? (item.plataformas || []).length > 0 && availabilityStart
+                    ? <>{(item.plataformas || []).map((p) => <span key={p} className={`watch-chip st-${getPlatformClass(p)}`}>{p}</span>)}<span className="watch-empty">{availabilityStart}</span></>
+                    : <span className="watch-empty">Ainda não chegou. A gente fica de olho.</span>
                   : (item.plataformas || []).length > 0
                 ? (item.plataformas || []).map((p) => <span key={p} className={`watch-chip st-${getPlatformClass(p)}`}>{p}</span>)
                 : <span className="watch-empty">Ainda sem streaming cadastrado</span>}
@@ -90,7 +82,7 @@ export default async function TitlePage({ params }) {
               <div className="score-metric score-box-empty score-awaiting-release">
                 <span>Avaliação</span>
                 <strong>Notas em breve</strong>
-                {futureReleaseDate ? <small>Estreia em {futureReleaseDate}.</small> : null}
+                {upcoming && availabilityStart ? <small>{availabilityStart}.</small> : null}
               </div>
             )}
             <div className={`score-metric ${item.nota_critica ? `score-box-${getScoreClass(item.nota_critica)}` : 'score-box-empty'}`}>
