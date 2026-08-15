@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { findEditorialSafetyViolations } from './editorial-safety.mjs';
 
 const ROOT = process.cwd();
 const DEFAULT_CATALOG_PATH = path.join(ROOT, 'src/data/catalogo.json');
@@ -113,6 +114,12 @@ async function main() {
     }
 
     validateAvailability(item, label, strict, errors);
+
+    if (strict) {
+      for (const violation of findEditorialSafetyViolations(item)) {
+        errors.push(`Segurança editorial em ${label}: ${violation}`);
+      }
+    }
 
     if (isImported(item)) {
       if (!item.id) errors.push(`Novo registro sem id: ${label}`);
