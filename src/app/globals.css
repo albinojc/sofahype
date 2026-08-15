@@ -66,6 +66,7 @@ a { color: inherit; text-decoration: none; }
 .hypo-display span { display:inline !important; margin:0 !important; color:#F5F0E8 !important; font-size:18px !important; letter-spacing:0 !important; text-transform:none !important; }
 
 .ranking { display: flex; flex-direction: column; gap: 8px; }
+.ranking-group + .ranking-group { border-top: 1px solid #1e1e1e; margin-top: 2rem; padding-top: 2rem; }
 .rank-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: #1a1a1a; border: 1px solid #222; border-radius: 10px; cursor: pointer; transition: border-color .2s; }
 .rank-row:hover { border-color: #444; }
 .rank-num { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: #3a3a3a; min-width: 32px; text-align: right; }
