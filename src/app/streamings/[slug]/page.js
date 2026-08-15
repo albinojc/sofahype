@@ -48,6 +48,7 @@ export default async function StreamingPage({ params }) {
         <TitleGrid
           items={items}
           platformContext={streaming.nome}
+          showPlatformBadge={false}
           emptyMessage={isHulu
             ? 'Ainda não encontramos títulos do Hulu no recorte atual do catálogo. Como a disponibilidade por país pode variar, o SofáHype só vai mostrar aqui títulos que a fonte de dados retornar com segurança.'
             : `Ainda não encontramos títulos de ${streaming.nome} no recorte atual do catálogo. O importador vai tentar trazer mais opções nas próximas atualizações.`}

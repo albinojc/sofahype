@@ -432,9 +432,15 @@ button.mood:focus-visible {
   margin-top: 1.4rem;
 }
 .search-form-page input[type="search"] {
-  background: #1a1a1a;
-  color: #F5F0E8;
-  border: 1px solid #2a2a2a;
+  background: #F5F0E8;
+  color: #0D0D0D;
+  border: 2px solid #D8D1C3;
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+}
+.search-form-page input[type="search"]::placeholder { color: #666; opacity: 1; }
+.search-form-page input[type="search"]:focus-visible {
+  border-color: #C8F135;
+  box-shadow: 0 0 0 3px rgba(200,241,53,.22), 0 8px 24px rgba(0,0,0,.2);
 }
 .search-submit {
   height: 44px;

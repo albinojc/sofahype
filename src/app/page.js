@@ -8,6 +8,7 @@ import { getCatalog, getTitlesByType, streamings } from '../lib/catalog';
 
 export default function HomePage() {
   const catalog = getCatalog();
+  const filmes = getTitlesByType('filme').slice(0, 8);
   const series = getTitlesByType('serie').slice(0, 8);
 
   return (
@@ -47,6 +48,16 @@ export default function HomePage() {
         <div className="divider" />
 
         <section className="section" id="rankings">
+          <div className="section-header">
+            <h2 className="section-title">Ranking <span>Filmes</span></h2>
+            <Link className="btn-ver-todos" href="/filmes">Ver todos os filmes →</Link>
+          </div>
+          <Ranking items={filmes} />
+        </section>
+
+        <div className="divider" />
+
+        <section className="section">
           <div className="section-header">
             <h2 className="section-title">Ranking <span>Séries</span></h2>
             <Link className="btn-ver-todos" href="/series">Ver ranking completo →</Link>
