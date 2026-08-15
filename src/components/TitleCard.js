@@ -12,7 +12,7 @@ function initials(title) {
     .toUpperCase();
 }
 
-export default function TitleCard({ item, platformContext = null }) {
+export default function TitleCard({ item, platformContext = null, showPlatformBadge = true }) {
   const hypo = getHypometro(item.nota_sofahype);
   // Em páginas específicas de streaming, o selo do card deve representar
   // a plataforma da página, não a primeira plataforma cadastrada no título.
@@ -26,7 +26,7 @@ export default function TitleCard({ item, platformContext = null }) {
       <div className={`card-thumb t${(item.nota_sofahype % 6) + 1}`}>
         {item.poster_url ? <img src={item.poster_url} alt={item.titulo} /> : <span>{initials(item.titulo)}</span>}
         {!upcoming ? <div className={`score-badge score-${getScoreClass(item.nota_sofahype)}`}>{formatScore(item.nota_sofahype)}</div> : null}
-        <div className={`stream-dot s-${platformClass}`}>{platform[0]}</div>
+        {showPlatformBadge ? <div className={`stream-dot s-${platformClass}`}>{platform[0]}</div> : null}
       </div>
       <div className="card-body">
         <div className="card-title">{item.titulo}</div>

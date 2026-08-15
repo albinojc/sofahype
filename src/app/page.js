@@ -8,7 +8,12 @@ import { getCatalog, getTitlesByType, streamings } from '../lib/catalog';
 
 export default function HomePage() {
   const catalog = getCatalog();
+  const filmes = getTitlesByType('filme').slice(0, 8);
   const series = getTitlesByType('serie').slice(0, 8);
+  const rankings = [
+    { tipo: 'filme', titulo: 'Filmes', items: filmes, href: '/filmes', chamada: 'Ver todos os filmes →' },
+    { tipo: 'serie', titulo: 'Séries', items: series, href: '/series', chamada: 'Ver ranking completo →' },
+  ];
 
   return (
     <>
@@ -46,12 +51,16 @@ export default function HomePage() {
 
         <div className="divider" />
 
-        <section className="section" id="rankings">
-          <div className="section-header">
-            <h2 className="section-title">Ranking <span>Séries</span></h2>
-            <Link className="btn-ver-todos" href="/series">Ver ranking completo →</Link>
-          </div>
-          <Ranking items={series} />
+        <section className="section rankings-section" id="rankings">
+          {rankings.map((ranking) => (
+            <div className="ranking-group" data-ranking-type={ranking.tipo} key={ranking.tipo}>
+              <div className="section-header">
+                <h2 className="section-title">Ranking <span>{ranking.titulo}</span></h2>
+                <Link className="btn-ver-todos" href={ranking.href}>{ranking.chamada}</Link>
+              </div>
+              <Ranking items={ranking.items} />
+            </div>
+          ))}
         </section>
       </main>
 
