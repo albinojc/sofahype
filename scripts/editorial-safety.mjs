@@ -32,6 +32,10 @@ const ADULT_POSITIVE = new Set([
 ]);
 
 const ADULT_NEGATIVE = new Set(['filme adulto', 'serie adulta', 'conteudo adulto']);
+const CHILD_NEGATIVE_ANIMATION = new Set([
+  'animacao para criancas pequenas',
+  'desenho infantil'
+]);
 
 const SERIES_REPLACEMENTS = new Map([
   ['filme adulto', 'conteúdo adulto']
@@ -111,6 +115,12 @@ function isAnimation(item) {
   return (item.generos || []).some((genre) => normalize(genre) === 'animacao');
 }
 
+export function findNegativeChildContradictions(item) {
+  if (classificationLevel(item.classificacao_etaria) !== 'baixa') return [];
+  if (!hasChildSafetySignal(item) || !isAnimation(item)) return [];
+  return (item.talvez_nao_seja || []).filter((value) => CHILD_NEGATIVE_ANIMATION.has(normalize(value)));
+}
+
 export function applyEditorialSafety(item, classification) {
   const result = structuredClone(item);
   result.classificacao_etaria = classification?.classificacao_etaria || null;
@@ -135,6 +145,8 @@ export function applyEditorialSafety(item, classification) {
     for (const field of POSITIVE_FIELDS) {
       result[field] = result[field].filter((value) => !ADULT_POSITIVE.has(normalize(value)));
     }
+    const contradictions = new Set(findNegativeChildContradictions(result).map(normalize));
+    result.talvez_nao_seja = result.talvez_nao_seja.filter((value) => !contradictions.has(normalize(value)));
   }
 
   // Correções de linguagem estrutural são objetivas e independem de inferência etária.
@@ -174,6 +186,9 @@ export function findEditorialSafetyViolations(item) {
         if (MOVIE_SERIES_ONLY.has(normalize(value))) violations.push(`filme com linguagem exclusiva de série em ${field}: ${value}`);
       }
     }
+  }
+  for (const value of findNegativeChildContradictions(item)) {
+    violations.push(`conteúdo familiar com indicação infantil negativa incompatível em talvez_nao_seja: ${value}`);
   }
   return violations;
 }

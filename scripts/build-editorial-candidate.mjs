@@ -11,8 +11,8 @@ import {
 
 const ROOT = process.cwd();
 const SOURCE = path.join(ROOT, 'src/data/catalogo.json');
-const OUTPUT = '/tmp/sofahype-catalogo-editorial-candidato-v2.json';
-const REPORT = '/tmp/sofahype-editorial-review-v2.json';
+const OUTPUT = '/tmp/sofahype-catalogo-editorial-candidato-v3.json';
+const REPORT = '/tmp/sofahype-editorial-review-v3.json';
 const API = 'https://api.themoviedb.org/3';
 const TOKEN = process.env.TMDB_READ_ACCESS_TOKEN;
 const CONCURRENCY = 12;
@@ -27,9 +27,12 @@ async function tmdb(endpoint) {
 }
 
 async function main() {
-  if (!TOKEN) throw new Error('TMDB_READ_ACCESS_TOKEN não disponível.');
   const sourceText = await fs.readFile(SOURCE, 'utf8');
   const original = JSON.parse(sourceText);
+  const needsClassificationLookup = original.some((item) =>
+    !Object.hasOwn(item, 'classificacao_etaria') || !Object.hasOwn(item, 'classificacao_etaria_pais')
+  );
+  if (needsClassificationLookup && !TOKEN) throw new Error('TMDB_READ_ACCESS_TOKEN não disponível.');
   const candidate = new Array(original.length);
   const intermediateReview = [];
   const unclassifiedReview = [];
@@ -41,8 +44,15 @@ async function main() {
       const index = cursor++;
       if (index >= original.length) return;
       const item = original[index];
-      let classification = { classificacao_etaria: null, classificacao_etaria_pais: null };
-      if (item.tmdb_id) {
+      const hasPersistedClassification = Object.hasOwn(item, 'classificacao_etaria')
+        && Object.hasOwn(item, 'classificacao_etaria_pais');
+      let classification = hasPersistedClassification
+        ? {
+            classificacao_etaria: item.classificacao_etaria,
+            classificacao_etaria_pais: item.classificacao_etaria_pais
+          }
+        : { classificacao_etaria: null, classificacao_etaria_pais: null };
+      if (!hasPersistedClassification && item.tmdb_id) {
         try {
           classification = extractAgeClassification(await tmdb(ageEndpoint(item.tipo, item.tmdb_id)), item.tipo);
         } catch (error) {
@@ -63,7 +73,7 @@ async function main() {
         };
         (level === 'intermediaria' ? intermediateReview : unclassifiedReview).push(entry);
       }
-      if ((index + 1) % 100 === 0) console.log(`Classificações consultadas: ${index + 1}/${original.length}`);
+      if ((index + 1) % 100 === 0) console.log(`Registros processados: ${index + 1}/${original.length}`);
     }
   }
 
