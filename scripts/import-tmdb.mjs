@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { STREAMING_PROVIDERS, detectarPlataformasSofahype } from './streaming-providers.mjs';
+import { ageEndpoint, applyEditorialSafety, classificationLevel, extractAgeClassification } from './editorial-safety.mjs';
 
 const TOKEN = process.env.TMDB_READ_ACCESS_TOKEN;
 const API = 'https://api.themoviedb.org/3';
@@ -180,7 +181,7 @@ function simpleUnique(list, limit = 4) {
   return [...new Set(list.filter(Boolean))].slice(0, limit);
 }
 
-function experienceFromDetails(details, genres, tipo) {
+function experienceFromDetails(details, genres, tipo, classification) {
   const text = normalize(genres.join(' '));
   const titulo = normalize(details.title || details.name || details.original_title || details.original_name || '');
   const sinopse = normalize(details.overview || '');
@@ -206,7 +207,8 @@ function experienceFromDetails(details, genres, tipo) {
   const isHistory = has('historia');
   const isAdultByText = mentions('assassin') || mentions('crime') || mentions('violencia') || mentions('morte') || mentions('trafic') || mentions('gangue');
   const adultTone = isCrime || isThriller || isHorror || isWar || isAdultByText;
-  const isKidFriendly = (isAnimation || isFamily) && !adultTone && !isHorror && !isCrime;
+  const ageLevel = classificationLevel(classification?.classificacao_etaria);
+  const isKidFriendly = (isAnimation || isFamily) && ageLevel === 'baixa' && !adultTone && !isHorror && !isCrime;
 
   const exp = [];
   const ideal = [];
@@ -221,7 +223,7 @@ function experienceFromDetails(details, genres, tipo) {
     ideal.push('ver com crianças');
     ideal.push('aventura para crianças');
     avoid.push(isFantasy || isScifi ? 'história sem fantasia' : 'filme adulto');
-  } else if (isAnimation) {
+  } else if (isAnimation && ageLevel === 'forte') {
     exp.push('Animação para público mais velho');
     ideal.push('animação com história adulta');
     avoid.push('animação para crianças pequenas');
@@ -311,10 +313,6 @@ function experienceFromDetails(details, genres, tipo) {
     ideal.push('maratonar ou acompanhar aos poucos');
   }
 
-  if (!exp.length) exp.push(tipo === 'serie' ? 'Boa opção de série' : 'Boa opção de filme');
-  if (!ideal.length) ideal.push('títulos bem avaliados');
-  if (!avoid.length) avoid.push('outro estilo de filme ou série');
-
   return {
     experiencia: simpleUnique(exp),
     ideal_para: simpleUnique(ideal),
@@ -325,11 +323,15 @@ function experienceFromDetails(details, genres, tipo) {
 async function buildItem(candidate) {
   const detailEndpoint = candidate.tipo === 'filme' ? `/movie/${candidate.id}` : `/tv/${candidate.id}`;
   const providerEndpoint = candidate.tipo === 'filme' ? `/movie/${candidate.id}/watch/providers` : `/tv/${candidate.id}/watch/providers`;
+  const classificationEndpoint = ageEndpoint(candidate.tipo, candidate.id);
 
   const details = await safeTmdb(detailEndpoint, { language: 'pt-BR' });
   if (!details) return null;
 
-  const watch = await safeTmdb(providerEndpoint);
+  const [watch, classificationData] = await Promise.all([
+    safeTmdb(providerEndpoint),
+    safeTmdb(classificationEndpoint)
+  ]);
   const plataformas = streamingsFromWatchProviders(watch);
   if (!plataformas.length) return null;
 
@@ -343,9 +345,10 @@ async function buildItem(candidate) {
   if (!isValidReleasedDate(date) || !details.poster_path || !details.backdrop_path) return null;
 
   const slugBase = slugify(title || originalTitle || `${candidate.tipo}-${candidate.id}`);
-  const experience = experienceFromDetails(details, genres, candidate.tipo);
+  const classification = extractAgeClassification(classificationData, candidate.tipo);
+  const experience = experienceFromDetails(details, genres, candidate.tipo, classification);
 
-  return {
+  return applyEditorialSafety({
     id: `${candidate.tipo}-${candidate.id}`,
     slug: slugBase,
     tmdb_id: details.id,
@@ -373,7 +376,7 @@ async function buildItem(candidate) {
     status: 'ativo',
     status_disponibilidade: 'ativo',
     verificacao_disponibilidade: 'verificado'
-  };
+  }, classification);
 }
 
 function releaseYear(item) {
