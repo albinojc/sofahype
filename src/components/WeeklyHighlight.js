@@ -28,12 +28,12 @@ export default function WeeklyHighlight({ compact = false }) {
   const hypo = hasScore ? getHypometro(score) : null;
   const platform = item?.plataformas?.[0] || weeklyHighlight.plataforma;
   const platformClass = getPlatformClass(platform);
-  const availabilityStart = formatAvailabilityStart(item?.data_lancamento);
   const hasConfirmedPlatform = Boolean(item?.plataformas?.length);
   const poster = item?.poster_url;
   const backdrop = item?.backdrop_url;
   const unavailable = item?.status_disponibilidade === 'sem_plataforma_monitorada';
   const upcoming = item?.status_disponibilidade === 'em_breve';
+  const availabilityStart = upcoming ? formatAvailabilityStart(item?.data_lancamento) : null;
   const availabilityError = item?.verificacao_disponibilidade === 'erro';
 
   return (

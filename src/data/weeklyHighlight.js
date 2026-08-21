@@ -1,37 +1,40 @@
 export const weeklyHighlight = {
-  slug: 'lanternas',
-  titulo: 'Lanternas',
-  titulo_original: 'Lanterns',
+  slug: 'a-onda',
+  titulo: 'A Onda',
+  titulo_original: 'Bølgen',
   aliases: [
-    'Lanterns',
-    'Lanternas 2026',
-    '95350'
+    'Bølgen',
+    'The Wave',
+    'A Onda 2015',
+    '336882'
   ],
   label: 'DESTAQUE DA SEMANA',
-  plataforma: 'HBO Max',
-  estreia: '16/08/2026',
+  plataforma: 'Netflix',
+  estreia: '28/08/2015',
   chamada:
-    'Dois Lanternas, um assassinato e um mistério na Terra. A nova série da DC estreia na HBO Max.',
-  nota_sofahype: null,
-  nota_critica: null,
-  nota_publico: null,
-  hypometro: null,
-  critica_titulo: 'O que esperar',
+    'A montanha caiu. Agora corre.',
+  nota_sofahype: 75,
+  nota_critica: 83,
+  nota_publico: 66,
+  hypometro: 'Sofá Quente',
+  critica_titulo: 'Dez minutos para sair do caminho',
   critica_sofahype:
-    'John Stewart e Hal Jordan se juntam para investigar um assassinato no coração dos Estados Unidos. Lanternas estreia em 16 de agosto na HBO Max e chega sem nota por aqui: primeiro a série precisa ir ao ar, depois a gente atualiza a avaliação.',
+    'A Onda não reinventa o filme-catástrofe. E nem precisa. Em vez de tentar ser maior que Hollywood, o norueguês Roar Uthaug faz o básico muito bem: cria tensão, faz a gente se importar com aquela família e só depois solta uma montanha inteira dentro do fiorde.\n\nQuando a sirene toca, são dez minutos e zero paz. Os efeitos seguram, o suspense funciona e o drama humano impede que tudo vire apenas água, pedra e gente correndo. É daqueles filmes que você começa “só pra ver qual é” e termina agarrado no sofá.',
   experiencia_extra: [
-    'Tem mistério',
-    'Precisa prestar atenção',
-    'Mundo de fantasia',
-    'Para acompanhar em episódios'
+    'Tensão crescente',
+    'Corrida contra o tempo',
+    'Catástrofe realista',
+    'Drama familiar'
   ],
   ideal_extra: [
-    'suspense',
-    'fantasia',
-    'maratonar ou acompanhar aos poucos'
+    'quem gosta de filmes-catástrofe',
+    'suspense e sobrevivência',
+    'ação sem exagero de blockbuster',
+    'histórias de gente comum em situações extremas'
   ],
   talvez_nao_extra: [
-    'assistir distraído',
-    'história sem fantasia'
+    'quer algo leve',
+    'não gosta de cenas de desastre',
+    'prefere ação desde o primeiro minuto'
   ]
 };
