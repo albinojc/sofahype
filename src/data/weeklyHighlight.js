@@ -1,40 +1,40 @@
 export const weeklyHighlight = {
-  slug: 'a-onda',
-  titulo: 'A Onda',
-  titulo_original: 'Bølgen',
+  slug: 'o-homem-que-sussurra',
+  titulo: 'O Homem que Sussurra',
+  titulo_original: 'The Whisper Man',
   aliases: [
-    'Bølgen',
-    'The Wave',
-    'A Onda 2015',
-    '336882'
+    'The Whisper Man',
+    'O Homem que Sussurra',
+    '860508'
   ],
   label: 'DESTAQUE DA SEMANA',
   plataforma: 'Netflix',
-  estreia: '28/08/2015',
+  estreia: '28/08/2026',
   chamada:
-    'A montanha caiu. Agora corre.',
-  nota_sofahype: 75,
-  nota_critica: 83,
-  nota_publico: 66,
-  hypometro: 'Sofá Quente',
-  critica_titulo: 'Dez minutos para sair do caminho',
+    'Seu filho desapareceu. E o passado do avô acabou de voltar.',
+  nota_sofahype: null,
+  nota_critica: null,
+  nota_publico: null,
+  hypometro: null,
+  critica_titulo: 'Tem sussurro, serial killer e um elenco de respeito',
   critica_sofahype:
-    'A Onda não reinventa o filme-catástrofe. E nem precisa. Em vez de tentar ser maior que Hollywood, o norueguês Roar Uthaug faz o básico muito bem: cria tensão, faz a gente se importar com aquela família e só depois solta uma montanha inteira dentro do fiorde.\n\nQuando a sirene toca, são dez minutos e zero paz. Os efeitos seguram, o suspense funciona e o drama humano impede que tudo vire apenas água, pedra e gente correndo. É daqueles filmes que você começa “só pra ver qual é” e termina agarrado no sofá.',
+    'O Homem que Sussurra chega com aquele kit completo de suspense policial que já vem com a luz apagada: criança desaparecida, serial killer, riminha macabra, detetive aposentado e uma família carregando trauma suficiente para umas três temporadas de terapia.\n\nA boa notícia é o elenco. Adam Scott segura boa parte do desespero da história, Michelle Monaghan funciona muito bem na investigação e ainda temos Robert De Niro e Michael Keaton no mesmo filme — o que, convenhamos, já é motivo suficiente para pelo menos dar uma espiada.\n\nO problema é que O Homem que Sussurra nem sempre tem coisa nova para contar. O filme visita várias casas onde Seven, O Silêncio dos Inocentes e os thrillers policiais dos anos 90 já tocaram a campainha antes. Tem atmosfera, tem mistério e alguns bons momentos de tensão, mas também tem aquela sensação de “acho que já vi isso em algum lugar”.\n\nNão parece ser o novo clássico dos serial killers. Mas, numa sexta à noite, com a sala escura e vontade de assistir a um suspense sinistro sem precisar pensar na vida, pode funcionar muito bem.',
   experiencia_extra: [
-    'Tensão crescente',
-    'Corrida contra o tempo',
-    'Catástrofe realista',
-    'Drama familiar'
+    'Suspense sombrio',
+    'Investigação policial',
+    'Clima de serial killer',
+    'Drama entre pai e filho'
   ],
   ideal_extra: [
-    'quem gosta de filmes-catástrofe',
-    'suspense e sobrevivência',
-    'ação sem exagero de blockbuster',
-    'histórias de gente comum em situações extremas'
+    'mistérios criminais',
+    'thrillers psicológicos',
+    'histórias de serial killer',
+    'suspense com clima dos anos 90'
   ],
   talvez_nao_extra: [
-    'quer algo leve',
-    'não gosta de cenas de desastre',
-    'prefere ação desde o primeiro minuto'
+    'algo leve',
+    'uma história muito original',
+    'ação o tempo todo',
+    'um filme sem crianças em situações de risco'
   ]
 };

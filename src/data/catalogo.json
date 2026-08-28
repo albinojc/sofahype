@@ -114875,12 +114875,67 @@
       "não gosta de cenas de desastre",
       "prefere ação desde o primeiro minuto"
     ],
-    "destaque_semana": true,
+    "destaque_semana": false,
     "fonte_dados": "TMDb",
     "status": "ativo",
     "status_disponibilidade": "ativo",
     "verificacao_disponibilidade": "verificado",
     "classificacao_etaria": "14",
+    "classificacao_etaria_pais": "BR"
+  },
+  {
+    "id": "filme-860508",
+    "slug": "o-homem-que-sussurra",
+    "tmdb_id": 860508,
+    "tipo": "filme",
+    "titulo": "O Homem que Sussurra",
+    "titulo_original": "The Whisper Man",
+    "ano": "2026",
+    "data_lancamento": "2026-08-28",
+    "generos": [
+      "Crime",
+      "Drama",
+      "Thriller"
+    ],
+    "plataformas": [
+      "Netflix"
+    ],
+    "nota_sofahype": null,
+    "nota_critica": null,
+    "nota_publico": null,
+    "nota_tmdb": "4.2",
+    "votos_tmdb": 4,
+    "popularidade_tmdb": 9.2407,
+    "duracao": "1h51",
+    "tag": "Destaque da Semana",
+    "poster_url": "https://image.tmdb.org/t/p/w500/umlg3mqkny7opAfPtBLUGYwZ8xF.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/wHWJ1d9hqZ2iY0057xoLm3I3m8r.jpg",
+    "sinopse": "Após o sequestro de seu filho, um escritor de romances policiais pede ajuda ao pai, um detetive aposentado, e descobre uma ligação inesperada com um assassino em série condenado há décadas.",
+    "experiencia": [
+      "Suspense sombrio",
+      "Investigação policial",
+      "Clima de serial killer",
+      "Drama entre pai e filho"
+    ],
+    "ideal_para": [
+      "mistérios criminais",
+      "thrillers psicológicos",
+      "histórias de serial killer",
+      "suspense com clima dos anos 90"
+    ],
+    "talvez_nao_seja": [
+      "algo leve",
+      "uma história muito original",
+      "ação o tempo todo",
+      "um filme sem crianças em situações de risco"
+    ],
+    "destaque_semana": true,
+    "fonte_dados": "TMDb",
+    "origem_importacao": "tmdb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "16",
     "classificacao_etaria_pais": "BR"
   }
 ]
