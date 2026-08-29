@@ -29,7 +29,7 @@ export default function WeeklyHighlight({ compact = false }) {
   const platform = item?.plataformas?.[0] || weeklyHighlight.plataforma;
   const platformClass = getPlatformClass(platform);
   const hasConfirmedPlatform = Boolean(item?.plataformas?.length);
-  const backdrop = item?.backdrop_url;
+  const heroImage = weeklyHighlight.hero_image || item?.backdrop_url;
   const unavailable = item?.status_disponibilidade === 'sem_plataforma_monitorada';
   const upcoming = item?.status_disponibilidade === 'em_breve';
   const availabilityStart = upcoming ? formatAvailabilityStart(item?.data_lancamento) : null;
@@ -43,7 +43,7 @@ export default function WeeklyHighlight({ compact = false }) {
     <div className={compact ? 'weekly-feature weekly-feature-compact' : 'weekly-feature'}>
       <section className={compact ? 'weekly-highlight weekly-highlight-compact' : 'weekly-highlight'}>
         <div className="weekly-highlight-bg" aria-hidden="true">
-          {backdrop ? <img src={backdrop} alt="" /> : null}
+          {heroImage ? <img src={heroImage} alt="" /> : null}
         </div>
         <div className="weekly-copy">
           <div className="weekly-label">{weeklyHighlight.label}</div>
