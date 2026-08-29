@@ -8,6 +8,7 @@ export const weeklyHighlight = {
     '860508'
   ],
   label: 'DESTAQUE DA SEMANA',
+  hero_image: '/images/destaques/o-homem-que-sussurra-hero.jpg',
   plataforma: 'Netflix',
   estreia: '28/08/2026',
   chamada:
