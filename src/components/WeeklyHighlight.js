@@ -43,7 +43,12 @@ export default function WeeklyHighlight({ compact = false }) {
     <div className={compact ? 'weekly-feature weekly-feature-compact' : 'weekly-feature'}>
       <section className={compact ? 'weekly-highlight weekly-highlight-compact' : 'weekly-highlight'}>
         <div className="weekly-highlight-bg" aria-hidden="true">
-          {heroImage ? <img src={heroImage} alt="" /> : null}
+          {heroImage || weeklyHighlight.hero_image_mobile ? (
+            <picture>
+              {weeklyHighlight.hero_image_mobile ? <source media="(max-width: 760px)" srcSet={weeklyHighlight.hero_image_mobile} /> : null}
+              <img src={heroImage} alt="" />
+            </picture>
+          ) : null}
         </div>
         <div className="weekly-copy">
           <div className="weekly-label">{weeklyHighlight.label}</div>

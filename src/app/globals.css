@@ -682,20 +682,22 @@ button.mood:focus-visible {
   .weekly-feature-compact { margin: 0; }
   .weekly-highlight {
     align-items: flex-end;
-    min-height: 570px;
-    padding: 26px 20px;
+    min-height: 0;
+    padding: 260px 20px 24px;
     border-radius: 22px;
   }
-  .weekly-highlight-compact { min-height: 540px; }
-  .weekly-highlight-bg img { object-position: 36% center; }
+  .weekly-highlight-compact { min-height: 0; }
+  .weekly-highlight-bg img {
+    height: 400px;
+    object-position: center top;
+  }
   .weekly-highlight::after {
     background:
-      linear-gradient(0deg, rgba(8,8,8,.90) 0%, rgba(8,8,8,.64) 34%, rgba(8,8,8,.10) 64%, rgba(8,8,8,0) 82%),
-      linear-gradient(90deg, rgba(8,8,8,.24), rgba(8,8,8,0) 64%);
+      linear-gradient(180deg, rgba(17,17,17,0) 220px, rgba(17,17,17,.35) 280px, #111 400px);
   }
   .weekly-copy { width: 100%; }
   .weekly-label { margin-bottom: 10px; }
-  .weekly-copy h2 { max-width: 100%; font-size: clamp(44px, 14vw, 60px); }
+  .weekly-copy h2 { max-width: 100%; font-size: clamp(40px, 11vw, 52px); }
   .weekly-copy p { max-width: 100%; font-size: 16px; line-height: 1.4; margin-bottom: 13px; }
   .weekly-meta { margin-bottom: 13px; }
   .weekly-metrics { margin-bottom: 14px; }
