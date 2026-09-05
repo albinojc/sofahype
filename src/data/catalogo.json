@@ -114929,13 +114929,67 @@
       "ação o tempo todo",
       "um filme sem crianças em situações de risco"
     ],
-    "destaque_semana": true,
+    "destaque_semana": false,
     "fonte_dados": "TMDb",
     "origem_importacao": "tmdb",
     "status": "ativo",
     "status_disponibilidade": "ativo",
     "verificacao_disponibilidade": "verificado",
     "classificacao_etaria": "16",
+    "classificacao_etaria_pais": "BR"
+  },
+  {
+    "id": "filme-1228710",
+    "slug": "star-wars-o-mandaloriano-e-grogu",
+    "tmdb_id": 1228710,
+    "tipo": "filme",
+    "titulo": "Star Wars: O Mandaloriano e Grogu",
+    "titulo_original": "The Mandalorian and Grogu",
+    "ano": "2026",
+    "data_lancamento": "2026-05-21",
+    "generos": [
+      "Ação",
+      "Aventura",
+      "Ficção científica"
+    ],
+    "plataformas": [
+      "Disney+"
+    ],
+    "nota_sofahype": 64,
+    "nota_critica": 60,
+    "nota_publico": 68,
+    "nota_tmdb": "7.5",
+    "votos_tmdb": 1457,
+    "popularidade_tmdb": 81.2094,
+    "duracao": "2h12",
+    "tag": "Destaque da Semana",
+    "poster_url": "https://image.tmdb.org/t/p/w500/dNwaS0tnwgQRaQFPY5MbGxdmYXr.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/wFKDH8nAz7l9iyVobjcNAPTrkNz.jpg",
+    "sinopse": "O maligno Império caiu e os senhores da guerra Imperiais ainda estão espalhados pela galáxia. Enquanto a jovem Nova República luta para proteger tudo pelo que a Rebelião batalhou, ela conta com a ajuda do lendário caçador de recompensas Mandaloriano Din Djarin e seu jovem aprendiz Grogu.",
+    "experiencia": [
+      "Aventura galáctica",
+      "Ação e humor",
+      "Faroeste espacial",
+      "Mando + Grogu"
+    ],
+    "ideal_para": [
+      "The Mandalorian",
+      "aventuras de Star Wars",
+      "ficção científica leve",
+      "Grogu sendo Grogu"
+    ],
+    "talvez_nao_seja": [
+      "uma trama muito complexa",
+      "um novo grande épico de Star Wars",
+      "algo totalmente independente da série",
+      "ficção científica mais séria"
+    ],
+    "destaque_semana": true,
+    "fonte_dados": "TMDb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "14",
     "classificacao_etaria_pais": "BR"
   }
 ]

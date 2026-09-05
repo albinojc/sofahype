@@ -34,16 +34,18 @@ export default function WeeklyHighlight({ compact = false }) {
   const upcoming = item?.status_disponibilidade === 'em_breve';
   const availabilityStart = upcoming ? formatAvailabilityStart(item?.data_lancamento) : null;
   const availabilityError = item?.verificacao_disponibilidade === 'erro';
-  const experience = weeklyHighlight.experiencia_extra?.length ? weeklyHighlight.experiencia_extra : item?.experiencia || [];
-  const idealFor = weeklyHighlight.ideal_extra?.length ? weeklyHighlight.ideal_extra : item?.ideal_para || [];
-  const notFor = weeklyHighlight.talvez_nao_extra?.length ? weeklyHighlight.talvez_nao_extra : item?.talvez_nao_seja || [];
   const metadata = [item?.ano, item?.duracao, item?.classificacao_etaria ? `${item.classificacao_etaria} anos` : null].filter(Boolean);
 
   return (
     <div className={compact ? 'weekly-feature weekly-feature-compact' : 'weekly-feature'}>
       <section className={compact ? 'weekly-highlight weekly-highlight-compact' : 'weekly-highlight'}>
         <div className="weekly-highlight-bg" aria-hidden="true">
-          {heroImage ? <img src={heroImage} alt="" /> : null}
+          {heroImage || weeklyHighlight.hero_image_mobile ? (
+            <picture>
+              {weeklyHighlight.hero_image_mobile ? <source media="(max-width: 760px)" srcSet={weeklyHighlight.hero_image_mobile} /> : null}
+              <img src={heroImage} alt="" />
+            </picture>
+          ) : null}
         </div>
         <div className="weekly-copy">
           <div className="weekly-label">{weeklyHighlight.label}</div>
@@ -76,29 +78,6 @@ export default function WeeklyHighlight({ compact = false }) {
         </div>
       </section>
 
-      {!compact ? (
-        <section className="weekly-editorial" aria-label={`Conteúdo editorial sobre ${title}`}>
-          <div className="detail-block review-block weekly-review">
-            <span className="review-eyebrow">Destaque da semana</span>
-            <h2>{weeklyHighlight.critica_titulo}</h2>
-            <p>{weeklyHighlight.critica_sofahype}</p>
-          </div>
-          <div className="detail-block weekly-experience">
-            <h2>Como é a experiência?</h2>
-            <div className="experience-list">{experience.map((entry) => <span key={entry}>{entry}</span>)}</div>
-          </div>
-          <div className="decision-grid weekly-decisions">
-            <div className="detail-block">
-              <h2>Ideal para quem gosta de</h2>
-              <ul className="decision-list good-list">{idealFor.map((entry) => <li key={entry}><span className="decision-icon good">✓</span>{entry}</li>)}</ul>
-            </div>
-            <div className="detail-block">
-              <h2>Talvez não seja para você se procura</h2>
-              <ul className="decision-list bad-list">{notFor.map((entry) => <li key={entry}><span className="decision-icon bad">×</span>{entry}</li>)}</ul>
-            </div>
-          </div>
-        </section>
-      ) : null}
     </div>
   );
 }
