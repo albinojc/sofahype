@@ -114984,6 +114984,60 @@
       "algo totalmente independente da série",
       "ficção científica mais séria"
     ],
+    "destaque_semana": false,
+    "fonte_dados": "TMDb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "14",
+    "classificacao_etaria_pais": "BR"
+  },
+  {
+    "id": "filme-1081003",
+    "slug": "supergirl",
+    "tmdb_id": 1081003,
+    "tipo": "filme",
+    "titulo": "Supergirl",
+    "titulo_original": "Supergirl",
+    "ano": "2026",
+    "data_lancamento": "2026-06-25",
+    "generos": [
+      "Ação",
+      "Aventura",
+      "Ficção científica"
+    ],
+    "plataformas": [
+      "HBO Max"
+    ],
+    "nota_sofahype": 56,
+    "nota_critica": 53,
+    "nota_publico": 58,
+    "nota_tmdb": "6.7",
+    "votos_tmdb": 2214,
+    "popularidade_tmdb": 72.9827,
+    "duracao": "1h48",
+    "tag": "Destaque da Semana",
+    "poster_url": "https://image.tmdb.org/t/p/w500/niSvU02l2BONH9ivubV6K1a5QiK.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/54KIfdTEzOliHDKx0OkzYGqAICx.jpg",
+    "sinopse": "Kara Zor-El cruza a galáxia ao lado da jovem Ruthye em uma jornada de vingança e justiça. Entre mundos estranhos, velhas cicatrizes e a tentativa de salvar Krypto, ela precisa descobrir que tipo de heroína pretende ser.",
+    "experiencia": [
+      "Aventura espacial",
+      "Heroína rebelde",
+      "Ação e humor",
+      "Faroeste cósmico"
+    ],
+    "ideal_para": [
+      "fãs do novo universo DC",
+      "aventuras espaciais",
+      "personagens imperfeitos",
+      "Milly Alcock"
+    ],
+    "talvez_nao_seja": [
+      "quem busca um grande épico de super-herói",
+      "uma história muito original",
+      "vilões memoráveis",
+      "super-heróis mais tradicionais"
+    ],
     "destaque_semana": true,
     "fonte_dados": "TMDb",
     "status": "ativo",
