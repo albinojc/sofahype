@@ -3,7 +3,7 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { formatAvailabilityStart, formatScore, getExperienceForDisplay, getFullCatalog, getHypometro, getPlatformClass, getScoreClass, getTitleBySlug } from '../../../lib/catalog';
 import HypometroIcon from '../../../components/HypometroIcon';
-import { weeklyHighlight } from '../../../data/weeklyHighlight';
+import { weeklyHighlight, weeklyHighlights } from '../../../data/weeklyHighlight';
 
 export const dynamicParams = false;
 
@@ -24,10 +24,16 @@ export default async function TitlePage({ params }) {
 
   const hasScore = item.nota_sofahype !== null && item.nota_sofahype !== undefined && Number(item.nota_sofahype) > 0;
   const hypo = hasScore ? getHypometro(item.nota_sofahype) : null;
-  const experience = getExperienceForDisplay(item);
-  const isWeeklyHighlight = item.destaque_semana || item.slug === weeklyHighlight.slug || item.titulo_original === weeklyHighlight.titulo_original;
-  const highlightReview = item.critica_sofahype || (isWeeklyHighlight ? weeklyHighlight.critica_sofahype : '');
-  const highlightReviewTitle = item.critica_titulo || weeklyHighlight.critica_titulo;
+  const editorialHighlight = weeklyHighlights.find((highlight) => item.slug === highlight.slug || item.titulo_original === highlight.titulo_original);
+  const experience = getExperienceForDisplay({
+    ...item,
+    experiencia: editorialHighlight?.experiencia_extra || item.experiencia,
+    ideal_para: editorialHighlight?.ideal_extra || item.ideal_para,
+    talvez_nao_seja: editorialHighlight?.talvez_nao_extra || item.talvez_nao_seja
+  });
+  const isWeeklyHighlight = item.destaque_semana === true || item.slug === weeklyHighlight.slug;
+  const highlightReview = item.critica_sofahype || editorialHighlight?.critica_sofahype || '';
+  const highlightReviewTitle = item.critica_titulo || editorialHighlight?.critica_titulo || 'Crítica SofáHype';
   const reviewEyebrow = isWeeklyHighlight ? 'Destaque da semana' : 'Crítica SofáHype';
   const availabilityStart = formatAvailabilityStart(item.data_lancamento);
   const availabilityStatus = item.status_disponibilidade;
