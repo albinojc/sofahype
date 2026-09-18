@@ -504,6 +504,72 @@ button.mood:focus-visible {
   margin: 2rem;
 }
 .weekly-feature-compact { margin: 0; }
+.weekly-carousel {
+  position: relative;
+  touch-action: pan-y;
+  outline: none;
+}
+.weekly-carousel:focus-visible .weekly-carousel-viewport {
+  outline: 3px solid #C8F135;
+  outline-offset: 3px;
+}
+.weekly-carousel-viewport {
+  overflow: hidden;
+  border-radius: 28px;
+}
+.weekly-carousel-track {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  will-change: transform;
+}
+.weekly-carousel-track.is-animated {
+  transition: transform .62s cubic-bezier(.22,.72,.22,1);
+}
+.weekly-carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+}
+.weekly-carousel-arrow {
+  position: absolute;
+  z-index: 4;
+  top: calc(50% - 22px);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 50%;
+  background: rgba(8,8,8,.58);
+  color: #F5F0E8;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background .16s, transform .16s;
+}
+.weekly-carousel-arrow:hover { background: rgba(8,8,8,.82); transform: scale(1.04); }
+.weekly-carousel-arrow:focus-visible { outline: 3px solid #C8F135; outline-offset: 3px; }
+.weekly-carousel-prev { left: 14px; }
+.weekly-carousel-next { right: 14px; }
+.weekly-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 14px;
+}
+.weekly-carousel-dots button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #555;
+  cursor: pointer;
+  transition: width .2s, background .2s;
+}
+.weekly-carousel-dots button[aria-current="true"] { width: 28px; background: #C8F135; }
+.weekly-carousel-dots button:focus-visible { outline: 3px solid #F5F0E8; outline-offset: 3px; }
 .weekly-highlight {
   position: relative;
   overflow: hidden;
@@ -529,7 +595,7 @@ button.mood:focus-visible {
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: var(--hero-position, center 42%);
   filter: saturate(1.04) contrast(1.01);
 }
 .weekly-highlight::after {
@@ -578,6 +644,16 @@ button.mood:focus-visible {
   line-height: 1.45;
   margin-bottom: 16px;
   text-shadow: 0 2px 18px rgba(0,0,0,.68);
+}
+.weekly-complement {
+  display: block;
+  width: fit-content;
+  margin: -5px 0 12px;
+  color: #C8F135;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 .weekly-meta {
   display: flex;
@@ -689,7 +765,7 @@ button.mood:focus-visible {
   .weekly-highlight-compact { min-height: 0; }
   .weekly-highlight-bg img {
     height: 400px;
-    object-position: center top;
+    object-position: var(--hero-position-mobile, center top);
   }
   .weekly-highlight::after {
     background:
@@ -702,9 +778,29 @@ button.mood:focus-visible {
   .weekly-meta { margin-bottom: 13px; }
   .weekly-metrics { margin-bottom: 14px; }
   .weekly-actions .btn-primary { width: 100%; min-height: 46px; }
+  .weekly-carousel-viewport { border-radius: 22px; }
+  .weekly-carousel-arrow { display: none; }
+  .weekly-carousel-dots { padding-top: 12px; }
   .weekly-editorial { margin-top: 14px; }
   .weekly-review { padding: 22px 18px; }
   .weekly-decisions { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weekly-carousel-track.is-animated { transition: none; }
+  .weekly-carousel-dots button { transition: none; }
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 /* Ajuste: notas em escala 0.0 a 10.0 e sempre em box */

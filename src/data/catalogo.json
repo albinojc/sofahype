@@ -49823,9 +49823,9 @@
     "plataformas": [
       "Prime Video"
     ],
-    "nota_sofahype": 79,
-    "nota_critica": null,
-    "nota_publico": 84,
+    "nota_sofahype": 85,
+    "nota_critica": 92,
+    "nota_publico": 77,
     "nota_tmdb": "8.4",
     "popularidade_tmdb": 42.4263,
     "duracao": "",
@@ -114990,6 +114990,60 @@
     "status_disponibilidade": "ativo",
     "verificacao_disponibilidade": "verificado",
     "classificacao_etaria": "14",
+    "classificacao_etaria_pais": "BR"
+  },
+  {
+    "id": "serie-299939",
+    "slug": "monstro-a-historia-de-lizzie-borden",
+    "tmdb_id": 299939,
+    "tipo": "serie",
+    "titulo": "Monstro: A História de Lizzie Borden",
+    "titulo_original": "Monster: The Lizzie Borden Story",
+    "ano": "2026",
+    "data_lancamento": "2026-09-17",
+    "generos": [
+      "Drama",
+      "Crime"
+    ],
+    "plataformas": [
+      "Netflix"
+    ],
+    "nota_sofahype": null,
+    "nota_critica": null,
+    "nota_publico": null,
+    "nota_tmdb": "8.1",
+    "votos_tmdb": 12,
+    "popularidade_tmdb": 93.8736,
+    "duracao": "",
+    "temporadas": 1,
+    "episodios": 8,
+    "tag": "",
+    "poster_url": "https://image.tmdb.org/t/p/w500/cLP2z0O78DLiMqH8pvtB8EYq8KY.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/gaew60NXUxok3Vmls7gkAT7lYW0.jpg",
+    "sinopse": "Baseada na história real de Lizzie Borden, esta série de terror histórica conta como foram os assassinatos a machadadas que deram origem a um ícone da vingança feminina.",
+    "experiencia": [
+      "True crime de época",
+      "Crime e obsessão",
+      "Atmosfera sombria",
+      "Caso histórico"
+    ],
+    "ideal_para": [
+      "fãs de true crime",
+      "quem acompanha a antologia Monstro",
+      "dramas criminais de época",
+      "histórias baseadas em crimes reais"
+    ],
+    "talvez_nao_seja": [
+      "quem evita violência gráfica",
+      "quem procura algo leve",
+      "quem prefere histórias rápidas",
+      "quem não gosta de dramatizações de crimes reais"
+    ],
+    "fonte_dados": "TMDb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "18",
     "classificacao_etaria_pais": "BR"
   },
   {
