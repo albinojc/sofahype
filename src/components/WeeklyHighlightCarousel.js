@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import HypometroIcon from './HypometroIcon';
 
-const AUTOPLAY_MS = 7000;
+const AUTOPLAY_MS = 5000;
 const SWIPE_THRESHOLD = 45;
 
 function Slide({ slide, active, position, total, priority = false }) {

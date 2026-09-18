@@ -524,7 +524,7 @@ button.mood:focus-visible {
   will-change: transform;
 }
 .weekly-carousel-track.is-animated {
-  transition: transform .62s cubic-bezier(.22,.72,.22,1);
+  transition: transform .56s cubic-bezier(.22,.72,.22,1);
 }
 .weekly-carousel-slide {
   flex: 0 0 100%;
