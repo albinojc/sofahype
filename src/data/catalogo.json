@@ -26825,11 +26825,12 @@
       "Aventura"
     ],
     "plataformas": [
+      "Netflix",
       "HBO Max"
     ],
-    "nota_sofahype": 62,
-    "nota_critica": null,
-    "nota_publico": 62,
+    "nota_sofahype": 52,
+    "nota_critica": 47,
+    "nota_publico": 56,
     "nota_tmdb": "6.2",
     "popularidade_tmdb": 32.1149,
     "duracao": "1h41",
@@ -26854,6 +26855,7 @@
       "história parada",
       "drama pesado"
     ],
+    "destaque_semana": true,
     "fonte_dados": "TMDb",
     "status": "ativo",
     "status_disponibilidade": "ativo",
@@ -31445,12 +31447,12 @@
       "Faroeste"
     ],
     "plataformas": [
-      "Prime Video",
+      "HBO Max",
       "Hulu"
     ],
-    "nota_sofahype": 60,
-    "nota_critica": null,
-    "nota_publico": 64,
+    "nota_sofahype": 36,
+    "nota_critica": 24,
+    "nota_publico": 47,
     "nota_tmdb": "6.4",
     "popularidade_tmdb": 9.3645,
     "duracao": "1h41",
@@ -31473,7 +31475,7 @@
     "fonte_dados": "TMDb",
     "status": "ativo",
     "status_disponibilidade": "ativo",
-    "verificacao_disponibilidade": "verificado",
+    "verificacao_disponibilidade": "erro",
     "classificacao_etaria": "16",
     "classificacao_etaria_pais": "BR"
   },
@@ -115092,12 +115094,118 @@
       "vilões memoráveis",
       "super-heróis mais tradicionais"
     ],
-    "destaque_semana": true,
+    "destaque_semana": false,
     "fonte_dados": "TMDb",
     "status": "ativo",
     "status_disponibilidade": "ativo",
     "verificacao_disponibilidade": "verificado",
     "classificacao_etaria": "14",
+    "classificacao_etaria_pais": "BR"
+  },
+  {
+    "id": "filme-1126336",
+    "slug": "o-aniversario",
+    "tmdb_id": 1126336,
+    "tipo": "filme",
+    "titulo": "O Aniversário",
+    "titulo_original": "Anniversary",
+    "ano": "2025",
+    "data_lancamento": "2025-11-06",
+    "generos": [
+      "Thriller",
+      "Drama"
+    ],
+    "plataformas": [
+      "Prime Video"
+    ],
+    "nota_sofahype": 68,
+    "nota_critica": 68,
+    "nota_publico": 67,
+    "nota_tmdb": "6.9",
+    "votos_tmdb": 186,
+    "popularidade_tmdb": 10.5564,
+    "duracao": "1h51",
+    "tag": "",
+    "poster_url": "https://image.tmdb.org/t/p/w500/7NjwRKKwTGQnBKAYnDBDKjLSzCP.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/mNUciC3vHhoskveYsO3hiFypqMz.jpg",
+    "sinopse": "Quando o filho de Ellen e Paul apresenta sua nova namorada durante a festa de 25 anos de casamento deles, ninguém imagina que esse é o começo do fim para essa família feliz. A nova namorada é Liz, ex-aluna de Ellen, que deixou a universidade alguns anos antes, depois que Ellen a confrontou em sala de aula por sua ideologia radical.",
+    "experiencia": [
+      "Thriller psicológico",
+      "Tensão familiar",
+      "Paranoia política",
+      "Drama"
+    ],
+    "ideal_para": [
+      "thrillers adultos",
+      "dramas familiares",
+      "histórias de tensão crescente",
+      "quem gosta de Diane Lane"
+    ],
+    "talvez_nao_seja": [
+      "quem busca ação constante",
+      "histórias leves",
+      "suspense convencional",
+      "quem prefere fugir de temas políticos"
+    ],
+    "fonte_dados": "TMDb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "16",
+    "classificacao_etaria_pais": "BR"
+  },
+  {
+    "id": "filme-1084244",
+    "slug": "toy-story-5",
+    "tmdb_id": 1084244,
+    "tipo": "filme",
+    "titulo": "Toy Story 5",
+    "titulo_original": "Toy Story 5",
+    "ano": "2026",
+    "data_lancamento": "2026-06-18",
+    "generos": [
+      "Animação",
+      "Família",
+      "Comédia",
+      "Aventura"
+    ],
+    "plataformas": [
+      "Disney+"
+    ],
+    "nota_sofahype": 84,
+    "nota_critica": 93,
+    "nota_publico": 74,
+    "nota_tmdb": "8.3",
+    "votos_tmdb": 2284,
+    "popularidade_tmdb": 170.4058,
+    "duracao": "1h40",
+    "tag": "",
+    "poster_url": "https://image.tmdb.org/t/p/w500/sssrBhdvDcczgMQYDc8oCoSuFEJ.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/qjTqY5coNiz6sVtPng40IzltsoN.jpg",
+    "sinopse": "O trabalho de Buzz, Woody, Jessie e do resto da gangue fica exponencialmente mais difícil quando eles enfrentam uma nova ameaça à diversão: a tecnologia.",
+    "experiencia": [
+      "Aventura em família",
+      "Humor",
+      "Nostalgia Pixar",
+      "Brinquedos contra tecnologia"
+    ],
+    "ideal_para": [
+      "fãs de Toy Story",
+      "assistir em família",
+      "animações da Pixar",
+      "quem cresceu com Woody e Buzz"
+    ],
+    "talvez_nao_seja": [
+      "quem acha que a franquia já deveria ter terminado",
+      "quem procura algo completamente novo",
+      "quem não gosta de nostalgia",
+      "animação menos sentimental"
+    ],
+    "fonte_dados": "TMDb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "10",
     "classificacao_etaria_pais": "BR"
   }
 ]
