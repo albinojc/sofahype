@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { findEditorialSafetyViolations } from './editorial-safety.mjs';
+import { hasConfirmedScores } from './editorial-scores.mjs';
 
 const ROOT = process.cwd();
 const DEFAULT_CATALOG_PATH = path.join(ROOT, 'src/data/catalogo.json');
@@ -82,6 +83,9 @@ async function main() {
   const { catalogPath, strict } = parseArgs(process.argv.slice(2));
   const errors = [];
   const warnings = [];
+  const reviews = JSON.parse(await fs.readFile(path.join(ROOT, 'src/data/scoreReviews.json'), 'utf8'));
+  const reviewsById = new Map(reviews.map((review) => [review.id, review]));
+  if (reviewsById.size !== reviews.length) errors.push('Revisões de notas com IDs duplicados.');
   let catalog;
 
   try {
@@ -103,6 +107,10 @@ async function main() {
 
   for (const item of catalog) {
     const label = item.titulo || item.id || '(registro sem identificação)';
+    const review = reviewsById.get(item.id);
+    if (review && !hasConfirmedScores(item, review)) {
+      errors.push(`Notas divergem da revisão editorial documentada: ${label}`);
+    }
     const releaseDate = item.data_lancamento;
     const year = Number(String(item.ano || '').slice(0, 4));
     if (item.status_disponibilidade !== 'em_breve' && ((releaseDate && releaseDate > TODAY) || (!releaseDate && Number.isFinite(year) && year > Number(TODAY.slice(0, 4))))) {
@@ -134,7 +142,8 @@ async function main() {
       if (!strict && item.status_disponibilidade === undefined && !item.plataformas?.length) {
         errors.push(`Novo registro sem plataforma: ${label}`);
       }
-      if (item.nota_sofahype !== null || item.nota_critica !== null || item.nota_publico !== null) {
+      if ((item.nota_sofahype !== null || item.nota_critica !== null || item.nota_publico !== null)
+        && !hasConfirmedScores(item, review)) {
         errors.push(`Novo registro com nota editorial preenchida: ${label}`);
       }
     } else {

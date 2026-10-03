@@ -4,12 +4,12 @@ import SearchBox from '../components/SearchBox';
 import SensationExplorer from '../components/SensationExplorer';
 import Ranking from '../components/Ranking';
 import WeeklyHighlight from '../components/WeeklyHighlight';
-import { getCatalog, getTitlesByType, streamings } from '../lib/catalog';
+import { getCatalog, getRankedTitlesByType, streamings } from '../lib/catalog';
 
 export default function HomePage() {
   const catalog = getCatalog();
-  const filmes = getTitlesByType('filme').slice(0, 8);
-  const series = getTitlesByType('serie').slice(0, 8);
+  const filmes = getRankedTitlesByType('filme').slice(0, 8);
+  const series = getRankedTitlesByType('serie').slice(0, 8);
   const rankings = [
     { tipo: 'filme', titulo: 'Filmes', items: filmes, href: '/filmes', chamada: 'Ver todos os filmes →' },
     { tipo: 'serie', titulo: 'Séries', items: series, href: '/series', chamada: 'Ver ranking completo →' },
