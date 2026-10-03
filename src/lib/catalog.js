@@ -1,4 +1,5 @@
 import catalogo from '../data/catalogo.json';
+import { compareByScore, isRankingEligible } from './ranking';
 
 export const streamings = [
   { nome: 'Netflix', slug: 'netflix', classe: 'netflix', aliases: ['Netflix'] },
@@ -65,7 +66,11 @@ export function getCatalog() {
 export function getTitlesByType(tipo) {
   return getCatalog()
     .filter((item) => item.tipo === tipo)
-    .sort((a, b) => b.nota_sofahype - a.nota_sofahype);
+    .sort(compareByScore);
+}
+
+export function getRankedTitlesByType(tipo) {
+  return getTitlesByType(tipo).filter(isRankingEligible);
 }
 
 export function platformMatches(itemPlatform, streaming) {
@@ -80,7 +85,7 @@ export function getTitlesByStreaming(slug) {
 
   return getCatalog()
     .filter((item) => (item.plataformas || []).some((platform) => platformMatches(platform, streaming)))
-    .sort((a, b) => b.nota_sofahype - a.nota_sofahype);
+    .sort(compareByScore);
 }
 
 export function getTitleBySlug(slug) {
@@ -98,7 +103,7 @@ export function getScoreClass(score) {
 export function formatScore(score) {
   const value = Number(score || 0);
   if (!Number.isFinite(value) || value <= 0) return '—';
-  return (value / 10).toFixed(1);
+  return (Math.round(value) / 10).toFixed(1);
 }
 
 export function getHypometro(score) {

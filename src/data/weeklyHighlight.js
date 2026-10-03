@@ -17,7 +17,7 @@ export const weeklyHighlights = [
     aliases: ['Toy Story 5', '1084244', 'tt29355505'],
     label: 'DESTAQUES DA SEMANA', plataforma: 'Disney+',
     chamada: 'Os brinquedos voltaram. Agora o inimigo tem tela.',
-    nota_sofahype: 84, nota_critica: 93, nota_publico: 74, hypometro: null,
+    nota_sofahype: 83, nota_critica: 92, nota_publico: 74, hypometro: null,
     critica_titulo: 'Ainda tem amigo aqui.',
     critica_sofahype: 'Depois de quatro filmes, Toy Story já tinha mais motivos para ficar quieto na caixa do que para voltar. Toy Story 5 resolve esse problema colocando os brinquedos diante de um adversário que qualquer pai reconhece imediatamente: uma tela mais interessante que eles.\n\nA ideia é simples, atual e funciona porque a Pixar não esqueceu o que fez essa turma durar tanto. Woody, Buzz e Jessie continuam carregando humor, aventura e aquela habilidade meio cruel de transformar brinquedos em crises existenciais.\n\nNem tudo parece tão novo quanto em 1995 — seria exigir bastante de um quinto filme. Mas existe imaginação, coração e diversão suficientes para justificar mais uma brincadeira. A caixa ainda não precisa ir para o sótão.',
     experiencia_extra: ['Aventura em família', 'Humor', 'Nostalgia Pixar', 'Brinquedos contra tecnologia'],
