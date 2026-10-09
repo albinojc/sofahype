@@ -26855,7 +26855,7 @@
       "história parada",
       "drama pesado"
     ],
-    "destaque_semana": true,
+    "destaque_semana": false,
     "fonte_dados": "TMDb",
     "status": "ativo",
     "status_disponibilidade": "ativo",
@@ -46870,9 +46870,9 @@
       "Disney+",
       "Hulu"
     ],
-    "nota_sofahype": 83,
-    "nota_critica": null,
-    "nota_publico": 81,
+    "nota_sofahype": 77.5,
+    "nota_critica": 76,
+    "nota_publico": 79,
     "nota_tmdb": "8.1",
     "popularidade_tmdb": 86.9282,
     "duracao": "",
@@ -115206,6 +115206,92 @@
     "status_disponibilidade": "ativo",
     "verificacao_disponibilidade": "verificado",
     "classificacao_etaria": "10",
+    "classificacao_etaria_pais": "BR"
+  },
+  {
+    "id": "filme-1226863",
+    "slug": "super-mario-galaxy-o-filme",
+    "tmdb_id": 1226863,
+    "tipo": "filme",
+    "titulo": "Super Mario Galaxy: O Filme",
+    "titulo_original": "The Super Mario Galaxy Movie",
+    "ano": "2026",
+    "data_lancamento": "2026-04-01",
+    "generos": [
+      "Animação",
+      "Aventura",
+      "Comédia"
+    ],
+    "plataformas": [
+      "Prime Video"
+    ],
+    "nota_sofahype": 52.0,
+    "nota_critica": 42,
+    "nota_publico": 62,
+    "duracao": "1h35",
+    "tag": "",
+    "poster_url": "https://image.tmdb.org/t/p/w500/b3WeTp42eJSRuE4UZfyPCOJW4c.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/kxQiIJ4gVcD3K6o14MJ72p5yRcE.jpg",
+    "sinopse": "Depois de salvar o Reino dos Cogumelos, Mario e seus amigos se encontram em uma missão intergaláctica para deter um novo vilão ameaçador.",
+    "experiencia": [
+      "Uma sessão pipoca intergaláctica, colorida e acelerada."
+    ],
+    "ideal_para": [
+      "Quem quer desligar o cérebro, juntar a família no sofá e curtir Mario sem grandes exigências."
+    ],
+    "talvez_nao_seja": [
+      "Se você espera uma história tão grande quanto o espetáculo visual."
+    ],
+    "fonte_dados": "TMDb",
+    "origem_importacao": "tmdb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "L",
+    "classificacao_etaria_pais": "BR",
+    "destaque_semana": true
+  },
+  {
+    "id": "filme-1311031",
+    "slug": "demon-slayer-kimetsu-no-yaiba-castelo-infinito-i",
+    "tmdb_id": 1311031,
+    "tipo": "filme",
+    "titulo": "Demon Slayer: Kimetsu no Yaiba Castelo Infinito I",
+    "titulo_original": "劇場版「鬼滅の刃」無限城編 第一章 猗窩座再来",
+    "ano": "2025",
+    "data_lancamento": "2025-09-11",
+    "generos": [
+      "Animação",
+      "Ação",
+      "Fantasia"
+    ],
+    "plataformas": [
+      "Netflix",
+      "HBO Max"
+    ],
+    "nota_sofahype": 90.5,
+    "nota_critica": 98,
+    "nota_publico": 83,
+    "duracao": "2h35",
+    "tag": "",
+    "poster_url": "https://image.tmdb.org/t/p/w500/41XdjOXGQoH0HTDNqEfwKGvGgwm.jpg",
+    "backdrop_url": "https://image.tmdb.org/t/p/w1280/1RgPyOhN4DRs225BGTlHJqCudII.jpg",
+    "sinopse": "Enquanto os membros dos caçadores e os Hashira participavam de um rigoroso programa de fortalecimento coletivo, conhecido como Treinamento dos Hashira, em preparação para a batalha final contra os demônios, Muzan Kibutsuji aparece na Mansão Ubuyashiki. Com a vida do líder da organização em risco, Tanjiro e os Hashira correm até o quartel-general, mas acabam sendo lançados, pelas mãos de Muzan, em uma queda profunda rumo a um espaço misterioso para um confronto final, o Castelo Infinito.",
+    "experiencia": [
+      "Ação gigantesca, emoção e animação em modo espetáculo."
+    ],
+    "ideal_para": [
+      "Quem já acompanha Demon Slayer e estava esperando a batalha ficar realmente séria."
+    ],
+    "talvez_nao_seja": [
+      "Se você nunca viu a série. Você vai boiar bonito."
+    ],
+    "fonte_dados": "TMDb",
+    "origem_importacao": "tmdb",
+    "status": "ativo",
+    "status_disponibilidade": "ativo",
+    "verificacao_disponibilidade": "verificado",
+    "classificacao_etaria": "18",
     "classificacao_etaria_pais": "BR"
   }
 ]
