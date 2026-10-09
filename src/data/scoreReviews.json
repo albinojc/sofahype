@@ -694,5 +694,41 @@
     "nota_sofahype": 83,
     "rotten_tomatoes": "https://www.rottentomatoes.com/m/toy_story_5",
     "imdb": "https://www.imdb.com/title/tt29355505/"
+  },
+  {
+    "id": "filme-1226863",
+    "titulo": "Super Mario Galaxy: O Filme",
+    "ano": "2026",
+    "tipo": "filme",
+    "verificado_em": "2026-10-09",
+    "nota_critica": 42,
+    "nota_publico": 62,
+    "nota_sofahype": 52.0,
+    "rotten_tomatoes": "https://www.rottentomatoes.com/m/the_super_mario_galaxy_movie",
+    "imdb": "https://www.imdb.com/title/tt28650488/"
+  },
+  {
+    "id": "filme-1311031",
+    "titulo": "Demon Slayer: Kimetsu no Yaiba Castelo Infinito I",
+    "ano": "2025",
+    "tipo": "filme",
+    "verificado_em": "2026-10-09",
+    "nota_critica": 98,
+    "nota_publico": 83,
+    "nota_sofahype": 90.5,
+    "rotten_tomatoes": "https://www.rottentomatoes.com/m/demon_slayer_kimetsu_no_yaiba_infinity_castle",
+    "imdb": "https://www.imdb.com/title/tt32820897/"
+  },
+  {
+    "id": "serie-1413",
+    "titulo": "American Horror Story",
+    "ano": "2011",
+    "tipo": "serie",
+    "verificado_em": "2026-10-09",
+    "nota_critica": 76,
+    "nota_publico": 79,
+    "nota_sofahype": 77.5,
+    "rotten_tomatoes": "https://www.rottentomatoes.com/tv/american_horror_story",
+    "imdb": "https://www.imdb.com/title/tt1844624/"
   }
 ]
